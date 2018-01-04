@@ -699,20 +699,17 @@ namespace Interview
         //Note:You must do this in-place without making a copy of the array.Minimize the total number of operations.
         public void MoveZeroes(int[] nums)
         { //smart solution~
-            int front = 0;
-            for (int i = 0; i < nums.Length; i++)
+            int zIdx = 0;
+            for(int i=0; i<nums.Length; i++)
             {
-                if (nums[i] != 0)
+                if(nums[i]!=0)
                 {
-                    //swap
-                    int temp = nums[i];
-                    nums[i] = nums[front];
-                    nums[front] = temp;
-                    front++;
-                }
+                    swap(nums, i, zIdx);
+                    zIdx++;
+                }                
             }
         }
-
+        
 
         //153. Find Minimum in Rotated Sorted Array
         //Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
