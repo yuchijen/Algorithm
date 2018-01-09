@@ -8,7 +8,7 @@ namespace Interview
 
     public class ArrayString
     {
-     
+       
         //22. Generate Parentheses
         //Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
         //        For example, given n = 3, a solution set is:
@@ -54,27 +54,36 @@ namespace Interview
         // For example,        a = "11"  b = "1", return "100".
         public string AddBinary(string a, string b)
         {
-            int i1 = a.Length - 1;
-            int i2 = b.Length - 1;
+            if (string.IsNullOrEmpty(a) && string.IsNullOrEmpty(b))
+                return "0";
+            if (string.IsNullOrEmpty(a) && !string.IsNullOrEmpty(b))
+                return b;
+            if (!string.IsNullOrEmpty(a) && string.IsNullOrEmpty(b))
+                return a;
 
+            int idxA = a.Length - 1;
+            int idxB = b.Length - 1;
             int carry = 0;
-            string ret = "";
-            while (i1 >= 0 || i2 >= 0 || carry != 0)
+            string ret = ""; 
+
+            while(idxA >=0 || idxB >=0 || carry >0)
             {
-                int aa = 0;
-                int bb = 0;
-                if (i1 >= 0) aa = a[i1] - '0';
-                if (i2 >= 0) bb = b[i2] - '0';
+                int valA = 0;
+                int valB = 0;
+                if (idxA >= 0)
+                    valA = a[idxA] - '0';
+                if (idxB >= 0)
+                    valB = b[idxB] - '0';
 
-                ret = ((aa + bb + carry) % 2).ToString() + ret;
-                carry = (aa + bb + carry) / 2;
-
-                i1--;
-                i2--;
+                ret = (valA + valB + carry) % 2 + ret;
+                carry = (valA + valB + carry) / 2;
+                idxA--;
+                idxB--;
             }
+
             return ret;
         }
-
+        
         //17. Letter Combinations of a Phone Number
         //Given a digit string, return all possible letter combinations that the number could represent.        
         //Input:Digit string "23"
@@ -533,7 +542,7 @@ namespace Interview
 
 
         //311. Sparse Matrix Multiplication
-        //Given two sparse matrices A and B, return the result of A*B.
+        //Given two sparse matrices A and B, return the result of A*B.        
         public int[,] Multiply(int[,] A, int[,] B)
         {
             int rowA = A.GetLength(0);
@@ -700,16 +709,16 @@ namespace Interview
         public void MoveZeroes(int[] nums)
         { //smart solution~
             int zIdx = 0;
-            for(int i=0; i<nums.Length; i++)
+            for (int i = 0; i < nums.Length; i++)
             {
-                if(nums[i]!=0)
+                if (nums[i] != 0)
                 {
                     swap(nums, i, zIdx);
                     zIdx++;
-                }                
+                }
             }
         }
-        
+
 
         //153. Find Minimum in Rotated Sorted Array
         //Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
@@ -1424,7 +1433,7 @@ namespace Interview
         //leetcode 1. Two Sum
         //Given an array of integers, return indices of the two numbers such that they add up to a specific target.
         //You may assume that each input would have exactly one solution, and you may not use the same element twice.
-        //Example: Given nums = [2, 7, 11, 15], target = 9,  Because nums[0] + nums[1] = 2 + 7 = 9,return [0, 1].
+        //Example: Given nums = [2, 7, 11, 15], target = 9,  Because nums[0] + nums[1] = 2 + 7 = 9,return [0, 1].       
         public int[] TwoSum(int[] nums, int target)
         {
             List<int> ret = new List<int>();
