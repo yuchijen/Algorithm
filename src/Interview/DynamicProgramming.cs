@@ -7,6 +7,42 @@ namespace Interview
 {
     public class DynamicProgramming
     {
+        //91. Decode Ways
+        //A message containing letters from A-Z is being encoded to numbers using the following mapping:
+        //'A' -> 1,'B' -> 2,...'Z' -> 26
+        //Given an encoded message containing digits, determine the total number of ways to decode it.
+        //For example,Given encoded message "12", it could be decoded as "AB" (1 2) or "L" (12).
+        //The number of ways decoding "12" is 2.
+        public int NumDecodings(string s)
+        {
+            if (s == null || s.Length == 0 || s[0] == '0')
+                return 0;
+
+            int len = s.Length;
+            int[] ret = new int[len + 1];
+            ret[0] = 1;
+            ret[1] = 1;
+
+            for (int i = 2; i <= len; i++)
+            {
+                int digi2 = 0; 
+                int digi1 = 0;
+                int prev2 = 0;
+                int prev1 = 0;
+                int.TryParse(s.Substring(i - 2, 2), out digi2);
+                int.TryParse(s.Substring(i - 1, 1), out digi1);
+
+                if (digi2 >= 10 && digi2 <= 26)
+                    prev2 = ret[i - 2];
+
+                if (digi1 != 0)
+                    prev1 = ret[i - 1];
+
+                ret[i] = prev2 + prev1;
+            }
+            return ret[len];
+        }
+
         //70. Climbing Stairs
         //You are climbing a stair case. It takes n steps to reach to the top.
         // Each time you can either climb 1 or 2 steps.In how many distinct ways can you climb to the top?
