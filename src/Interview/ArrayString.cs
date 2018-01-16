@@ -743,7 +743,6 @@ namespace Interview
         //191. Number of 1 Bits
         //Write a function that takes an unsigned integer and returns the number of ’1' bits it has (also known as the Hamming weight).
         //For example, the 32-bit integer ’11' has binary representation 00000000000000000000000000001011, so the function should return 3.
-
         public int HammingWeight(uint n)
         {
             if (n == 0)
@@ -1454,7 +1453,8 @@ namespace Interview
         }
 
         //leetcode 15. 3Sum
-        //Given an array S of n integers, are there elements a, b, c in S such that a + b + c = 0? Find all unique triplets in the array which gives the sum of zero.
+        //Given an array S of n integers, are there elements a, b, c in S such that a + b + c = 0? 
+        //Find all unique triplets in the array which gives the sum of zero.
         //For example, given array S = [-1, 0, 1, 2, -1, -4],  A solution set is:
         //[  [-1, 0, 1],  [-1, -1, 2]  ]
         public IList<IList<int>> ThreeSum2(int[] nums)
@@ -1500,15 +1500,19 @@ namespace Interview
             if (nums == null || nums.Length == 0)
                 return ret;
             Array.Sort(nums);
+            //var hs = new HashSet<string>();
 
             ThreeSumHelp(nums, 0, ret, new List<int>());
-
             return ret;
         }
+ 
         void ThreeSumHelp(int[] nums, int curIdx, List<IList<int>> ret, List<int> curList)
         {
-            if (curList.Count == 3 && curList.Sum() == 0 && !ret.Contains(curList))
+            //string checkRep = string.Join(",", curList);
+
+            if (curList.Count == 3 && curList.Sum() == 0 && !ret.Any(item => item[0]==curList[0] && item[1] == curList[1] && item[2] == curList[2]))
             {
+                //hs.Add(checkRep);
                 ret.Add(new List<int>(curList));
                 return;
             }
