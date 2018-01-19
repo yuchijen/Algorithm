@@ -8,7 +8,32 @@ namespace Interview
 
     public class ArrayString
     {
-       
+        //252. Meeting room
+        //Given an array of meeting time intervals consisting of start and end times
+        //[[s1, e1],[s2, e2],...] (si<ei), determine if a person could attend all meetings.
+        //For example,
+        //Given[[0, 30],[5, 10],[15, 20]],return false.
+        public bool canAttendMeetings(Interval[] intervals)
+        {
+            if (intervals == null || intervals.Length == 0)
+                return false;
+            if (intervals.Length == 1)
+                return true;
+
+            Array.Sort(intervals, (Interval a, Interval b) => {
+                    return a.start - b.start;
+                }
+            );
+
+            for(int i =1; i<intervals.Length; i++)
+            {
+                if (intervals[i].start > intervals[i - 1].end)
+                    return false;
+            }
+            return true;
+        }
+
+
         //22. Generate Parentheses
         //Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
         //        For example, given n = 3, a solution set is:
@@ -29,8 +54,7 @@ namespace Interview
             return ret;
         }
 
-
-
+        
         void helper(List<string> ret, int n, string cur, int st, int end)
         {
             if (cur.Length == n * 2)
@@ -64,9 +88,9 @@ namespace Interview
             int idxA = a.Length - 1;
             int idxB = b.Length - 1;
             int carry = 0;
-            string ret = ""; 
+            string ret = "";
 
-            while(idxA >=0 || idxB >=0 || carry >0)
+            while (idxA >= 0 || idxB >= 0 || carry > 0)
             {
                 int valA = 0;
                 int valB = 0;
@@ -83,7 +107,7 @@ namespace Interview
 
             return ret;
         }
-        
+
         //17. Letter Combinations of a Phone Number
         //Given a digit string, return all possible letter combinations that the number could represent.        
         //Input:Digit string "23"
@@ -515,8 +539,11 @@ namespace Interview
         }
 
         //277. Find the Celebrity
-        //Suppose you are at a party with n people (labeled from 0 to n - 1) and among them, there may exist one celebrity. The definition of a celebrity is that all the other n - 1 people know him/her but he/she does not know any of them.
-        //Note: There will be exactly one celebrity if he/she is in the party. Return the celebrity's label if there is a celebrity in the party. If there is no celebrity, return -1.
+        //Suppose you are at a party with n people (labeled from 0 to n - 1) and among them, there may 
+        //exist one celebrity. The definition of a celebrity is that all the other n - 1 people know 
+        //him/her but he/she does not know any of them.
+        //Note: There will be exactly one celebrity if he/she is in the party. Return the celebrity's 
+        //label if there is a celebrity in the party. If there is no celebrity, return -1.
         public int FindCelebrity(int n)
         {
             int maybeCelerity = 0;
@@ -1505,12 +1532,12 @@ namespace Interview
             ThreeSumHelp(nums, 0, ret, new List<int>());
             return ret;
         }
- 
+
         void ThreeSumHelp(int[] nums, int curIdx, List<IList<int>> ret, List<int> curList)
         {
             //string checkRep = string.Join(",", curList);
 
-            if (curList.Count == 3 && curList.Sum() == 0 && !ret.Any(item => item[0]==curList[0] && item[1] == curList[1] && item[2] == curList[2]))
+            if (curList.Count == 3 && curList.Sum() == 0 && !ret.Any(item => item[0] == curList[0] && item[1] == curList[1] && item[2] == curList[2]))
             {
                 //hs.Add(checkRep);
                 ret.Add(new List<int>(curList));
