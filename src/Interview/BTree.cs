@@ -20,6 +20,40 @@ namespace Interview
     }
     public class BTree
     {
+        //257. Binary Tree Paths
+        //Given a binary tree, return all root-to-leaf paths.
+        //For example, given the following binary tree:
+        //        1              All root-to-leaf paths are:["1->2->5", "1->3"]
+        //      /   \
+        //     2     3
+        //      \
+        //       5
+        public IList<string> BinaryTreePaths(TreeNode root)
+        {
+            var ret = new List<string>();
+            if (root == null)
+                return ret;
+
+            AllPathHelper(root, "", ret);
+
+            return ret;
+        }
+        void AllPathHelper(TreeNode root, string curPath, IList<string> ret)
+        {
+            if (root.left == null && root.right == null)
+            {
+                ret.Add(curPath + root.val);
+                return;
+            }
+            curPath += root.val + "->";
+
+            if (root.left != null)
+                AllPathHelper(root.left, curPath, ret);
+            if (root.right != null)
+                AllPathHelper(root.right, curPath, ret);
+        }
+
+
         //501. Find Mode in Binary Search Tree
         //Given a binary search tree (BST) with duplicates, find all the mode(s) (the most frequently occurred element) in the given BST.
         // Assume a BST is defined as follows:

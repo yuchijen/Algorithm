@@ -8,6 +8,72 @@ namespace Interview
 
     public class ArrayString
     {
+        //161. One Edit Distance(substring)
+        //Given two strings S and T, determine if they are both one edit distance apart.
+        //如果字符串长度相等，那么判断对应位置不同的字符数是不是1即可。
+        //如果字符串长度相差1，那么肯定是要在长的那个串删掉一个，所以两个字符串一起加加，一旦遇到一个不同，
+        //那么剩下的子串就要是一样，否则就是不止一个不同，false。
+        public bool isOneEditDistance(string s, string t)
+        {
+            if (string.IsNullOrEmpty(s) || string.IsNullOrEmpty(t))
+                return false;
+            if (Math.Abs(s.Length - t.Length) == 1)
+                return true;
+            if(s.Length==t.Length)
+            {
+                if (s == t)
+                    return false;
+                for (int i = 0; i<s.Length; i++)
+                {
+                    if (s[i] != t[i])
+                    {
+                        if (i + 1 == s.Length)
+                            return true;
+                        return s.Substring(i + 1, s.Length - i) == t.Substring(i + 1, s.Length - i);
+                    }   
+                }
+            }
+            return false;
+        }
+
+
+        //157. Read N Characters Given Read4  (not resoved yet)
+        //The API: int read4(char *buf) reads 4 characters at a time from a file. 
+        //The return value is the actual number of characters read.For example, it returns 3 
+        //if there is only 3 characters left in the file.
+        //By using the read4 API, implement the function int read(char* buf, int n) that reads n characters from the file.
+        //Note:The read function will only be called once for each test case.
+        int read(char[] buf, int n)
+        {
+            return 0;
+        }
+
+
+        //Given an array of meeting time intervals consisting of start and end times[[s1, e1],[s2, e2],...] 
+        //(si<ei), find the minimum number of conference rooms required.
+        //e.g. Given[[0, 30],[5, 10],[15, 20]], return 2.
+        int minMeetingRooms(Interval[] intervals)
+        {
+            if (intervals == null || intervals.Length == 0)
+                return 0;
+
+            Dictionary<int, int> map = new Dictionary<int, int>();
+            for (int i = 0; i < intervals.Length; i++)
+            {
+                map[intervals[i].start]++;
+                map[intervals[i].end]--;
+            }
+            int ret = 0;
+            int max = 0;
+            foreach (var x in map)
+            {
+                max += x.Value;
+                ret = Math.Max(ret, max);
+            }
+            return ret;
+        }
+
+
         //252. Meeting room
         //Given an array of meeting time intervals consisting of start and end times
         //[[s1, e1],[s2, e2],...] (si<ei), determine if a person could attend all meetings.
@@ -20,12 +86,13 @@ namespace Interview
             if (intervals.Length == 1)
                 return true;
 
-            Array.Sort(intervals, (Interval a, Interval b) => {
-                    return a.start - b.start;
-                }
+            Array.Sort(intervals, (Interval a, Interval b) =>
+            {
+                return a.start - b.start;
+            }
             );
 
-            for(int i =1; i<intervals.Length; i++)
+            for (int i = 1; i < intervals.Length; i++)
             {
                 if (intervals[i].start > intervals[i - 1].end)
                     return false;
@@ -54,7 +121,7 @@ namespace Interview
             return ret;
         }
 
-        
+
         void helper(List<string> ret, int n, string cur, int st, int end)
         {
             if (cur.Length == n * 2)
@@ -1415,7 +1482,7 @@ namespace Interview
         //If you were only permitted to complete at most one transaction(ie, buy one and sell one share of the stock), design an algorithm to find the maximum profit.
         //Example 1: Input: [7, 1, 5, 3, 6, 4]  Output: 5
         // max.difference = 6 - 1 = 5(not 7 - 1 = 6, as selling price needs to be larger than buying price)
-        //Input: [7, 6, 4, 3, 1]        Output: 0
+        //Input: [7, 6, 4, 3, 1]        Output: 0        
         public int MaxProfit(int[] prices)
         {
             if (prices == null || prices.Length <= 1)
@@ -1425,11 +1492,8 @@ namespace Interview
             int max = 0;
             for (int i = 1; i < prices.Length; i++)
             {
-                if (prices[i] < min)
-                    min = prices[i];
-                else if (prices[i] - min > 0)
-                    max = Math.Max(max, prices[i] - min);
-
+                max = Math.Max(prices[i] - min, max);
+                min = Math.Min(prices[i], min);
             }
             return max;
         }
@@ -1437,7 +1501,8 @@ namespace Interview
         //leetcode 122. Best Time to Buy and Sell Stock II
         //Say you have an array for which the ith element is the price of a given stock on day i.
         //Design an algorithm to find the maximum profit.You may complete as many transactions as 
-        //you like (ie, buy one and sell one share of the stock multiple times). However, you may not engage in multiple transactions at the same time(ie, you must sell the stock before you buy again).
+        //you like (ie, buy one and sell one share of the stock multiple times). 
+        //However, you may not engage in multiple transactions at the same time(ie, you must sell the stock before you buy again).
         public int MaxProfit2(int[] prices)
         {
             int ret = 0;
