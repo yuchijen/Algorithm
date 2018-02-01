@@ -75,7 +75,34 @@ namespace Interview
                 return true;
             return false;
         }
-        
+
+
+        //139. Word Break
+        //Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, determine if s can be segmented into a space-separated sequence of one or more dictionary words. You may assume the dictionary does not contain duplicate words.
+        //For example, given s = "leetcode", dict = ["leet", "code"].
+        //Return true because "leetcode" can be segmented as "leet code".
+        public bool WordBreak(string s, IList<string> wordDict)
+        {
+            if (wordDict == null || s == null)
+                return false;
+            if (s.Length == 0)
+                return true;
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                string front = s.Substring(0, i);
+
+                if (wordDict.Contains(front))
+                {
+                    if (WordBreak(s.Substring(i + 1), wordDict))
+                        return true;
+
+                    wordDict.Remove(front);
+                }
+            }
+            return false;
+        }
+
 
         //200. Number of Islands
         //Given a 2d grid map of '1's (land) and '0's (water), count the number of islands. 
