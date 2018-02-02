@@ -9,6 +9,111 @@ namespace Interview
 {
     public class Dsign
     {
+        //341. Flatten Nested List Iterator
+        //Given a nested list of integers, implement an iterator to flatten it.
+        //Each element is either an integer, or a list -- whose elements may also be integers or other lists.
+        //Example 1: Given the list[[1, 1],2,[1,1]],
+        //By calling next repeatedly until hasNext returns false, the order of elements returned by next should be: [1,1,2,1,1].
+        //Example 2: Given the list[1,[4,[6]]],
+        //By calling next repeatedly until hasNext returns false, the order of elements returned by next should be: [1,4,6].         
+        public class NestedIterator
+        {
+            Stack<NestedInteger> stack;
+            
+            public NestedIterator(IList<NestedInteger> nestedList)
+            {
+                stack = new Stack<NestedInteger>();
+                if (nestedList != null)
+                {
+                    for (int i = nestedList.Count - 1; i >= 0; i--)
+                    {
+                        stack.Push(nestedList[i]);
+                    }
+                }                     
+            }
+
+            public bool HasNext()
+            {
+                while(stack.Count!=0)
+                {
+                    if (stack.Peek().IsInteger())
+                        return true;
+                    var list = stack.Pop();
+                    for (int i = list.GetList().Count-1; i>=0; i--)
+                    {
+                        stack.Push(list.GetList()[i]);
+                    }
+                }
+                return false;
+            }
+            public int Next()
+            {
+                if (stack.Peek().IsInteger())
+                    return stack.Pop().GetInteger();
+                else
+                    throw new Exception("");
+            }
+        }
+        //alternative way, not real iterator, spend more memory O(n)
+        public class NestedIterator2
+        {
+            List<int> q;
+            int curIdx;
+            public NestedIterator2(IList<NestedInteger> nestedList)
+            {
+                q = new List<int>();
+                //DFS to save to q
+                DFSHelper(nestedList);
+            }
+            void DFSHelper(IList<NestedInteger> nestedList)
+            {
+                if (nestedList != null)
+                {
+                    foreach (var nest in nestedList)
+                    {
+                        if (nest.IsInteger())
+                            q.Add(nest.GetInteger());
+                        else
+                            DFSHelper(nest.GetList());
+                    }
+                }
+            }
+
+            public bool HasNext()
+            {
+                return curIdx < q.Count;
+            }
+            public int Next()
+            {
+                if (q.Count > 0)
+                {
+                    int ret = q[curIdx];
+                    curIdx++;
+                    return ret;
+                }
+                else
+                    throw new Exception("");
+            }
+        }
+
+        // This is the interface that allows for creating nested lists.
+        // You should not implement it, or speculate about its implementation
+        public interface NestedInteger
+        {
+            // @return true if this NestedInteger holds a single integer, rather than a nested list.
+            bool IsInteger();
+            // @return the single integer that this NestedInteger holds, if it holds a single integer
+            // Return null if this NestedInteger holds a nested list
+            int GetInteger();
+            // @return the nested list that this NestedInteger holds, if it holds a nested list
+            // Return null if this NestedInteger holds a single integer
+            IList<NestedInteger> GetList();
+            //Your NestedIterator will be called like this:
+            //NestedIterator i = new NestedIterator(nestedList);
+            //while (i.HasNext()) v[f()] = i.Next();
+        }
+
+
 
         public class BSTIterator
         {
@@ -25,7 +130,7 @@ namespace Interview
                     return;
                 getSort(node.left, list);
                 list.Add(node.val);
-             
+
                 getSort(node.right, list);
             }
             /** @return whether we have a next smallest number */
@@ -41,10 +146,6 @@ namespace Interview
                 return ret;
             }
         }
-
-
-
-
 
 
         //208. Implement Trie (Prefix Tree)    
@@ -86,10 +187,10 @@ namespace Interview
                 {
                     return root.word == word;
                 }
-                root = root.children[word[idx]-'a'];
-                return match(root, idx + 1, word);                
+                root = root.children[word[idx] - 'a'];
+                return match(root, idx + 1, word);
             }
-         
+
             //Returns if there is any word in the trie, that starts with the given prefix.
             public bool StartsWith(string pre)
             {
@@ -105,7 +206,7 @@ namespace Interview
                     return true;
                 root = root.children[pre[idx] - 'a'];
 
-                return matchPrefix(root, idx + 1, pre);                
+                return matchPrefix(root, idx + 1, pre);
             }
         }
         class TrieNode
@@ -115,10 +216,10 @@ namespace Interview
             {
                 children = new TrieNode[26];
             }
-            public TrieNode[] children {get;set;}
+            public TrieNode[] children { get; set; }
             public string word { get; set; }
         }
-        
+
     }
 
 
@@ -273,7 +374,7 @@ namespace Interview
         }
     }
 
-    
+
     //interview of Agoda in Hackerrank, practice of virtual , abstract, override 
     public abstract class CalculatorBase
     {
@@ -380,12 +481,13 @@ namespace Interview
         {
             public int Foo { get; set; }
         }
-        public IFoo CreateFoo(int value) {
+        public IFoo CreateFoo(int value)
+        {
             return new MyFoo { Foo = value };
         }
         //=> new MyFoo { Foo = value };
     }
-    
+
 
     public class AsyncTest
     {
@@ -399,9 +501,9 @@ namespace Interview
             string x = await tt;
 
             Console.WriteLine(x);
-         
+
         }
-        
+
         public async Task<string> longRunTaskAsync()
         {
             await Task.Delay(5000);
@@ -410,6 +512,6 @@ namespace Interview
         }
 
     }
-    
+
 
 }
