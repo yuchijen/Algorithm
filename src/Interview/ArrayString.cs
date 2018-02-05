@@ -252,7 +252,45 @@ namespace Interview
             }
         }
 
+        //242. Valid Anagram
+        //For example,  s = "anagram", t = "nagaram", return true.
+        //s = "rat", t = "car", return false.
+        public bool IsAnagram(string s, string t)
+        {
+            if (s == null || t == null || s.Length != t.Length)
+                return false;
+            if (s.Length == 0)
+                return true;
+
+            var map = new Dictionary<char, int>();
+
+            for(int i =0; i<s.Length; i++)
+            {
+                if (map.ContainsKey(s[i]))
+                    map[s[i]]++;
+                else
+                    map.Add(s[i], 1);                
+            }
+            for (int i = 0; i < t.Length; i++)
+            {
+                if (map.ContainsKey(t[i]))
+                {
+                    if (map[t[i]] == 0)
+                        return false;
+                    map[t[i]]--;
+                }
+                else
+                    return false;
+            }
+
+            return !map.Any(x => x.Value != 0);
+        }
+
         //49. Group Anagrams  (Amazon onsite)
+        //Given an array of strings, group anagrams together.
+        //For example, given: ["eat", "tea", "tan", "ate", "nat", "bat"], 
+        //Return:
+        //  [  ["ate", "eat","tea"], ["nat","tan"], ["bat"] ]
         public IList<IList<string>> GroupAnagrams(string[] strs)
         {
             List<IList<string>> ret = new List<IList<string>>();

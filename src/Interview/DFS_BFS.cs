@@ -13,6 +13,43 @@ namespace Interview
     }
     public class DFS_BFS
     {
+        //419. Battleships in a Board
+        //Given an 2D board, count how many battleships are in it. The battleships are represented with 'X's, 
+        //empty slots are represented with '.'s. You may assume the following rules:
+        //  You receive a valid board, made of only battleships or empty slots.
+        //  Battleships can only be placed horizontally or vertically.In other words, they can only be made of 
+        //the shape 1xN (1 row, N columns) or Nx1(N rows, 1 column), where N can be of any size.
+        //At least one horizontal or vertical cell separates between two battleships - there are no adjacent battleships.        
+        public int CountBattleships(char[,] board)
+        {
+            if (board == null)
+                return 0;
+            int ret = 0;
+            for(int x = 0; x < board.GetLength(0); x++)
+            {
+                for(int y = 0; y < board.GetLength(1); y++)
+                {
+                    if (board[x, y] == 'X')
+                    {
+                        ret++;
+                        CountBattleshipsHelper(x, y, board);
+                    }
+                }
+            }
+            return ret;
+        }
+        void CountBattleshipsHelper(int x, int y, char[,] board)
+        {
+            if (x >= board.GetLength(0) || x < 0 || y >= board.GetLength(1) || y < 0 || board[x, y] == '.')
+                return;
+            board[x, y] = '.';
+            CountBattleshipsHelper(x + 1, y, board);
+            CountBattleshipsHelper(x, y + 1, board);
+            CountBattleshipsHelper(x - 1, y, board);
+            CountBattleshipsHelper(x, y - 1, board);
+        }
+
+
         //ref Swap 
         public void refSwap(ref Point pt1,ref Point pt2)
         {
@@ -25,7 +62,9 @@ namespace Interview
         }
 
         //NVIDIA Shortest path in a Binary Maze
-        //Given a MxN matrix where each element can either be 0 or 1. We need to find the shortest path between a given source cell to a destination cell.The path can only be created out of a cell if its value is 1.
+        //Given a MxN matrix where each element can either be 0 or 1. We need to find the shortest 
+        //path between a given source cell to a destination cell.
+        //The path can only be created out of a cell if its value is 1.
         // Expected time complexity is O(MN).
         //Input:
         //        mat[ROW][COL]  = {{1, 0, 1, 1, 1, 1, 0, 1, 1, 1 },
