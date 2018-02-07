@@ -1425,9 +1425,12 @@ namespace Interview
         //88. Merge Sorted Array  
         //Given two sorted integer arrays nums1 and nums2, merge nums2 into nums1 as one sorted array.
         //Note:You may assume that nums1 has enough space(size that is greater or equal to m + n) to 
-        //hold additional elements from nums2.The number of elements initialized in nums1 and nums2 are m and n respectively.
+        //hold additional elements from nums2.The number of elements initialized in nums1 and nums2 are m and n respectively.        
         public void Merge(int[] nums1, int m, int[] nums2, int n)
         {
+            if (nums1 == null || nums2 == null || n <= 0)
+                return;
+
             int k = m + n - 1;
             int i = m - 1;
             int j = n - 1;
@@ -1484,6 +1487,65 @@ namespace Interview
             }
             return max;
         }
+
+        //54. Spiral Matrix
+        //Given a matrix of m x n elements (m rows, n columns), return all elements of the matrix in spiral order.
+        //For example,  Given the following matrix:
+        //[ [ 1, 2, 3 ],
+        //  [ 4, 5, 6 ],
+        //  [ 7, 8, 9 ]
+        //]                        You should return [1,2,3,6,9,8,7,4,5].
+        public IList<int> SpiralOrder(int[,] matrix)
+        {
+            int leftFlag = 0;
+            int downFlag = matrix.GetLength(0) - 1;
+            int upFlag = 0;
+            int rightFlag = matrix.GetLength(1) - 1;
+
+            List<int> ret = new List<int>();
+
+            if (matrix.Length == 0)
+                return ret;
+
+            while (leftFlag <= rightFlag && upFlag <= downFlag)
+            {
+                //visit through most up row 
+                for (int i = leftFlag; i <= rightFlag; i++)
+                {
+                    ret.Add(matrix[upFlag, i]);
+                }
+                upFlag++;
+
+                //visit through most right col
+                for (int i = upFlag; i <= downFlag; i++)
+                {
+                    ret.Add(matrix[i, rightFlag]);
+                }
+                rightFlag--;
+
+                //visit back through down row
+                if (upFlag <= downFlag)  //need to check is it no row left
+                {
+                    for (int i = rightFlag; i >= leftFlag; i--)
+                    {
+                        ret.Add(matrix[downFlag, i]);
+                    }
+                }
+                downFlag--;
+                //visit back through up col
+                if (leftFlag <= rightFlag) //need to check is it no col left
+                {
+                    for (int i = downFlag; i >= upFlag; i--)
+                    {
+                        ret.Add(matrix[i, leftFlag]);
+                    }
+                }
+                leftFlag++;
+            }
+            return ret;
+
+        }
+
 
 
         //186. Reverse Words in a String II  

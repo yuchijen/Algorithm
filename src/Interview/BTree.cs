@@ -629,6 +629,22 @@ namespace Interview
             return isChild(root.left, n) || isChild(root.right, n);
         }
 
+        public TreeNode LowestCommonAncestor2(TreeNode root, TreeNode p, TreeNode q)
+        {
+            if (root == null || root == p || root == q)
+                return root;
+
+            TreeNode left = LowestCommonAncestor2(root.left, p, q);
+            TreeNode right = LowestCommonAncestor2(root.right, p, q);
+            
+            if (left == null)
+                return right;
+            else if (right == null)
+                return left;
+            else
+                return root;
+        }
+
         //98. Validate Binary Search Tree
         //Given a binary tree, determine if it is a valid binary search tree (BST).        
         public bool IsValidBST(TreeNode root)
