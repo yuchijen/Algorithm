@@ -9,7 +9,8 @@ namespace Interview
 
     public class ArrayString
     {
-        
+
+       
         //125. Valid Palindrome
         //Given a string, determine if it is a palindrome, considering only alphanumeric characters and ignoring cases.
         //For example, "A man, a plan, a canal: Panama" is a palindrome. "race a car" is not a palindrome.
@@ -1552,7 +1553,7 @@ namespace Interview
         //Given an input string, reverse the string word by word. A word is defined as a sequence of non-space characters.
         //The input string does not contain leading or trailing spaces and the words are always separated by a single space.
         //For example, Given s = "the sky is blue", return "blue is sky the".
-        // Could you do it in-place without allocating extra space?
+        // Could you do it in-place without allocating extra space?        
         public void ReverseWords(char[] s)
         {
             if (s.All(c => c != ' '))
@@ -1592,25 +1593,26 @@ namespace Interview
         //leetcode 201705 53. Maximum Subarray
         //Find the contiguous subarray within an array (containing at least one number) which has the largest sum.
         //For example, given the array[-2, 1, -3, 4, -1, 2, 1, -5, 4],
-        //the contiguous subarray[4, -1, 2, 1] has the largest sum = 6.        
+        //the contiguous subarray[4, -1, 2, 1] has the largest sum = 6.                
         public int MaxSubArray(int[] nums)
         {
-            if (nums.Length == 1)
-                return nums[0];
+            if (nums == null || nums.Length == 0)
+                return 0;
 
-            int max = int.MinValue;
-            int pre = nums[0];
+            int curSum = 0; 
+            int curmax = int.MinValue;
 
-            for (int i = 1; i < nums.Length; i++)
+            for(int i =0; i< nums.Length; i++)
             {
-                pre = System.Math.Max(nums[i], pre + nums[i]);
-                max = System.Math.Max(max, pre);
+                curSum += nums[i];
+
+                if (curSum < nums[i])
+                    curSum = nums[i];
+
+                curmax = Math.Max(curSum, curmax);
             }
-
-            max = System.Math.Max(nums[0], max);
-            return max;
+            return curmax;
         }
-
 
         //leetcode 201705 121. Best Time to Buy and Sell Stock
         //Say you have an array for which the ith element is the price of a given stock on day i.
@@ -1756,7 +1758,8 @@ namespace Interview
         //268. Missing Number
         //Given an array containing n distinct numbers taken from 0, 1, 2, ..., n, find the one that is missing from the array.
         //For example, Given nums = [0, 1, 3] return 2.
-        //Your algorithm should run in linear runtime complexity. Could you implement it using only constant extra space complexity?
+        // Input: [3,0,1]    Output: 2
+        //Your algorithm should run in linear runtime complexity. Could you implement it using only constant extra space complexity?        
         public int MissingNumber(int[] nums)
         {
             if (nums == null || nums.Length == 0)
@@ -1930,5 +1933,37 @@ namespace Interview
                     matrix[i, zCol.ElementAt(j)] = 0;
             }
         }
+
+        //MS tech screen, 2 arrays , one is n and another is n+1, find out extra char
+        //....
+        char findExtraChar(char[] a, char[] b)
+        {
+            if (a == null || b == null)
+                return '\0';
+            if (a.Length == 0 && b.Length == 1)
+                return b[0];
+            if (a.Length == 1 && b.Length == 0)
+                return a[0];
+
+            var map = new Dictionary<char, int>();
+
+            for (int i = 0; i < a.Length; i++)
+            {
+                if (!map.ContainsKey(a[i]))
+                    map.Add(a[i], 1);
+                else
+                    map[a[i]] += 1;
+            }
+
+            for (int i = 0; i < b.Length; i++)
+            {
+                if (map.ContainsKey(b[i]))
+                    map[a[i]] -= 1;
+                else
+                    return b[i];
+            }
+            return map.Where(p => p.Value != 0).FirstOrDefault().Key;
+        }
+
     }
 }

@@ -7,6 +7,27 @@ namespace Interview
 {
     public class DynamicProgramming
     {
+        //leetcode 201705 53. Maximum Subarray
+        //Find the contiguous subarray within an array (containing at least one number) which has the largest sum.
+        //For example, given the array[-2, 1, -3, 4, -1, 2, 1, -5, 4],
+        //the contiguous subarray[4, -1, 2, 1] has the largest sum = 6.                
+        public int MaxSubArray(int[] nums)
+        {
+            if (nums == null || nums.Length == 0)
+                return 0;
+            int curSum = nums[0];
+            int curMax = nums[0];
+
+            int[] dp = new int[nums.Length];
+
+            for(int i =1; i<nums.Length; i++)
+            {
+                dp[i] = dp[i - 1] + nums[i] < nums[i] ? nums[i] : dp[i - 1] + nums[i];
+                curMax=Math.Max(curMax, dp[i]);
+            }
+            return curMax;
+        }
+
         //91. Decode Ways
         //A message containing letters from A-Z is being encoded to numbers using the following mapping:
         //'A' -> 1,'B' -> 2,...'Z' -> 26
@@ -25,7 +46,7 @@ namespace Interview
 
             for (int i = 2; i <= len; i++)
             {
-                int digi2 = 0; 
+                int digi2 = 0;
                 int digi1 = 0;
                 int prev2 = 0;
                 int prev1 = 0;
@@ -89,5 +110,5 @@ namespace Interview
         }
     }
 
-    
+
 }
