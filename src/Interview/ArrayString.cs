@@ -9,8 +9,46 @@ namespace Interview
 
     public class ArrayString
     {
+        //75. Sort Colors
+        //Given an array with n objects colored red, white or blue, sort them so that objects of the same 
+        //color are adjacent, with the colors in the order red, white and blue.
+        //Here, we will use the integers 0, 1, and 2 to represent the color red, white, and blue respectively.
+        //Note:You are not suppose to use the library's sort function for this problem.
+        public void SortColors(int[] nums)
+        {
+            if (nums == null || nums.Length == 0)
+                return;
 
-       
+            int ptR = 0;
+            int ptB = nums.Length - 1;
+
+            for (int i = ptR; i <= ptB;)
+            {
+                if (nums[i] == 0)
+                {
+                    swapColor(nums, i, ptR);
+                    ptR++;
+                    i++;
+                }
+                else if (nums[i] == 2)
+                {
+                    swapColor(nums, i, ptB);
+                    ptB--;
+                }
+                else
+                    i++;
+            }
+        }
+
+        void swapColor(int[] nums, int i, int j)
+        {
+            if (nums == null || nums.Length == 0 || i == j)
+                return;
+            int temp = nums[i];
+            nums[i] = nums[j];
+            nums[j] = temp;
+        }
+
         //125. Valid Palindrome
         //Given a string, determine if it is a palindrome, considering only alphanumeric characters and ignoring cases.
         //For example, "A man, a plan, a canal: Panama" is a palindrome. "race a car" is not a palindrome.

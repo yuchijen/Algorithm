@@ -457,6 +457,7 @@ namespace Interview
 
     //Houlihan Lokey  onsite
     //write code to calculate the circumference of the circle without modifying class itself
+    //(closure )
     public sealed class Circle
     {
         private double radius;
@@ -493,15 +494,15 @@ namespace Interview
     {
         public async void TestAsync()
         {
-            Task<string> tt = longRunTaskAsync();
+            Task<string> tt = longRunTaskAsync();            
             Console.WriteLine("doesn't block main thread");
-            Thread.Sleep(4000);
+            Thread.Sleep(5000);
             //await AsyncMethod();
-            Console.WriteLine("waiting for long run thread feedback...");
+
             string x = await tt;
 
             Console.WriteLine(x);
-
+            Console.WriteLine("waiting for long run thread feedback...");
         }
 
         public async Task<string> longRunTaskAsync()
@@ -513,5 +514,97 @@ namespace Interview
 
     }
 
+    //design hashtable class without using the built-in classes
+    public class HashTable<TKey, TValue>
+    {
+        private LinkedList<Tuple<TKey, TValue>>[] _items;
+        private int _fillFactor = 3;
+        private int _size;
 
+        public HashTable()
+        {
+            _items = new LinkedList<Tuple<TKey, TValue>>[4];
+        }
+
+        public void Add(TKey key, TValue value)
+        {
+            var pos = GetPosition(key, _items.Length);
+            if (_items[pos] == null)
+            {
+                _items[pos] = new LinkedList<Tuple<TKey, TValue>>();
+            }
+            if (_items[pos].Any(x => x.Item1.Equals(key)))
+            {
+                throw new Exception("Duplicate key, cannot insert.");
+            }
+            _size++;
+            if (NeedToGrow())
+            {
+                GrowAndReHash();
+            }
+            pos = GetPosition(key, _items.Length);
+            if (_items[pos] == null)
+            {
+                _items[pos] = new LinkedList<Tuple<TKey, TValue>>();
+            }
+            _items[pos].AddFirst(new Tuple<TKey, TValue>(key, value));
+        }
+
+        public void Remove(TKey key)
+        {
+            var pos = GetPosition(key, _items.Length);
+            if (_items[pos] != null)
+            {
+                var objToRemove = _items[pos].FirstOrDefault(item => item.Item1.Equals(key));
+                if (objToRemove == null) return;
+                _items[pos].Remove(objToRemove);
+                _size--;
+            }
+            else
+            {
+                throw new Exception("Value not in HashTable.");
+            }
+        }
+
+        public TValue Get(TKey key)
+        {
+            var pos = GetPosition(key, _items.Length);
+            foreach (var item in _items[pos].Where(item => item.Item1.Equals(key)))
+            {
+                return item.Item2;
+            }
+            throw new Exception("Key does not exist in HashTable.");
+        }
+
+        private void GrowAndReHash()
+        {
+            _fillFactor *= 2;
+            var newItems = new LinkedList<Tuple<TKey, TValue>>[_items.Length * 2];
+            foreach (var item in _items.Where(x => x != null))
+            {
+                foreach (var value in item)
+                {
+                    var pos = GetPosition(value.Item1, newItems.Length);
+                    if (newItems[pos] == null)
+                    {
+                        newItems[pos] = new LinkedList<Tuple<TKey, TValue>>();
+                    }
+                    newItems[pos].AddFirst(new Tuple<TKey, TValue>(value.Item1, value.Item2));
+                }
+            }
+            _items = newItems;
+        }
+
+        private int GetPosition(TKey key, int length)
+        {
+            var hash = key.GetHashCode();
+            var pos = Math.Abs(hash % length);
+            return pos;
+        }
+
+        private bool NeedToGrow()
+        {
+            return _size >= _fillFactor;
+        }
+    }
 }

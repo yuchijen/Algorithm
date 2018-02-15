@@ -572,34 +572,31 @@ namespace Interview
         //[  [3],
         //   [20,9],
         //   [15,7]
-        //]
+        //]        
         public IList<IList<int>> ZigzagLevelOrder(TreeNode root)
         {
             List<IList<int>> ret = new List<IList<int>>();
             if (root == null)
                 return ret;
 
-            treeLevelOrder(root, 0, ret);
+            treeLevelOrder(ret, root, 0);
             return ret;
         }
-        void treeLevelOrder(TreeNode root, int level, IList<IList<int>> ret)
+        void treeLevelOrder(IList<IList<int>> ret, TreeNode node, int level)
         {
-            if (root == null)
+            if (node == null)
                 return;
 
-            if (level >= ret.Count)
+            if (ret.Count <= level)
                 ret.Add(new List<int>());
 
-            List<int> curLevelList = ret[level].ToList();
-
             if (level % 2 == 0)
-                curLevelList.Add(root.val);
+                ret[level].Add(node.val);
             else
-                curLevelList.Insert(0, root.val);
+                ret[level].Insert(0, node.val);
 
-            ret[level] = curLevelList;
-            treeLevelOrder(root.left, level + 1, ret);
-            treeLevelOrder(root.right, level + 1, ret);
+            treeLevelOrder(ret, node.left, level + 1);
+            treeLevelOrder(ret, node.right, level + 1);
         }
 
         //235. Lowest Common Ancestor of a Binary Search Tree
