@@ -1940,11 +1940,77 @@ namespace Interview
 
         //73. Set Matrix Zeroes
         //Given a m x n matrix, if an element is 0, set its entire row and column to 0. Do it in place.
+        public void SetZeroes2(int[,] matrix)
+        {
+            //space complex : O(1)
+            //use 1st row and 1st col to record zero
+            if (matrix == null)
+                return;
+
+            bool isRowZero = false;
+            bool isColZero = false;
+
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                if (matrix[i, 0] == 0)
+                {
+                    isColZero = true;
+                    break;
+                }                    
+            }
+            for (int j = 0; j < matrix.GetLength(1); j++)
+            {
+                if (matrix[0,j] == 0)
+                {
+                    isRowZero = true;
+                    break;
+                }
+            }
+            //use 1st row and 1st col to record zero
+            for (int i =1; i< matrix.GetLength(0);i++)
+            {
+                for (int j = 1; j < matrix.GetLength(1); j++)
+                {
+                    if (matrix[i, j] == 0)
+                    {
+                        matrix[i, 0] = 0;
+                        matrix[0, j] = 0;
+                    }                        
+                }
+            }
+            //assign 0 according to 1st row and col
+            for (int i = 1; i < matrix.GetLength(0); i++)
+            {
+                for (int j = 1; j < matrix.GetLength(1); j++)
+                {
+                    if (matrix[i, 0] == 0 || matrix[0, j] == 0)
+                        matrix[i, j] = 0;
+                }
+            }
+            //taking care 1st row and col
+            if (isRowZero)
+            {
+                for (int j = 0; j < matrix.GetLength(1); j++)
+                {
+                    matrix[0, j]=0;   
+                }
+            }
+            if (isColZero)
+            {
+                for (int i = 0; i < matrix.GetLength(0); i++)
+                {
+                    matrix[i, 0] = 0;
+                }
+            }
+            
+        }
+
         public void SetZeroes(int[,] matrix)
         {
+            //space complex : O(m+n) 
             int rows = matrix.GetLength(0);
             int cols = matrix.GetLength(1);
-
+            
             HashSet<int> zRow = new HashSet<int>();
             HashSet<int> zCol = new HashSet<int>();
 

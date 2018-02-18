@@ -510,28 +510,27 @@ namespace Interview
         //   /  \
         //  2 -> 3 -> NULL
         // / \  / \
-        //4->5->6->7 -> NULL
+        //4->5->6->7 -> NULL        
         public void connect(TreeLinkNode root)
         {
             if (root == null)
                 return;
-
-            TreeLinkNode level_start = root;
-
-            while (level_start != null)
+            
+            while (root != null)
             {
-                TreeLinkNode cur = level_start;
-                while (cur != null)
+                TreeLinkNode curNode = root;
+                while (curNode != null)
                 {
-                    if (cur.left != null)
-                        cur.left.next = cur.right;
-                    if (cur.right != null && cur.next != null)
-                        cur.right.next = cur.next.left;
-                    cur = cur.next;
+                    if (curNode.left != null)
+                        curNode.left.next = curNode.right;
+                    if (curNode.right != null && curNode.next != null)
+                        curNode.right.next = curNode.next.left;
+                    curNode = curNode.next;
                 }
-                level_start = level_start.left;
+                root = root.left;
             }
         }
+        
 
         //102. Binary Tree Level Order Traversal
         public IList<IList<int>> LevelOrder(TreeNode root)
