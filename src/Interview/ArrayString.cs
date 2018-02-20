@@ -9,6 +9,31 @@ namespace Interview
 
     public class ArrayString
     {
+        //MS onsite 
+        //find out max and second max value in array
+        public int[] FindMaxAndSecondMax(int[] nums)
+        {
+            var ret = new List<int>();
+            int max = int.MinValue;
+            int smax = int.MinValue;
+
+            for(int i=0; i< nums.Length; i++)
+            {
+                if (nums[i] > max)
+                {
+                    smax = max;
+                    max = nums[i];
+                }
+                else if (nums[i] > smax && nums[i] != max)
+                {
+                    smax = nums[i];
+                }
+            }
+            ret.Add(max);
+            ret.Add(smax);
+            return ret.ToArray();
+        }
+
         //75. Sort Colors
         //Given an array with n objects colored red, white or blue, sort them so that objects of the same 
         //color are adjacent, with the colors in the order red, white and blue.
@@ -558,9 +583,10 @@ namespace Interview
         }
 
         //238. Product of Array Except Self
-        //Given an array of n integers where n > 1, nums, return an array output such that output[i] is equal to the product of all the elements of nums except nums[i].
+        //Given an array of n integers where n > 1, nums, return an array output such that output[i] is equal to 
+        //the product of all the elements of nums except nums[i].
         //Solve it without division and in O(n).
-        //For example, given[1, 2, 3, 4], return [24,12,8,6].
+        //For example, given[1, 2, 3, 4], return [24,12,8,6].       
         public int[] ProductExceptSelf(int[] nums)
         {
             int[] result = new int[nums.Length];
@@ -1388,7 +1414,7 @@ namespace Interview
         //The brackets must close in the correct order, "()" and "()[]{}" are all valid but "(]" and "([)]" are not.
         public bool IsValid(string s)
         {
-            if (s == null || s.Length == 0)
+            if (string.IsNullOrEmpty(s))
                 return true;
 
             Stack<char> st = new Stack<char>();
@@ -1422,7 +1448,7 @@ namespace Interview
             }
             return st.Count == 0;
         }
-
+        
         //13. Roman to Integer
         public int RomanToInt(string s)
         {
