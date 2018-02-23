@@ -34,7 +34,7 @@ namespace Interview
             return ret.ToArray();
         }
 
-        //75. Sort Colors
+        //75. Sort Colors (MS OA)
         //Given an array with n objects colored red, white or blue, sort them so that objects of the same 
         //color are adjacent, with the colors in the order red, white and blue.
         //Here, we will use the integers 0, 1, and 2 to represent the color red, white, and blue respectively.
@@ -64,7 +64,7 @@ namespace Interview
                     i++;
             }
         }
-
+        
         void swapColor(int[] nums, int i, int j)
         {
             if (nums == null || nums.Length == 0 || i == j)
@@ -1844,14 +1844,14 @@ namespace Interview
             return ideasum - realsum;
         }
 
-        //8. String to Integer (atoi)
+        //8. String to Integer (atoi) MS OA
         //Implement atoi to convert a string to an integer.
         //Hint: Carefully consider all possible input cases.If you want a challenge, please do not see below and ask yourself what are the possible input cases.
         //If no valid conversion could be performed, a zero value is returned.If the correct value is out of the range of representable values, INT_MAX (2147483647) or INT_MIN(-2147483648) is returned.
         //e.g. -12a445  ->  -12 
         public int MyAtoi(string str)
         {
-            if (str.Length == 0)
+            if (string.IsNullOrEmpty(str))
                 return 0;
 
             str = str.Trim();
@@ -1890,7 +1890,7 @@ namespace Interview
             return (int)ret;
         }
 
-        public void SortColors(int[] nums)
+        public void SortColors2(int[] nums)
         {
             int rIdx = 0;
             int bIdx = nums.Length - 1;
