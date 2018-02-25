@@ -22,6 +22,33 @@ namespace Interview
 
     public class LinkedList
     {
+        //61. Rotate List
+        //Given a list, rotate the list to the right by k places, where k is non-negative.
+        // Example: Given 1->2->3->4->5->NULL and k = 2,
+        //return 4->5->1->2->3->NULL.
+        public ListNode RotateRight(ListNode head, int k)
+        {
+            if (head == null || head.next == null || k == 0) return head;
+
+            //获取链表的总长度
+            ListNode index = head; int len = 1;
+            while (index.next != null)
+            { index = index.next; len++; }
+            //将链表首尾相连形成环
+            index.next = head;
+
+            //找到需要截断的位置，因为k可能大于链表总长度。所以这里使用取余操作
+            for (int i = 0; i < len - k % len; i++)
+            {
+                index = index.next;
+            }
+            //将该处截断，指向空指针即可
+            ListNode result = index.next;
+            index.next = null;
+            return result;
+        }
+
+
         //206. Reverse Linked List
         //Reverse a singly linked list.
         public ListNode ReverseList(ListNode head)

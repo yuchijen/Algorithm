@@ -7,6 +7,27 @@ namespace Interview
 {
     public class DynamicProgramming
     {
+        //Reverse Fibonacci MS OTS
+        //given 2 first number. 80 50 -> 80 50 30 20 10 10 0
+        public int[] ReverseFibonacci(int i, int j)
+        {
+            //assume this is for positive 
+            if (i <= 0 || j <= 0 || i<j)
+                return null;
+
+            var ret = new List<int>();
+            ret.Add(i);
+            ret.Add(j);
+            int k = i - j;
+            while(k >=0)
+            {
+                ret.Add(k);
+                k = ret.Last() - k;
+            }
+            return ret.ToArray();
+        }
+
+
         //leetcode 201705 53. Maximum Subarray
         //Find the contiguous subarray within an array (containing at least one number) which has the largest sum.
         //For example, given the array[-2, 1, -3, 4, -1, 2, 1, -5, 4],

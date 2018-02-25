@@ -33,10 +33,28 @@ namespace Interview
         //         15   7
         public TreeNode BuildTree(int[] preorder, int[] inorder)
         {
+            if (preorder == null || preorder.Length == 0 || inorder == null || inorder.Length == 0)
+                return null;
 
+            int preStart = 0;
+            int inStart = 0;
+            int inEnd = inorder.Length - 1;
+            int preEnd = preorder.Length - 1;
+
+            return buildTreeHelper(preorder, preStart, preEnd, inorder, inStart, inEnd);
+        }
+        TreeNode buildTreeHelper(int[] preorder, int preStart, int preEnd, int[] inorder, int inStart, int inEnd)
+        {
+            int pivValue = preorder[preStart];
+
+            int inOrderPivIdx = Array.FindIndex(inorder, v => v == pivValue);
+            
+            var rootNode = new TreeNode(pivValue);
+            rootNode.left = buildTreeHelper(preorder, preStart + 1, preStart + (inOrderPivIdx - inStart), inorder, inStart, inOrderPivIdx - 1);
+            rootNode.right = buildTreeHelper(preorder, preStart + (inOrderPivIdx - inStart) + 1, preEnd, inorder, inOrderPivIdx + 1, inEnd);
+            return rootNode;
 
         }
-
 
         //285.	Inorder Successor in BST
         //Given a binary search tree and a node in it, find the in-order successor of that node in the BST.
@@ -62,7 +80,36 @@ namespace Interview
             return successor;
         }
 
+        // Inorder Successor in regular BT
+        public TreeNode inorderSuccessorBTree(TreeNode root, TreeNode p)
+        {
+            if (root == null || p == null)
+                return null;
 
+            Stack<TreeNode> st = new Stack<TreeNode>();
+            bool isFoundNode = false;
+
+            while (root != null || st.Count!=0)
+            {
+                if(root!=null)
+                {
+                    st.Push(root);
+                    root = root.left;
+                }
+                else
+                {
+                    root = st.Pop();
+                    if (isFoundNode)  //found p in previous round, this node from stack should be successor
+                        return root;
+                    if(p == root)
+                    {
+                        isFoundNode = true;
+                    }
+                    root = root.right;
+                }
+            }
+            return null;
+        }
         TreeNode findMostLeftChildHelper(TreeNode node)
         {
             if (node == null)
@@ -76,6 +123,7 @@ namespace Interview
             else
                 return null;
         }
+
 
         //173. Binary Search Tree Iterator
         //Implement an iterator over a binary search tree (BST). Your iterator will be initialized with the root node of a BST.

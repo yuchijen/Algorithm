@@ -9,6 +9,98 @@ namespace Interview
 
     public class ArrayString
     {
+        //60. Permutation Sequence
+        //The set [1,2,3,…,n] contains a total of n! unique permutations.
+        //By listing and labeling all of the permutations in order,
+        //We get the following sequence(ie, for n = 3):
+        //"123"
+        //"132"
+        //"213"
+        //"231"
+        //"312"
+        //"321"
+        //Given n and k, return the kth permutation sequence.Note: Given n will be between 1 and 9 inclusive.
+        public string GetPermutation(int n, int k)
+        {
+            if (n < 1 || k < 1)
+                return "";
+            //generate factorial array e.g. n=4 , [1,1,2,6] => [0!,1!,2!,3!] 
+            var factorial = new int[n];
+            factorial[0] = 1;
+            for(int i =1; i<n;i++)
+                factorial[i] = factorial[i-1] *i;
+            
+            //generate candidate array
+            var candidateSet = new List<int>();
+            for(int i = 1; i<= n;i++)
+                candidateSet.Add(i);
+
+            var ret = new StringBuilder();
+
+            k--; // if k= 2 , will be 132 (the last element of prefix =1, 1(k-1) % 2 = 1 <-- index of candidateSet   
+            //iterate start from 3! to 0!  
+            for (int i = n-1; i>=0; i--)
+            {
+                ret.Append(candidateSet[k % factorial[i]]);
+                candidateSet.RemoveAt(k % factorial[i]);
+                k %= factorial[i];
+                
+            }
+            return ret.ToString();
+        }
+        //hint:定ｎ个数字让求第k个序列．ｎ个数字总共的全排列最多有n!个，并且全排列有个规律．
+        //给定一个n，以１开头的排列有(n-1)!个，同样对２和３也是，所以如果k小于等于(n-1)!，那么首位必为１，因为以１开头的全排列有(n-1)!个．
+        //同样如果k大于(n-1)!，那么第一个数就应该为(k-1)/(n-1)! + 1．这样找到了首位数字应该是哪个，剩下了(n-1)个数字，
+        //我们只需要再重复上面的步骤，不断缩小k即可．
+
+
+        //165. Compare Version Numbers
+        //Compare two version numbers version1 and version2.
+        //If version1 > version2 return 1, if version1<version2 return -1, otherwise return 0.
+        //You may assume that the version strings are non-empty and contain only digits and the.character.
+        //The.character does not represent a decimal point and is used to separate number sequences.
+        //For instance, 2.5 is not "two and a half" or "half way to version three", it is the fifth second-level revision of the second first-level revision.
+        //Here is an example of version numbers ordering: 0.1 < 1.1 < 1.2 < 13.37
+        public int CompareVersion(string version1, string version2)
+        {
+            if (string.IsNullOrEmpty(version1) || string.IsNullOrEmpty(version2))
+                return 0;
+
+            var v1s = version1.Split('.');
+            var v2s = version2.Split('.');
+
+            int len = Math.Min(v1s.Length, v2s.Length);
+
+            for (int i = 0; i < len; i++)
+            {
+                if (int.Parse(v1s[i]) > int.Parse(v2s[i]))
+                    return 1;
+                if (int.Parse(v1s[i]) < int.Parse(v2s[i]))
+                    return -1;
+            }
+
+            if (v1s.Length < v2s.Length)
+            {
+                for (int i = v1s.Length; i < v2s.Length; i++)
+                {
+                    if (int.Parse(v2s[i]) != 0)
+                        return -1;
+                }
+                return 0;
+            }
+            if (v1s.Length > v2s.Length)
+            {
+                for (int i = v2s.Length; i < v1s.Length; i++)
+                {
+                    if (int.Parse(v1s[i]) != 0)
+                        return 1;
+                }
+                return 0;
+            }
+            return 0;
+        }
+
+
         //MS onsite 
         //find out max and second max value in array
         public int[] FindMaxAndSecondMax(int[] nums)
@@ -17,7 +109,7 @@ namespace Interview
             int max = int.MinValue;
             int smax = int.MinValue;
 
-            for(int i=0; i< nums.Length; i++)
+            for (int i = 0; i < nums.Length; i++)
             {
                 if (nums[i] > max)
                 {
@@ -64,7 +156,7 @@ namespace Interview
                     i++;
             }
         }
-        
+
         void swapColor(int[] nums, int i, int j)
         {
             if (nums == null || nums.Length == 0 || i == j)
@@ -83,7 +175,7 @@ namespace Interview
         {
             if (string.IsNullOrEmpty(s))
                 return true;
-            
+
             int i = 0;
             int j = s.Length - 1;
 
@@ -106,7 +198,7 @@ namespace Interview
             return true;
         }
 
-        
+
         //161. One Edit Distance(substring)
         //Given two strings S and T, determine if they are both one edit distance apart.
         //如果字符串长度相等，那么判断对应位置不同的字符数是不是1即可。
@@ -118,18 +210,18 @@ namespace Interview
                 return false;
             if (Math.Abs(s.Length - t.Length) == 1)
                 return true;
-            if(s.Length==t.Length)
+            if (s.Length == t.Length)
             {
                 if (s == t)
                     return false;
-                for (int i = 0; i<s.Length; i++)
+                for (int i = 0; i < s.Length; i++)
                 {
                     if (s[i] != t[i])
                     {
                         if (i + 1 == s.Length)
                             return true;
                         return s.Substring(i + 1, s.Length - i) == t.Substring(i + 1, s.Length - i);
-                    }   
+                    }
                 }
             }
             return false;
@@ -328,12 +420,12 @@ namespace Interview
 
             var map = new Dictionary<char, int>();
 
-            for(int i =0; i<s.Length; i++)
+            for (int i = 0; i < s.Length; i++)
             {
                 if (map.ContainsKey(s[i]))
                     map[s[i]]++;
                 else
-                    map.Add(s[i], 1);                
+                    map.Add(s[i], 1);
             }
             for (int i = 0; i < t.Length; i++)
             {
@@ -426,7 +518,7 @@ namespace Interview
         //151. Reverse Words in a String
         //Given an input string, reverse the string word by word.
         //For example,Given s = "the sky is blue",return "blue is sky the".
-        //For C programmers: Try to solve it in-place in O(1) spac
+        //For C programmers: Try to solve it in-place in O(1) spac  (NOW IS NOT IN-SPACE SOL!)
         public string ReverseWords(string s)
         {
             string[] temp = s.Split(' ');
@@ -1448,7 +1540,7 @@ namespace Interview
             }
             return st.Count == 0;
         }
-        
+
         //13. Roman to Integer
         public int RomanToInt(string s)
         {
@@ -1637,6 +1729,7 @@ namespace Interview
                 }
                 i++;
             }
+            //reverse last part
             reverseParial(s, stIdx, s.Length - 1);
 
         }
@@ -1663,10 +1756,10 @@ namespace Interview
             if (nums == null || nums.Length == 0)
                 return 0;
 
-            int curSum = 0; 
+            int curSum = 0;
             int curmax = int.MinValue;
 
-            for(int i =0; i< nums.Length; i++)
+            for (int i = 0; i < nums.Length; i++)
             {
                 curSum += nums[i];
 
@@ -1745,7 +1838,7 @@ namespace Interview
             return ret.ToArray();
         }
 
-            
+
         //leetcode 15. 3Sum
         //Given an array S of n integers, are there elements a, b, c in S such that a + b + c = 0? 
         //Find all unique triplets in the array which gives the sum of zero.
@@ -1982,18 +2075,18 @@ namespace Interview
                 {
                     isColZero = true;
                     break;
-                }                    
+                }
             }
             for (int j = 0; j < matrix.GetLength(1); j++)
             {
-                if (matrix[0,j] == 0)
+                if (matrix[0, j] == 0)
                 {
                     isRowZero = true;
                     break;
                 }
             }
             //use 1st row and 1st col to record zero
-            for (int i =1; i< matrix.GetLength(0);i++)
+            for (int i = 1; i < matrix.GetLength(0); i++)
             {
                 for (int j = 1; j < matrix.GetLength(1); j++)
                 {
@@ -2001,7 +2094,7 @@ namespace Interview
                     {
                         matrix[i, 0] = 0;
                         matrix[0, j] = 0;
-                    }                        
+                    }
                 }
             }
             //assign 0 according to 1st row and col
@@ -2018,7 +2111,7 @@ namespace Interview
             {
                 for (int j = 0; j < matrix.GetLength(1); j++)
                 {
-                    matrix[0, j]=0;   
+                    matrix[0, j] = 0;
                 }
             }
             if (isColZero)
@@ -2028,7 +2121,7 @@ namespace Interview
                     matrix[i, 0] = 0;
                 }
             }
-            
+
         }
 
         public void SetZeroes(int[,] matrix)
@@ -2036,7 +2129,7 @@ namespace Interview
             //space complex : O(m+n) 
             int rows = matrix.GetLength(0);
             int cols = matrix.GetLength(1);
-            
+
             HashSet<int> zRow = new HashSet<int>();
             HashSet<int> zCol = new HashSet<int>();
 

@@ -75,19 +75,7 @@ namespace Interview
             return -1;
         }
 
-        //29. Divide Two Integers
-        //Divide two integers without using multiplication, division and mod operator.
-        //If it is overflow, return MAX_INT.
-        //public int Divide(int dividend, int divisor)
-        //{
-        //    if (dividend == 0)
-        //        return 0;
-        //    if (divisor == 0)
-        //        return int.MaxValue;
-
-        //}
-
-
+        
         //69. Sqrt(x)
         //Implement int sqrt(int x).
         //Compute and return the square root of x.
