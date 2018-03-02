@@ -46,7 +46,7 @@ namespace Interview
             int preR = 0;
             int preH = 0;
 
-            for(int i=0; i<buildings.Length; i++)
+            for (int i = 0; i < buildings.Length; i++)
             {
                 //if next X.L position in previous X range and next hight > previous hight
                 if (buildings[i, 0] <= preR && buildings[i, 0] > preL && buildings[i, 2] > preH)
@@ -55,7 +55,7 @@ namespace Interview
                 }
                 else if (buildings[i, 0] <= preR && buildings[i, 0] > preL && buildings[i, 2] <= preH)
                 {
-                    ret.Add(new int[] { preR, buildings[i, 2] });                    
+                    ret.Add(new int[] { preR, buildings[i, 2] });
                 }
                 else if (buildings[i, 0] > preR)
                 {
@@ -70,7 +70,113 @@ namespace Interview
             return ret;
         }
 
+        
+        //348. Design a Tic-tac-toe game that is played between two players on a n x n grid.
+        //You may assume the following rules:
+        //A move is guaranteed to be valid and is placed on an empty block.
+        //Once a winning condition is reached, no more moves is allowed. A player who succeeds in placing 
+        //n of their marks in a horizontal, vertical, or diagonal row wins the game.
+        //Example:Given n = 3, assume that player 1 is "X" and player 2 is "O" in the board.
+        //Hint: Could you trade extra space such that move() operation can be done in O(1)?
+        //You need two arrays: int rows[n], int cols[n], plus two variables: diagonal, anti_diagonal.
+        public class TicTacToe
+        {
+            char[,] board;
+            int len;
+            public TicTacToe(int n)
+            {
+                len = n;
+                board = new char[n, n];
+            }
 
+            int isWin(char t, int i, int j)
+            {
+                if (checkVerticle(t,i,j) || checkHarizonal(t, i, j) || checkDiag(t, i, j))
+                    return t == 'X' ? 1 : 2;
+
+                return 0;
+            }
+
+            bool checkVerticle(char t, int i, int j)
+            {
+                for (int k = 0; k < len; k++)
+                {
+                    if (board[k, j] != t)
+                        return false;
+                }
+                return true;
+            }
+            bool checkHarizonal(char t, int i, int j)
+            {
+                for (int k = 0; k < len; k++)
+                {
+                    if (board[i,k] != t)
+                        return false;
+                }
+                return true;
+            }
+            bool checkDiag(char t, int i, int j)
+            {
+                for (int k = 0; k < len; k++)
+                {
+                    if (board[k, k] != t)
+                        return false;
+                }
+                for (int k = 0; k < len; k++)
+                {
+                    if(board[k,len-1-k] ==t)
+                        return false;
+                }
+                return true;
+            }
+
+            public void Move(int player, int i, int j)
+            {
+                char move = player == 1 ? 'X' : 'O';
+                if (board[i, j] == '\0')
+                {
+                    board[i, j] = move;
+                    int result = isWin(move, i, j);
+                    if (result == 1)
+                        Console.Write("player 1 wins");
+                    else if(result == 2)
+                        Console.Write("player 2 wins");
+                }
+            }
+
+        }
+
+        //Hint: Could you trade extra space such that move() operation can be done in O(1)?
+        //You need two arrays: int rows[n], int cols[n], plus two variables: diagonal, anti_diagonal.
+        public class TicTacToe2
+        {
+            int len, Darr, RDarr;
+            int[] Varr, Harr;
+            public TicTacToe2(int n)
+            {
+                len = n;
+                Varr = new int[n];
+                Harr = new int[n];
+            }
+
+            int move(int player, int i, int j)
+            {
+                int add = player == 1 ? 1 : -1;
+
+                Harr[i] += add;
+                Varr[j] += add;
+                if (i == j)
+                    Darr += add;
+                if (i == len - 1 - j)
+                    RDarr += add;
+
+                if (Math.Abs(Harr.Sum()) == len || Math.Abs(Varr.Sum()) == len || Math.Abs(Darr) == len || Math.Abs(RDarr) == len)
+                    return player;
+                else
+                    return 0;
+            }
+
+        }
         //341. Flatten Nested List Iterator
         //Given a nested list of integers, implement an iterator to flatten it.
         //Each element is either an integer, or a list -- whose elements may also be integers or other lists.
@@ -81,7 +187,7 @@ namespace Interview
         public class NestedIterator
         {
             Stack<NestedInteger> stack;
-            
+
             public NestedIterator(IList<NestedInteger> nestedList)
             {
                 stack = new Stack<NestedInteger>();
@@ -91,17 +197,17 @@ namespace Interview
                     {
                         stack.Push(nestedList[i]);
                     }
-                }                     
+                }
             }
 
             public bool HasNext()
             {
-                while(stack.Count!=0)
+                while (stack.Count != 0)
                 {
                     if (stack.Peek().IsInteger())
                         return true;
                     var list = stack.Pop();
-                    for (int i = list.GetList().Count-1; i>=0; i--)
+                    for (int i = list.GetList().Count - 1; i >= 0; i--)
                     {
                         stack.Push(list.GetList()[i]);
                     }
@@ -556,7 +662,7 @@ namespace Interview
     {
         public async void TestAsync()
         {
-            Task<string> tt = longRunTaskAsync();            
+            Task<string> tt = longRunTaskAsync();
             Console.WriteLine("doesn't block main thread");
             Thread.Sleep(5000);
             //await AsyncMethod();

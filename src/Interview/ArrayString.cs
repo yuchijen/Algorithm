@@ -239,7 +239,7 @@ namespace Interview
             return 0;
         }
 
-
+        //253 meeting room2
         //Given an array of meeting time intervals consisting of start and end times[[s1, e1],[s2, e2],...] 
         //(si<ei), find the minimum number of conference rooms required.
         //e.g. Given[[0, 30],[5, 10],[15, 20]], return 2.
@@ -248,18 +248,26 @@ namespace Interview
             if (intervals == null || intervals.Length == 0)
                 return 0;
 
-            Dictionary<int, int> map = new Dictionary<int, int>();
-            for (int i = 0; i < intervals.Length; i++)
+            int len = intervals.Length;
+            int[] starts = new int[len];
+            int[] ends = new int[len];
+            for (int i = 0; i < len; i++)
             {
-                map[intervals[i].start]++;
-                map[intervals[i].end]--;
+                starts[i] = intervals[i].start;
+                ends[i] = intervals[i].end;
             }
+            Array.Sort(starts);
+            Array.Sort(ends);
+
+            
             int ret = 0;
-            int max = 0;
-            foreach (var x in map)
+            int endIdx = 0;
+            for (int i = 0; i < len; i++)
             {
-                max += x.Value;
-                ret = Math.Max(ret, max);
+                if (starts[i] < ends[endIdx])
+                    ret++;                
+                else
+                    endIdx++;
             }
             return ret;
         }
@@ -285,13 +293,13 @@ namespace Interview
 
             for (int i = 1; i < intervals.Length; i++)
             {
-                if (intervals[i].start > intervals[i - 1].end)
+                if (intervals[i].start < intervals[i - 1].end)
                     return false;
             }
             return true;
         }
 
-
+        
         //22. Generate Parentheses
         //Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
         //        For example, given n = 3, a solution set is:
