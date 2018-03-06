@@ -7,21 +7,67 @@ namespace Interview
 {
     public class RandomListNode
     {
-       public int label;
-       public RandomListNode next, random;
-       public RandomListNode(int x) { this.label = x; }
+        public int label;
+        public RandomListNode next, random;
+        public RandomListNode(int x) { this.label = x; }
     }
     public class ListNode
     {
-       public int val;
-       public ListNode next;
-       public ListNode(int x) { val = x; }
+        public int val;
+        public ListNode next;
+        public ListNode(int x) { val = x; }
     }
 
 
 
     public class LinkedList
     {
+        //Sort 2 Sorted LinkedList
+        public ListNode SortTwo(ListNode n1, ListNode n2)
+        {
+            if (n1 == null && n2 == null)
+                return null;
+            if (n1 == null)
+                return n2;
+            if (n2 == null)
+                return n1;
+
+            var pt1 = n1;
+            var pt2 = n2;
+
+            var ret = new ListNode(-1);
+            var retPt = ret;
+            while (pt1 != null && pt2 != null)
+            {
+                if (pt1.val < pt2.val)
+                {
+                    retPt.next = new ListNode(pt1.val);
+                    pt1 = pt1.next;
+                }
+                else
+                {
+                    retPt.next = new ListNode(pt2.val);
+                    pt2 = pt2.next;
+                }
+                retPt = retPt.next;
+            }
+
+            while (pt1 != null)
+            {
+                retPt.next = new ListNode(pt1.val);
+                pt1 = pt1.next;
+                retPt = retPt.next;
+            }
+            while (pt2 != null)
+            {
+                retPt.next = new ListNode(pt2.val);
+                pt2 = pt2.next;
+                retPt = retPt.next;
+            }
+            return ret.next;
+        }
+       
+        
         //328. Odd Even Linked List
         //Given a singly linked list, group all odd nodes together followed by the even nodes. 
         //Please note here we are talking about the node number and not the value in the nodes.
@@ -39,13 +85,13 @@ namespace Interview
             var ptEven = head.next;
             var ptrEven = ptEven;
 
-            while(ptEven!=null && ptEven.next!=null)
+            while (ptEven != null && ptEven.next != null)
             {
                 ptOdd.next = ptEven.next;
                 ptOdd = ptOdd.next;
 
                 ptEven.next = ptOdd.next;
-                ptEven = ptEven.next;                
+                ptEven = ptEven.next;
             }
             ptOdd.next = ptrEven;
             return head;
@@ -190,7 +236,7 @@ namespace Interview
                 ptr.next = new ListNode(st3.Pop());
                 ptr = ptr.next;
             }
-            return ret.next;            
+            return ret.next;
         }
 
         //leetcode 138. Copy List with Random Pointer 

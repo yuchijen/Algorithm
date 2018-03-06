@@ -20,6 +20,27 @@ namespace Interview
     }
     public class BTree
     {
+        //110. Balanced Binary Tree
+        //Given a binary tree, determine if it is height-balanced.
+        //For this problem, a height-balanced binary tree is defined as:
+        //a binary tree in which the depth of the two subtrees of every node never differ by more than 1.
+        //Example 1:Given the following tree [3,9,20,null,null,15,7]:
+        //       3
+        //      / \
+        //     9  20
+        //       /  \
+        //      15   7      return true
+        public bool IsBalanced(TreeNode root)
+        {
+            if (root == null)
+                return true;
+
+            if (Math.Abs(MaxDepth(root.right) - MaxDepth(root.left)) > 1)
+                return false;
+
+            return IsBalanced(root.left) && IsBalanced(root.right);
+        }
+       
         //105. Construct Binary Tree from Preorder and Inorder Traversal
         //Given preorder and inorder traversal of a tree, construct the binary tree.
         //Note:You may assume that duplicates do not exist in the tree.

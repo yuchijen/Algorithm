@@ -7,6 +7,39 @@ namespace Interview
 {
     public class DynamicProgramming
     {
+        //322. Coin Change
+        //You are given coins of different denominations and a total amount of money amount.
+        //Write a function to compute the fewest number of coins that you need to make up that 
+        //amount.If that amount of money cannot be made up by any combination of the coins, return -1.
+        //Example 1:coins = [1, 2, 5], amount = 11
+        //return 3 (11 = 5 + 5 + 1)
+        //Example 2:coins = [2], amount = 3  return -1.
+        //用dp存储硬币数量，dp[i] 表示凑齐钱数 i 需要的最少硬币数，那么凑齐钱数 amount 最少硬币数为：
+        //固定钱数为 coins[j] 一枚硬币，另外的钱数为 amount - coins[j] 它的数量为dp[amount - coins[j]]，j 从0遍历到coins.length - 1：
+        public int CoinChange(int[] coins, int amount)
+        {
+            if (coins == null || amount == 0)
+                return 0;
+
+            int[] ret = new int[amount + 1];
+            for (int i = 0; i <= amount; i++)
+                ret[i] = int.MaxValue;
+            ret[0] = 0;
+
+            //iterate coin value , (pick 1 of coin, the rest is ret[amount - this coin value] )
+            for(int i=0; i< coins.Length; i++)
+            {
+                for(int j = coins[i]; j <= amount; j++)
+                {
+                    if(ret[j-coins[i]] < int.MaxValue)
+                    ret[j] = Math.Min(ret[j - coins[i]] + 1, ret[j]);
+                }
+            }
+
+            return ret[amount] == int.MaxValue ? -1 : ret[amount];
+        }
+
+
         //Reverse Fibonacci MS OTS
         //given 2 first number. 80 50 -> 80 50 30 20 10 10 0
         public int[] ReverseFibonacci(int i, int j)

@@ -1341,6 +1341,55 @@ namespace Interview
             return ret;
         }
 
+
+        //229. Majority Element II
+        //Given an integer array of size n, find all elements that appear more than ⌊ n/3 ⌋ times.
+        //The algorithm should run in linear time and in O(1) space.
+        public IList<int> MajorityElement2(int[] nums)
+        {
+            var ret = new HashSet<int>();
+
+            if (nums == null || nums.Length == 0)
+                return ret.ToList();
+            
+
+            int count1=0, count2=0;
+            int maj1 = int.MinValue;
+            int maj2 = int.MinValue;
+
+            for(int i=0; i<nums.Length; i++)
+            {
+                if(count1==0)
+                {
+                    maj1 = nums[i];
+                    count1++;
+                }
+                else if(count2==0)
+                {
+                    maj2 = nums[i];
+                    count2++;
+                }
+                else if(nums[i]==maj1)
+                    count1++;
+                else if (nums[i] == maj2)
+                    count2++;
+                else
+                {
+                    count1--;
+                    count2--;
+                }
+            }
+
+            
+            if (nums.Where(x => x == maj1).Count() > (nums.Length / 3))
+                ret.Add(maj1);
+            if (nums.Where(x => x == maj2).Count() > (nums.Length / 3))
+                ret.Add(maj2);
+
+            return ret.ToList();
+        }
+
+
         //169. Majority Element  (in space O(1))
         //Given an array of size n, find the majority element. The majority element is the element that appears more than ⌊ n/2 ⌋ times.
         //You may assume that the array is non-empty and the majority element always exist in the array.
