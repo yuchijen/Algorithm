@@ -19,9 +19,49 @@ namespace Interview
     }
 
 
+    public class DoublyListNode
+    {
+        public int val;
+        public DoublyListNode(int i)
+        {
+            val = i;
+        }
+        public DoublyListNode pre;
+        public DoublyListNode next;
+    }
 
     public class LinkedList
     {
+        //Doubly linkedlist contains 0 and 1 only, sort it in O(n), in-space
+        // e.g.  0 <-> 1 <-> 1 <-> 0 <-> 1 <-> 0  
+        //return 0 <-> 0 <-> 0 <-> 1 <-> 1 <-> 1
+        DoublyListNode SortDoublyList(DoublyListNode head)
+        {
+            while (head == null)
+                return null;
+
+            //get tail ptr 
+            var ptrEnd = head;
+            var ptrStart = head;
+
+            while (ptrEnd != null && ptrEnd.next != null)
+                ptrEnd = ptrEnd.next;
+
+            while(ptrStart!= ptrEnd)
+            {
+                if (ptrStart.val == 1)//swap with end
+                {
+                    int temp = ptrEnd.val;
+                    ptrEnd.val = ptrStart.val;
+                    ptrStart.val = temp;
+                    ptrEnd = ptrEnd.pre;   // end index left shift one
+                }
+                else
+                    ptrStart = ptrStart.next;
+            }
+            return head;
+        }
+
         //Sort 2 Sorted LinkedList
         public ListNode SortTwo(ListNode n1, ListNode n2)
         {
@@ -101,26 +141,26 @@ namespace Interview
         //61. Rotate List
         //Given a list, rotate the list to the right by k places, where k is non-negative.
         // Example: Given 1->2->3->4->5->NULL and k = 2,
-        //return 4->5->1->2->3->NULL.
+        //return 4->5->1->2->3->NULL.        
         public ListNode RotateRight(ListNode head, int k)
         {
             if (head == null || head.next == null || k == 0) return head;
 
             //获取链表的总长度
-            ListNode index = head; int len = 1;
-            while (index.next != null)
-            { index = index.next; len++; }
+            ListNode ptr1 = head; int len = 1;
+            while (ptr1.next != null)
+            { ptr1 = ptr1.next; len++; }
             //将链表首尾相连形成环
-            index.next = head;
+            ptr1.next = head;
 
             //找到需要截断的位置，因为k可能大于链表总长度。所以这里使用取余操作
             for (int i = 0; i < len - k % len; i++)
             {
-                index = index.next;
+                ptr1 = ptr1.next;
             }
             //将该处截断，指向空指针即可
-            ListNode result = index.next;
-            index.next = null;
+            ListNode result = ptr1.next;
+            ptr1.next = null;
             return result;
         }
 

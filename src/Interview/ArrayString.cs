@@ -9,6 +9,56 @@ namespace Interview
 
     public class ArrayString
     {
+        //Envestnet simple data structure question with 2 sets of numbers. Which number is in list A, that is not in list B.
+        List<int> inAnotInB(int[] A, int[] B)
+        {
+            var hs = new HashSet<int>();
+            foreach (var x in B)
+                hs.Add(x);
+
+            var ret = new List<int>();
+            foreach(var a in A)
+            {
+                if (!hs.Contains(a))
+                    ret.Add(a); ;
+            }
+            return ret;
+        }
+
+        //402  Remove K Digits
+        //Given a non-negative integer num represented as a string, remove k digits from the number so that the 
+        //new number is the smallest possible.
+        //Note:The length of num is less than 10002 and will be ≥ k.The given num does not contain any leading zero.
+        //Example 1: Input: num = "1432219", k = 3   1412219
+        //Output: "1219" Explanation: Remove the three digits 4, 3, and 2 to form the new number 1219 which is the smallest.
+        //Example 2:
+        //Input: num = "10200", k = 1
+        //Output: "200"
+        //Explanation: Remove the leading 1 and the number is 200. Note that the output must not contain leading zeroes.
+        //Example 3:
+        //Input: num = "10", k = 2
+        //Output: "0"
+        //Explanation: Remove all the digits from the number and it is left with nothing which is 0.
+        string removeKdigits(string num, int k)
+        {
+
+        }
+
+        //678. Valid Parenthesis String
+        //Given a string containing only three types of characters: '(', ')' and '*', write a function to check whether this string is valid.We define the validity of a string by these rules:
+        //Any left parenthesis '(' must have a corresponding right parenthesis ')'.
+        //Any right parenthesis ')' must have a corresponding left parenthesis '('.
+        //Left parenthesis '(' must go before the corresponding right parenthesis ')'.
+        //'*' could be treated as a single right parenthesis ')' or a single left parenthesis '(' or an empty string.
+        //An empty string is also valid.
+        //Example 1:Input: "()" Output: True
+        //Example 2:Input: "(*)"Output: True
+        //Example 3:Input: "(*))"Output: True
+        public bool CheckValidString(string s)
+        {
+        }
+
+        
         //60. Permutation Sequence
         //The set [1,2,3,…,n] contains a total of n! unique permutations.
         //By listing and labeling all of the permutations in order,
@@ -27,24 +77,24 @@ namespace Interview
             //generate factorial array e.g. n=4 , [1,1,2,6] => [0!,1!,2!,3!] 
             var factorial = new int[n];
             factorial[0] = 1;
-            for(int i =1; i<n;i++)
-                factorial[i] = factorial[i-1] *i;
-            
+            for (int i = 1; i < n; i++)
+                factorial[i] = factorial[i - 1] * i;
+
             //generate candidate array
             var candidateSet = new List<int>();
-            for(int i = 1; i<= n;i++)
+            for (int i = 1; i <= n; i++)
                 candidateSet.Add(i);
 
             var ret = new StringBuilder();
 
             k--; // if k= 2 , will be 132 (the last element of prefix =1, 1(k-1) % 2 = 1 <-- index of candidateSet   
             //iterate start from 3! to 0!  
-            for (int i = n-1; i>=0; i--)
+            for (int i = n - 1; i >= 0; i--)
             {
                 ret.Append(candidateSet[k % factorial[i]]);
                 candidateSet.RemoveAt(k % factorial[i]);
                 k %= factorial[i];
-                
+
             }
             return ret.ToString();
         }
@@ -259,13 +309,13 @@ namespace Interview
             Array.Sort(starts);
             Array.Sort(ends);
 
-            
+
             int ret = 0;
             int endIdx = 0;
             for (int i = 0; i < len; i++)
             {
                 if (starts[i] < ends[endIdx])
-                    ret++;                
+                    ret++;
                 else
                     endIdx++;
             }
@@ -299,7 +349,7 @@ namespace Interview
             return true;
         }
 
-        
+
         //22. Generate Parentheses
         //Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
         //        For example, given n = 3, a solution set is:
@@ -1081,16 +1131,24 @@ namespace Interview
                 return 0;
 
             int ret = 0;
-            while (n > 0)
+            while (n != 0)
             {
-                if (n % 2 != 0)
-                {
-                    n = n - 1;
-                    ret += 1;
-                }
-                else
-                    n /= 2;
+                if ((n & 1) == 1)
+                    ret++;
+
+                n >>= 1;
             }
+
+            //while (n > 0)
+            //{
+            //    if (n % 2 != 0)
+            //    {
+            //        n = n - 1;
+            //        ret += 1;
+            //    }
+            //    else
+            //        n /= 2;
+            //}
             return ret;
         }
 
@@ -1351,25 +1409,25 @@ namespace Interview
 
             if (nums == null || nums.Length == 0)
                 return ret.ToList();
-            
 
-            int count1=0, count2=0;
+
+            int count1 = 0, count2 = 0;
             int maj1 = int.MinValue;
             int maj2 = int.MinValue;
 
-            for(int i=0; i<nums.Length; i++)
+            for (int i = 0; i < nums.Length; i++)
             {
-                if(count1==0)
+                if (count1 == 0)
                 {
                     maj1 = nums[i];
                     count1++;
                 }
-                else if(count2==0)
+                else if (count2 == 0)
                 {
                     maj2 = nums[i];
                     count2++;
                 }
-                else if(nums[i]==maj1)
+                else if (nums[i] == maj1)
                     count1++;
                 else if (nums[i] == maj2)
                     count2++;
@@ -1380,7 +1438,7 @@ namespace Interview
                 }
             }
 
-            
+
             if (nums.Where(x => x == maj1).Count() > (nums.Length / 3))
                 ret.Add(maj1);
             if (nums.Where(x => x == maj2).Count() > (nums.Length / 3))
@@ -1833,7 +1891,7 @@ namespace Interview
         //If you were only permitted to complete at most one transaction(ie, buy one and sell one share of the stock), design an algorithm to find the maximum profit.
         //Example 1: Input: [7, 1, 5, 3, 6, 4]  Output: 5
         // max.difference = 6 - 1 = 5(not 7 - 1 = 6, as selling price needs to be larger than buying price)
-        //Input: [7, 6, 4, 3, 1]        Output: 0        
+        //Input: [7, 6, 4, 3, 1]        Output: 0              
         public int MaxProfit(int[] prices)
         {
             if (prices == null || prices.Length <= 1)

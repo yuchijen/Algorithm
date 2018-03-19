@@ -25,9 +25,9 @@ namespace Interview
             if (board == null)
                 return 0;
             int ret = 0;
-            for(int x = 0; x < board.GetLength(0); x++)
+            for (int x = 0; x < board.GetLength(0); x++)
             {
-                for(int y = 0; y < board.GetLength(1); y++)
+                for (int y = 0; y < board.GetLength(1); y++)
                 {
                     if (board[x, y] == 'X')
                     {
@@ -51,7 +51,7 @@ namespace Interview
 
 
         //ref Swap 
-        public void refSwap(ref Point pt1,ref Point pt2)
+        public void refSwap(ref Point pt1, ref Point pt2)
         {
             Point temp = pt1;
             pt1 = pt2;
@@ -83,22 +83,22 @@ namespace Interview
             Queue<Point> q = new Queue<Point>();
             q.Enqueue(source);
 
-            bool[,] visited = new bool[mat.GetLength(0),mat.GetLength(1)];
+            bool[,] visited = new bool[mat.GetLength(0), mat.GetLength(1)];
 
             int[] adjRow = new int[4] { 1, 0, 0, -1 };
             int[] adjCol = new int[4] { 0, 1, -1, 0 };
 
-            while (q.Count!=0)
+            while (q.Count != 0)
             {
                 Point cur = q.Dequeue();
-                if(cur.x==dest.x && cur.y==dest.y)
+                if (cur.x == dest.x && cur.y == dest.y)
                     return cur.dist;
-                
-                for (int i=0; i< 4; i++)
+
+                for (int i = 0; i < 4; i++)
                 {
                     int adjX = cur.x + adjRow[i];
                     int adjY = cur.y + adjCol[i];
-                    if (validPoint(mat, adjX, adjY) && !visited[adjX, adjY] && mat[adjX, adjY]==1)
+                    if (validPoint(mat, adjX, adjY) && !visited[adjX, adjY] && mat[adjX, adjY] == 1)
                     {
                         Point adjPoint = new Point() { x = adjX, y = adjY, dist = cur.dist + 1 };
                         visited[adjX, adjY] = true;
@@ -179,23 +179,21 @@ namespace Interview
         //207. Course Schedule
         //There are a total of n courses you have to take, labeled from 0 to n - 1.
         //Some courses may have prerequisites, for example to take course 0 you have to first take course 1, which is expressed as a pair: [0,1]
-        // Given the total number of courses and a list of prerequisite pairs, is it possible for you to finish all courses?
+        // Given the total number of courses and a list of prerequisite pairs, is it possible for you to finish all courses?        
         public bool CanFinish(int numCourses, int[,] prerequisites)
         {
             if (numCourses == 0 || prerequisites == null || prerequisites.GetLength(0) == 0)
                 return true;
-            bool[] visitedList = new bool[numCourses];
+
+            var  visitedList = new int[numCourses];
+
             List<int>[] map = new List<int>[numCourses];
             for (int i = 0; i < numCourses; i++)
-            {
                 map[i] = new List<int>();
-            }
-
+            
             for (int i = 0; i < prerequisites.GetLength(0); i++)
-            {
                 map[prerequisites[i, 0]].Add(prerequisites[i, 1]);
-            }
-
+            
             for (int i = 0; i < numCourses; i++)
             {
                 if (isCircle(map, i, visitedList))
@@ -203,21 +201,86 @@ namespace Interview
             }
             return true;
         }
-        bool isCircle(List<int>[] map, int key, bool[] visitedList)
+        bool isCircle(List<int>[] map, int key, int[] visitedList)
         {
-            if (visitedList[key])
+            if (visitedList[key]==1)  //visiting in dfs stack
                 return true;
-            else
-                visitedList[key] = true;
+            if (visitedList[key] == 2) // already visited, out of dfs stack
+                return false;
+
+            visitedList[key] = 1;
 
             foreach (var k in map[key])
             {
                 if (isCircle(map, k, visitedList))
                     return true;
             }
-            visitedList[key] = false;
+
+            visitedList[key] = 2;
             return false;
         }
+
+
+        //210 Course Schedule II
+        //There are a total of n courses you have to take, labeled from 0 to n - 1.
+        //Some courses may have prerequisites, for example to take course 0 you have to first take course 1, which is expressed as a pair: [0,1]
+        //Given the total number of courses and a list of prerequisite pairs, return the ordering of courses you should take to finish all courses.
+        //There may be multiple correct orders, you just need to return one of them.If it is impossible to finish all courses, return an empty array.
+        // For example: 2, [[1,0]]
+        //There are a total of 2 courses to take.To take course 1 you should have finished course 0. So the correct course order is [0,1]
+        //4, [[1,0],[2,0],[3,1],[3,2]]
+        //There are a total of 4 courses to take.To take course 3 you should have finished both courses 1 and 2. Both courses 1 and 2 should be 
+        //taken after you finished course 0. So one correct course order is [0,1,2,3]. Another correct ordering is[0,2,1,3].
+        //Note: The input prerequisites is a graph represented by a list of edges, not adjacency matrices.Read more about how a graph is represented.
+        //You may assume that there are no duplicate edges in the input prerequisites.
+        public int[] FindOrder(int numCourses, int[,] prerequisites)
+        {
+            if (numCourses == 0)
+                return null;
+
+            List<int> ret = new List<int>();
+            //build graph
+            List<int>[] graph = new List<int>[numCourses];
+            for (int i = 0; i < numCourses; i++)
+                graph[i] = new List<int>();
+
+            for (int i = 0; i < prerequisites.GetLength(0); i++)
+                graph[prerequisites[i, 0]].Add(prerequisites[i, 1]);
+
+            var visit = new int[numCourses];
+            
+            for (int i = 0; i < numCourses; i++)
+            {
+                if (IsCourseCycle(graph, ret, visit, i))
+                    return new int[] { };
+            }
+            return ret.ToArray();
+        }
+        bool IsCourseCycle(List<int>[] graph, List<int> ret, int[] visit, int idx)
+        {
+            if (visit[idx]==1)  //if visiting node 
+                return true;
+
+            if (visit[idx]==2)  //if visited node 
+                return false;
+
+            visit[idx] = 1;
+
+            foreach (int x in graph[idx])
+            {
+                if (IsCourseCycle(graph, ret, visit, x))
+                    return true;
+            }
+
+            visit[idx] = 2;  //already visited
+            ret.Add(idx);
+            return false;
+        }
+
+
+
+
+
 
         //339. Nested List Weight Sum
         //Example 1: Given the list[[1, 1],2,[1,1]], return 10. (four 1's at depth 2, one 2 at depth 1)

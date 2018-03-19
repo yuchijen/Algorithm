@@ -114,7 +114,8 @@ namespace Interview
             {
                 if(root!=null)
                 {
-                    st.Push(root);
+                    var rootPt = root;
+                    st.Push(rootPt);
                     root = root.left;
                 }
                 else
@@ -123,9 +124,8 @@ namespace Interview
                     if (isFoundNode)  //found p in previous round, this node from stack should be successor
                         return root;
                     if(p == root)
-                    {
                         isFoundNode = true;
-                    }
+                    
                     root = root.right;
                 }
             }
