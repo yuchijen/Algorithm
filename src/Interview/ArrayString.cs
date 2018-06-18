@@ -39,10 +39,10 @@ namespace Interview
         //Input: num = "10", k = 2
         //Output: "0"
         //Explanation: Remove all the digits from the number and it is left with nothing which is 0.
-        string removeKdigits(string num, int k)
-        {
+        //string removeKdigits(string num, int k)
+        //{
 
-        }
+        //}
 
         //678. Valid Parenthesis String
         //Given a string containing only three types of characters: '(', ')' and '*', write a function to check whether this string is valid.We define the validity of a string by these rules:
@@ -54,9 +54,9 @@ namespace Interview
         //Example 1:Input: "()" Output: True
         //Example 2:Input: "(*)"Output: True
         //Example 3:Input: "(*))"Output: True
-        public bool CheckValidString(string s)
-        {
-        }
+        //public bool CheckValidString(string s)
+        //{
+        //}
 
         
         //60. Permutation Sequence
