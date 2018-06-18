@@ -9,6 +9,279 @@ namespace Interview
 {
     public class Dsign
     {
+        //218. The Skyline Problem
+        //A city's skyline is the outer contour of the silhouette formed by all the buildings in that city when 
+        //viewed from a distance. Now suppose you are given the locations and height of all the buildings as 
+        //shown on a cityscape photo (Figure A), write a program to output the skyline formed by these buildings 
+        //collectively (Figure B).
+        //The geometric information of each building is represented by a triplet of integers[Li, Ri, Hi], 
+        //where Li and Ri are the x coordinates of the left and right edge of the ith building, respectively, 
+        //and Hi is its height.It is guaranteed that 0 ≤ Li, Ri ≤ INT_MAX, 0 < Hi ≤ INT_MAX, and Ri - Li > 0. 
+        //You may assume all buildings are perfect rectangles grounded on an absolutely flat surface at height 0.
+        //For instance, the dimensions of all buildings in Figure A are recorded as: 
+        //[ [2 9 10], [3 7 15], [5 12 12], [15 20 10], [19 24 8] ] .
+        //The output is a list of "key points" (red dots in Figure B) in the format 
+        //of[[x1, y1], [x2, y2], [x3, y3], ... ] that uniquely defines a skyline.A key point is the left endpoint 
+        //of a horizontal line segment.Note that the last key point, where the rightmost building ends, is merely 
+        //used to mark the termination of the skyline, and always has zero height.Also, the ground in between any 
+        //two adjacent buildings should be considered part of the skyline contour.
+        //For instance, the skyline in Figure B should be represented 
+        //as:[ [2 10], [3 15], [7 12], [12 0], [15 10], [20 8], [24, 0] ].
+        //Notes:
+        //The number of buildings in any input list is guaranteed to be in the range[0, 10000].
+        //The input list is already sorted in ascending order by the left x position Li.
+        //The output list must be sorted by the x position.
+        //There must be no consecutive horizontal lines of equal height in the output skyline.For instance, 
+        //[...[2 3], [4 5], [7 5], [11 5], [12 7]...] is not acceptable; the three lines of height 5 should be 
+        //merged into one in the final output as such: [...[2 3], [4 5], [12 7], ...]
+
+        public IList<int[]> GetSkyline(int[,] buildings)
+        {
+            if (buildings == null)
+                return null;
+
+            var ret = new List<int[]>();
+
+            int preL = 0;
+            int preR = 0;
+            int preH = 0;
+
+            for (int i = 0; i < buildings.Length; i++)
+            {
+                //if next X.L position in previous X range and next hight > previous hight
+                if (buildings[i, 0] <= preR && buildings[i, 0] > preL && buildings[i, 2] > preH)
+                {
+                    ret.Add(new int[] { buildings[i, 0], buildings[i, 2] });
+                }
+                else if (buildings[i, 0] <= preR && buildings[i, 0] > preL && buildings[i, 2] <= preH)
+                {
+                    ret.Add(new int[] { preR, buildings[i, 2] });
+                }
+                else if (buildings[i, 0] > preR)
+                {
+                    ret.Add(new int[] { preR, 0 });
+                    ret.Add(new int[] { buildings[i, 0], buildings[i, 2] });
+                }
+                preL = buildings[i, 0];
+                preR = buildings[i, 1];
+                preH = buildings[i, 2];
+            }
+            ret.Add(new int[] { buildings[buildings.Length - 1, 1], 0 });
+            return ret;
+        }
+
+        
+        //348. Design a Tic-tac-toe game that is played between two players on a n x n grid.
+        //You may assume the following rules:
+        //A move is guaranteed to be valid and is placed on an empty block.
+        //Once a winning condition is reached, no more moves is allowed. A player who succeeds in placing 
+        //n of their marks in a horizontal, vertical, or diagonal row wins the game.
+        //Example:Given n = 3, assume that player 1 is "X" and player 2 is "O" in the board.
+        //Hint: Could you trade extra space such that move() operation can be done in O(1)?
+        //You need two arrays: int rows[n], int cols[n], plus two variables: diagonal, anti_diagonal.
+        public class TicTacToe
+        {
+            char[,] board;
+            int len;
+            public TicTacToe(int n)
+            {
+                len = n;
+                board = new char[n, n];
+            }
+
+            int isWin(char t, int i, int j)
+            {
+                if (checkVerticle(t,i,j) || checkHarizonal(t, i, j) || checkDiag(t, i, j))
+                    return t == 'X' ? 1 : 2;
+
+                return 0;
+            }
+
+            bool checkVerticle(char t, int i, int j)
+            {
+                for (int k = 0; k < len; k++)
+                {
+                    if (board[k, j] != t)
+                        return false;
+                }
+                return true;
+            }
+            bool checkHarizonal(char t, int i, int j)
+            {
+                for (int k = 0; k < len; k++)
+                {
+                    if (board[i,k] != t)
+                        return false;
+                }
+                return true;
+            }
+            bool checkDiag(char t, int i, int j)
+            {
+                for (int k = 0; k < len; k++)
+                {
+                    if (board[k, k] != t)
+                        return false;
+                }
+                for (int k = 0; k < len; k++)
+                {
+                    if(board[k,len-1-k] ==t)
+                        return false;
+                }
+                return true;
+            }
+
+            public void Move(int player, int i, int j)
+            {
+                char move = player == 1 ? 'X' : 'O';
+                if (board[i, j] == '\0')
+                {
+                    board[i, j] = move;
+                    int result = isWin(move, i, j);
+                    if (result == 1)
+                        Console.Write("player 1 wins");
+                    else if(result == 2)
+                        Console.Write("player 2 wins");
+                }
+            }
+
+        }
+
+        //Hint: Could you trade extra space such that move() operation can be done in O(1)?
+        //You need two arrays: int rows[n], int cols[n], plus two variables: diagonal, anti_diagonal.
+        public class TicTacToe2
+        {
+            int len, Darr, RDarr;
+            int[] Varr, Harr;
+            public TicTacToe2(int n)
+            {
+                len = n;
+                Varr = new int[n];
+                Harr = new int[n];
+            }
+
+            int move(int player, int i, int j)
+            {
+                int add = player == 1 ? 1 : -1;
+
+                Harr[i] += add;
+                Varr[j] += add;
+                if (i == j)
+                    Darr += add;
+                if (i == len - 1 - j)
+                    RDarr += add;
+
+                if (Math.Abs(Harr.Sum()) == len || Math.Abs(Varr.Sum()) == len || Math.Abs(Darr) == len || Math.Abs(RDarr) == len)
+                    return player;
+                else
+                    return 0;
+            }
+
+        }
+        //341. Flatten Nested List Iterator
+        //Given a nested list of integers, implement an iterator to flatten it.
+        //Each element is either an integer, or a list -- whose elements may also be integers or other lists.
+        //Example 1: Given the list[[1, 1],2,[1,1]],
+        //By calling next repeatedly until hasNext returns false, the order of elements returned by next should be: [1,1,2,1,1].
+        //Example 2: Given the list[1,[4,[6]]],
+        //By calling next repeatedly until hasNext returns false, the order of elements returned by next should be: [1,4,6].         
+        public class NestedIterator
+        {
+            Stack<NestedInteger> stack;
+
+            public NestedIterator(IList<NestedInteger> nestedList)
+            {
+                stack = new Stack<NestedInteger>();
+                if (nestedList != null)
+                {
+                    for (int i = nestedList.Count - 1; i >= 0; i--)
+                    {
+                        stack.Push(nestedList[i]);
+                    }
+                }
+            }
+
+            public bool HasNext()
+            {
+                while (stack.Count != 0)
+                {
+                    if (stack.Peek().IsInteger())
+                        return true;
+                    var list = stack.Pop();
+                    for (int i = list.GetList().Count - 1; i >= 0; i--)
+                    {
+                        stack.Push(list.GetList()[i]);
+                    }
+                }
+                return false;
+            }
+            public int Next()
+            {
+                if (stack.Peek().IsInteger())
+                    return stack.Pop().GetInteger();
+                else
+                    throw new Exception("");
+            }
+        }
+        //alternative way, not real iterator, spend more memory O(n)
+        public class NestedIterator2
+        {
+            List<int> q;
+            int curIdx;
+            public NestedIterator2(IList<NestedInteger> nestedList)
+            {
+                q = new List<int>();
+                //DFS to save to q
+                DFSHelper(nestedList);
+            }
+            void DFSHelper(IList<NestedInteger> nestedList)
+            {
+                if (nestedList != null)
+                {
+                    foreach (var nest in nestedList)
+                    {
+                        if (nest.IsInteger())
+                            q.Add(nest.GetInteger());
+                        else
+                            DFSHelper(nest.GetList());
+                    }
+                }
+            }
+
+            public bool HasNext()
+            {
+                return curIdx < q.Count;
+            }
+            public int Next()
+            {
+                if (q.Count > 0)
+                {
+                    int ret = q[curIdx];
+                    curIdx++;
+                    return ret;
+                }
+                else
+                    throw new Exception("");
+            }
+        }
+
+        // This is the interface that allows for creating nested lists.
+        // You should not implement it, or speculate about its implementation
+        public interface NestedInteger
+        {
+            // @return true if this NestedInteger holds a single integer, rather than a nested list.
+            bool IsInteger();
+            // @return the single integer that this NestedInteger holds, if it holds a single integer
+            // Return null if this NestedInteger holds a nested list
+            int GetInteger();
+            // @return the nested list that this NestedInteger holds, if it holds a nested list
+            // Return null if this NestedInteger holds a single integer
+            IList<NestedInteger> GetList();
+            //Your NestedIterator will be called like this:
+            //NestedIterator i = new NestedIterator(nestedList);
+            //while (i.HasNext()) v[f()] = i.Next();
+        }
+
+
 
         public class BSTIterator
         {
@@ -25,7 +298,7 @@ namespace Interview
                     return;
                 getSort(node.left, list);
                 list.Add(node.val);
-             
+
                 getSort(node.right, list);
             }
             /** @return whether we have a next smallest number */
@@ -41,10 +314,6 @@ namespace Interview
                 return ret;
             }
         }
-
-
-
-
 
 
         //208. Implement Trie (Prefix Tree)    
@@ -86,10 +355,10 @@ namespace Interview
                 {
                     return root.word == word;
                 }
-                root = root.children[word[idx]-'a'];
-                return match(root, idx + 1, word);                
+                root = root.children[word[idx] - 'a'];
+                return match(root, idx + 1, word);
             }
-         
+
             //Returns if there is any word in the trie, that starts with the given prefix.
             public bool StartsWith(string pre)
             {
@@ -105,7 +374,7 @@ namespace Interview
                     return true;
                 root = root.children[pre[idx] - 'a'];
 
-                return matchPrefix(root, idx + 1, pre);                
+                return matchPrefix(root, idx + 1, pre);
             }
         }
         class TrieNode
@@ -115,10 +384,10 @@ namespace Interview
             {
                 children = new TrieNode[26];
             }
-            public TrieNode[] children {get;set;}
+            public TrieNode[] children { get; set; }
             public string word { get; set; }
         }
-        
+
     }
 
 
@@ -273,7 +542,7 @@ namespace Interview
         }
     }
 
-    
+
     //interview of Agoda in Hackerrank, practice of virtual , abstract, override 
     public abstract class CalculatorBase
     {
@@ -356,6 +625,7 @@ namespace Interview
 
     //Houlihan Lokey  onsite
     //write code to calculate the circumference of the circle without modifying class itself
+    //(closure )
     public sealed class Circle
     {
         private double radius;
@@ -380,12 +650,13 @@ namespace Interview
         {
             public int Foo { get; set; }
         }
-        public IFoo CreateFoo(int value) {
+        public IFoo CreateFoo(int value)
+        {
             return new MyFoo { Foo = value };
         }
         //=> new MyFoo { Foo = value };
     }
-    
+
 
     public class AsyncTest
     {
@@ -393,15 +664,15 @@ namespace Interview
         {
             Task<string> tt = longRunTaskAsync();
             Console.WriteLine("doesn't block main thread");
-            Thread.Sleep(4000);
+            Thread.Sleep(5000);
             //await AsyncMethod();
-            Console.WriteLine("waiting for long run thread feedback...");
+
             string x = await tt;
 
             Console.WriteLine(x);
-         
+            Console.WriteLine("waiting for long run thread feedback...");
         }
-        
+
         public async Task<string> longRunTaskAsync()
         {
             await Task.Delay(5000);
@@ -410,6 +681,98 @@ namespace Interview
         }
 
     }
-    
 
+    //design hashtable class without using the built-in classes
+    public class HashTable<TKey, TValue>
+    {
+        private LinkedList<Tuple<TKey, TValue>>[] _items;
+        private int _fillFactor = 3;
+        private int _size;
+
+        public HashTable()
+        {
+            _items = new LinkedList<Tuple<TKey, TValue>>[4];
+        }
+
+        public void Add(TKey key, TValue value)
+        {
+            var pos = GetPosition(key, _items.Length);
+            if (_items[pos] == null)
+            {
+                _items[pos] = new LinkedList<Tuple<TKey, TValue>>();
+            }
+            if (_items[pos].Any(x => x.Item1.Equals(key)))
+            {
+                throw new Exception("Duplicate key, cannot insert.");
+            }
+            _size++;
+            if (NeedToGrow())
+            {
+                GrowAndReHash();
+            }
+            pos = GetPosition(key, _items.Length);
+            if (_items[pos] == null)
+            {
+                _items[pos] = new LinkedList<Tuple<TKey, TValue>>();
+            }
+            _items[pos].AddFirst(new Tuple<TKey, TValue>(key, value));
+        }
+
+        public void Remove(TKey key)
+        {
+            var pos = GetPosition(key, _items.Length);
+            if (_items[pos] != null)
+            {
+                var objToRemove = _items[pos].FirstOrDefault(item => item.Item1.Equals(key));
+                if (objToRemove == null) return;
+                _items[pos].Remove(objToRemove);
+                _size--;
+            }
+            else
+            {
+                throw new Exception("Value not in HashTable.");
+            }
+        }
+
+        public TValue Get(TKey key)
+        {
+            var pos = GetPosition(key, _items.Length);
+            foreach (var item in _items[pos].Where(item => item.Item1.Equals(key)))
+            {
+                return item.Item2;
+            }
+            throw new Exception("Key does not exist in HashTable.");
+        }
+
+        private void GrowAndReHash()
+        {
+            _fillFactor *= 2;
+            var newItems = new LinkedList<Tuple<TKey, TValue>>[_items.Length * 2];
+            foreach (var item in _items.Where(x => x != null))
+            {
+                foreach (var value in item)
+                {
+                    var pos = GetPosition(value.Item1, newItems.Length);
+                    if (newItems[pos] == null)
+                    {
+                        newItems[pos] = new LinkedList<Tuple<TKey, TValue>>();
+                    }
+                    newItems[pos].AddFirst(new Tuple<TKey, TValue>(value.Item1, value.Item2));
+                }
+            }
+            _items = newItems;
+        }
+
+        private int GetPosition(TKey key, int length)
+        {
+            var hash = key.GetHashCode();
+            var pos = Math.Abs(hash % length);
+            return pos;
+        }
+
+        private bool NeedToGrow()
+        {
+            return _size >= _fillFactor;
+        }
+    }
 }

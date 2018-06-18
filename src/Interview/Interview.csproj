@@ -16,7 +16,7 @@
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -54,6 +54,7 @@
     <Compile Include="BTree.cs" />
     <Compile Include="DFS_BFS.cs" />
     <Compile Include="DynamicProgramming.cs" />
+    <Compile Include="HashTable.cs" />
     <Compile Include="LinkedList.cs" />
     <Compile Include="LinkedListNode.cs" />
     <Compile Include="Math2.cs" />

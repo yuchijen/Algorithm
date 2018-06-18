@@ -7,21 +7,164 @@ namespace Interview
 {
     public class RandomListNode
     {
-       public int label;
-       public RandomListNode next, random;
-       public RandomListNode(int x) { this.label = x; }
+        public int label;
+        public RandomListNode next, random;
+        public RandomListNode(int x) { this.label = x; }
     }
     public class ListNode
     {
-       public int val;
-       public ListNode next;
-       public ListNode(int x) { val = x; }
+        public int val;
+        public ListNode next;
+        public ListNode(int x) { val = x; }
     }
 
 
+    public class DoublyListNode
+    {
+        public int val;
+        public DoublyListNode(int i)
+        {
+            val = i;
+        }
+        public DoublyListNode pre;
+        public DoublyListNode next;
+    }
 
     public class LinkedList
     {
+        //Doubly linkedlist contains 0 and 1 only, sort it in O(n), in-space
+        // e.g.  0 <-> 1 <-> 1 <-> 0 <-> 1 <-> 0  
+        //return 0 <-> 0 <-> 0 <-> 1 <-> 1 <-> 1
+        DoublyListNode SortDoublyList(DoublyListNode head)
+        {
+            while (head == null)
+                return null;
+
+            //get tail ptr 
+            var ptrEnd = head;
+            var ptrStart = head;
+
+            while (ptrEnd != null && ptrEnd.next != null)
+                ptrEnd = ptrEnd.next;
+
+            while(ptrStart!= ptrEnd)
+            {
+                if (ptrStart.val == 1)//swap with end
+                {
+                    int temp = ptrEnd.val;
+                    ptrEnd.val = ptrStart.val;
+                    ptrStart.val = temp;
+                    ptrEnd = ptrEnd.pre;   // end index left shift one
+                }
+                else
+                    ptrStart = ptrStart.next;
+            }
+            return head;
+        }
+
+        //Sort 2 Sorted LinkedList
+        public ListNode SortTwo(ListNode n1, ListNode n2)
+        {
+            if (n1 == null && n2 == null)
+                return null;
+            if (n1 == null)
+                return n2;
+            if (n2 == null)
+                return n1;
+
+            var pt1 = n1;
+            var pt2 = n2;
+
+            var ret = new ListNode(-1);
+            var retPt = ret;
+            while (pt1 != null && pt2 != null)
+            {
+                if (pt1.val < pt2.val)
+                {
+                    retPt.next = new ListNode(pt1.val);
+                    pt1 = pt1.next;
+                }
+                else
+                {
+                    retPt.next = new ListNode(pt2.val);
+                    pt2 = pt2.next;
+                }
+                retPt = retPt.next;
+            }
+
+            while (pt1 != null)
+            {
+                retPt.next = new ListNode(pt1.val);
+                pt1 = pt1.next;
+                retPt = retPt.next;
+            }
+            while (pt2 != null)
+            {
+                retPt.next = new ListNode(pt2.val);
+                pt2 = pt2.next;
+                retPt = retPt.next;
+            }
+            return ret.next;
+        }
+       
+        
+        //328. Odd Even Linked List
+        //Given a singly linked list, group all odd nodes together followed by the even nodes. 
+        //Please note here we are talking about the node number and not the value in the nodes.
+        //You should try to do it in place.The program should run in O(1) space complexity and O(nodes) time complexity.
+        //Example: Given 1->2->3->4->5->NULL,
+        //return         1->3->5->2->4->NULL.
+        //Note:The relative order inside both the even and odd groups should remain as it was in the input. 
+        //The first node is considered odd, the second node even and so on...
+        public ListNode OddEvenList(ListNode head)
+        {
+            if (head == null || head.next == null)
+                return head;
+
+            var ptOdd = head;
+            var ptEven = head.next;
+            var ptrEven = ptEven;
+
+            while (ptEven != null && ptEven.next != null)
+            {
+                ptOdd.next = ptEven.next;
+                ptOdd = ptOdd.next;
+
+                ptEven.next = ptOdd.next;
+                ptEven = ptEven.next;
+            }
+            ptOdd.next = ptrEven;
+            return head;
+        }
+
+
+        //61. Rotate List
+        //Given a list, rotate the list to the right by k places, where k is non-negative.
+        // Example: Given 1->2->3->4->5->NULL and k = 2,
+        //return 4->5->1->2->3->NULL.        
+        public ListNode RotateRight(ListNode head, int k)
+        {
+            if (head == null || head.next == null || k == 0) return head;
+
+            //获取链表的总长度
+            ListNode ptr1 = head; int len = 1;
+            while (ptr1.next != null)
+            { ptr1 = ptr1.next; len++; }
+            //将链表首尾相连形成环
+            ptr1.next = head;
+
+            //找到需要截断的位置，因为k可能大于链表总长度。所以这里使用取余操作
+            for (int i = 0; i < len - k % len; i++)
+            {
+                ptr1 = ptr1.next;
+            }
+            //将该处截断，指向空指针即可
+            ListNode result = ptr1.next;
+            ptr1.next = null;
+            return result;
+        }
+
+
         //206. Reverse Linked List
         //Reverse a singly linked list.
         public ListNode ReverseList(ListNode head)
@@ -133,7 +276,7 @@ namespace Interview
                 ptr.next = new ListNode(st3.Pop());
                 ptr = ptr.next;
             }
-            return ret.next;            
+            return ret.next;
         }
 
         //leetcode 138. Copy List with Random Pointer 

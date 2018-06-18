@@ -16,10 +16,287 @@ namespace Interview
     {
         int val;
         public TreeLinkNode left, right, next;
-        TreeLinkNode(int x) { val = x; }
+        public TreeLinkNode(int x) { val = x; }
     }
     public class BTree
     {
+        //110. Balanced Binary Tree
+        //Given a binary tree, determine if it is height-balanced.
+        //For this problem, a height-balanced binary tree is defined as:
+        //a binary tree in which the depth of the two subtrees of every node never differ by more than 1.
+        //Example 1:Given the following tree [3,9,20,null,null,15,7]:
+        //       3
+        //      / \
+        //     9  20
+        //       /  \
+        //      15   7      return true
+        public bool IsBalanced(TreeNode root)
+        {
+            if (root == null)
+                return true;
+
+            if (Math.Abs(MaxDepth(root.right) - MaxDepth(root.left)) > 1)
+                return false;
+
+            return IsBalanced(root.left) && IsBalanced(root.right);
+        }
+       
+        //105. Construct Binary Tree from Preorder and Inorder Traversal
+        //Given preorder and inorder traversal of a tree, construct the binary tree.
+        //Note:You may assume that duplicates do not exist in the tree.
+        //For example, given preorder = [3, 9, 20, 15, 7]
+        //inorder = [9, 3, 15, 20, 7]
+        //Return the following binary tree:
+        //          3
+        //         / \
+        //        9  20
+        //          /  \
+        //         15   7
+        public TreeNode BuildTree(int[] preorder, int[] inorder)
+        {
+            if (preorder == null || preorder.Length == 0 || inorder == null || inorder.Length == 0)
+                return null;
+
+            int preStart = 0;
+            int inStart = 0;
+            int inEnd = inorder.Length - 1;
+            int preEnd = preorder.Length - 1;
+
+            return buildTreeHelper(preorder, preStart, preEnd, inorder, inStart, inEnd);
+        }
+        TreeNode buildTreeHelper(int[] preorder, int preStart, int preEnd, int[] inorder, int inStart, int inEnd)
+        {
+            int pivValue = preorder[preStart];
+
+            int inOrderPivIdx = Array.FindIndex(inorder, v => v == pivValue);
+            
+            var rootNode = new TreeNode(pivValue);
+            rootNode.left = buildTreeHelper(preorder, preStart + 1, preStart + (inOrderPivIdx - inStart), inorder, inStart, inOrderPivIdx - 1);
+            rootNode.right = buildTreeHelper(preorder, preStart + (inOrderPivIdx - inStart) + 1, preEnd, inorder, inOrderPivIdx + 1, inEnd);
+            return rootNode;
+
+        }
+
+        //285.	Inorder Successor in BST
+        //Given a binary search tree and a node in it, find the in-order successor of that node in the BST.
+        //Note: If the given node has no in-order successor in the tree, return null.
+        public TreeNode inorderSuccessor(TreeNode root, TreeNode p)
+        {
+            if (root == null || p == null)
+                return null;
+
+            TreeNode successor = null;
+            while(root!=null)
+            {
+
+                if (root.val > p.val)
+                {
+                    successor = root;
+                    root = root.left;
+                }
+                else
+                    root = root.right;
+                
+            }
+            return successor;
+        }
+
+        // Inorder Successor in regular BT
+        public TreeNode inorderSuccessorBTree(TreeNode root, TreeNode p)
+        {
+            if (root == null || p == null)
+                return null;
+
+            Stack<TreeNode> st = new Stack<TreeNode>();
+            bool isFoundNode = false;
+
+            while (root != null || st.Count!=0)
+            {
+                if(root!=null)
+                {
+                    var rootPt = root;
+                    st.Push(rootPt);
+                    root = root.left;
+                }
+                else
+                {
+                    root = st.Pop();
+                    if (isFoundNode)  //found p in previous round, this node from stack should be successor
+                        return root;
+                    if(p == root)
+                        isFoundNode = true;
+                    
+                    root = root.right;
+                }
+            }
+            return null;
+        }
+        TreeNode findMostLeftChildHelper(TreeNode node)
+        {
+            if (node == null)
+                return null;
+            if (node.left != null)
+                return findMostLeftChildHelper(node.left);
+            else if (node.left == null && node.right == null)
+                return node;
+            else if (node.left == null && node.right != null)
+                return node;
+            else
+                return null;
+        }
+
+
+        //173. Binary Search Tree Iterator
+        //Implement an iterator over a binary search tree (BST). Your iterator will be initialized with the root node of a BST.
+        //Calling next() will return the next smallest number in the BST.
+        //Note: next() and hasNext() should run in average O(1) time and uses O(h) memory, where h is the height of the tree.
+        /** * Your BSTIterator will be called like this:
+            BSTIterator i = new BSTIterator(root);
+            while (i.HasNext()) v[f()] = i.Next();*/
+        //
+        public class BSTIterator
+        {
+            Stack<TreeNode> st;
+            public BSTIterator(TreeNode root)
+            {
+                st = new Stack<TreeNode>();
+                saveLeftTreeToStack(root, st);
+            }
+
+            void saveLeftTreeToStack(TreeNode node, Stack<TreeNode> stack)
+            {
+                if (node == null)
+                    return;
+                stack.Push(node);
+                saveLeftTreeToStack(node.left, stack);
+            }
+
+            /** @return whether we have a next smallest number */
+            public bool HasNext()
+            {
+                return st.Count != 0;                    
+            }
+
+            /** @return the next smallest number */
+            public int Next()
+            {
+                if (st.Count > 0)
+                {
+                    TreeNode curNode = st.Pop();
+                    
+                    if(curNode.right!=null)
+                    {
+                        saveLeftTreeToStack(curNode.right, st);
+                    }
+                    return curNode.val;
+                }
+                else
+                    throw new Exception("end of road");
+            }
+
+        }
+
+        //314.	Binary Tree Vertical Order Traversal
+        //Given a binary tree, return the vertical order traversal of its nodes' values. (ie, from top to bottom, column by column).
+        //If two nodes are in the same row and column, the order should be from left to right.
+        //Examples: Given binary tree[3, 9, 20, null, null, 15, 7],
+        //      3
+        //     / \
+        //    9  20
+        //      /  \
+        //     15   7
+        //return its vertical order traversal as:
+        //[  [9],  [3,15],  [20],  [7] ]
+
+        //Given binary tree [3,9,20,4,5,2,7],
+        //        3
+        //      /   \
+        //     9    20
+        //    / \   / \
+        //   4   5 2   7
+        //return its vertical order traversal as:
+        //[  [4],  [9],  [3,5,2],  [20],  [7]  ]
+        public List<List<int>> verticalOrder(TreeNode root)
+        {
+            var ret = new List<List<int>>();
+            if (root == null)
+                return ret;
+
+            var map = new Dictionary<int, List<int>>();
+            var columnQ = new Queue<int>();
+            var nodeQ = new Queue<TreeNode>();
+
+            int min = 0;
+            int max = 0;
+
+            columnQ.Enqueue(0);
+            nodeQ.Enqueue(root);
+
+            while (nodeQ.Count != 0)
+            {
+                TreeNode curNode = nodeQ.Dequeue();
+                int curColumn = columnQ.Dequeue();
+                if (map.ContainsKey(curColumn))
+                    map[curColumn].Add(curNode.val);
+                else
+                    map.Add(curColumn, new List<int>(curNode.val));
+
+                if (curNode.left != null)
+                {
+                    nodeQ.Enqueue(curNode.left);
+                    columnQ.Enqueue(curColumn - 1);
+                    min = Math.Min(curColumn - 1, min);
+                }
+                if (curNode.right != null)
+                {
+                    nodeQ.Enqueue(curNode.right);
+                    columnQ.Enqueue(curColumn + 1);
+                    max = Math.Max(curColumn + 1, max);
+                }
+            }
+
+            for (int i = min; i <= max; i++)
+            {
+                ret.Add(map[i]);
+            }
+            return ret;
+        }
+
+
+        //257. Binary Tree Paths
+        //Given a binary tree, return all root-to-leaf paths.
+        //For example, given the following binary tree:
+        //        1              All root-to-leaf paths are:["1->2->5", "1->3"]
+        //      /   \
+        //     2     3
+        //      \
+        //       5
+        public IList<string> BinaryTreePaths(TreeNode root)
+        {
+            var ret = new List<string>();
+            if (root == null)
+                return ret;
+
+            AllPathHelper(root, "", ret);
+
+            return ret;
+        }
+        void AllPathHelper(TreeNode root, string curPath, IList<string> ret)
+        {
+            if (root.left == null && root.right == null)
+            {
+                ret.Add(curPath + root.val);
+                return;
+            }
+            curPath += root.val + "->";
+
+            if (root.left != null)
+                AllPathHelper(root.left, curPath, ret);
+            if (root.right != null)
+                AllPathHelper(root.right, curPath, ret);
+        }
+
+
         //501. Find Mode in Binary Search Tree
         //Given a binary search tree (BST) with duplicates, find all the mode(s) (the most frequently occurred element) in the given BST.
         // Assume a BST is defined as follows:
@@ -35,7 +312,7 @@ namespace Interview
 
             int max = list[0].Value;
             List<int> ret = new List<int>();
-            foreach(var x in list)
+            foreach (var x in list)
             {
                 if (x.Value == max)
                     ret.Add(x.Key);
@@ -114,20 +391,20 @@ namespace Interview
             if (node == null)
                 return true;
 
-            return isMirrorHelp(node.left, node.right);    
+            return isMirrorHelp(node.left, node.right);
         }
         bool isMirrorHelp(TreeNode left, TreeNode right)
         {
             if (left == null || right == null)
                 return left == null && right == null;
             return left.val == right.val && isMirrorHelp(left.left, right.right) && isMirrorHelp(left.right, right.left);
-               
+
         }
 
         //Amazon Given a Binary Search Tree, Find the distance between 2 nodes
         public int DistanceOf2Nodes(TreeNode root, TreeNode node1, TreeNode node2)
         {
-            TreeNode croot= lowerestCommonAncestor(root, node1, node2);
+            TreeNode croot = lowerestCommonAncestor(root, node1, node2);
             return findDistOfAncestor(croot, node1, 0) + findDistOfAncestor(croot, node2, 0);
 
         }
@@ -139,8 +416,8 @@ namespace Interview
                 return depth;
 
             int d = findDistOfAncestor(root.left, node1, depth + 1);
-            
-            return d != -1 ? d: findDistOfAncestor(root.right, node1, depth + 1);            
+
+            return d != -1 ? d : findDistOfAncestor(root.right, node1, depth + 1);
         }
 
         TreeNode lowerestCommonAncestor(TreeNode root, TreeNode node1, TreeNode node2)
@@ -334,28 +611,63 @@ namespace Interview
         //   /  \
         //  2 -> 3 -> NULL
         // / \  / \
-        //4->5->6->7 -> NULL
+        //4->5->6->7 -> NULL        
         public void connect(TreeLinkNode root)
         {
             if (root == null)
                 return;
-
-            TreeLinkNode level_start = root;
-
-            while (level_start != null)
+            
+            while (root != null)
             {
-                TreeLinkNode cur = level_start;
-                while (cur != null)
+                TreeLinkNode curNode = root;
+                while (curNode != null)
                 {
-                    if (cur.left != null)
-                        cur.left.next = cur.right;
-                    if (cur.right != null && cur.next != null)
-                        cur.right.next = cur.next.left;
-                    cur = cur.next;
+                    if (curNode.left != null)
+                        curNode.left.next = curNode.right;
+                    if (curNode.right != null && curNode.next != null)
+                        curNode.right.next = curNode.next.left;
+                    curNode = curNode.next;
                 }
-                level_start = level_start.left;
+                root = root.left;
             }
         }
+
+
+        //117. Populating Next Right Pointers in Each Node II
+        //Follow up for problem "Populating Next Right Pointers in Each Node".
+        //What if the given tree could be any binary tree? Would your previous solution still work?
+        //Note:You may only use constant extra space.
+        //For example, Given the following binary tree,
+        //       1
+        //     /  \
+        //    2    3
+        //   / \    \
+        //  4   5    7
+        //After calling your function, the tree should look like:
+        //       1 -> NULL
+        //      /  \
+        //     2 -> 3 -> NULL
+        //    / \    \
+        //   4-> 5 -> 7 -> NULL
+        public void connect2(TreeLinkNode root)
+        {
+            if (root == null)
+                return;
+            while (root != null)
+            {
+                TreeLinkNode tempChild = new TreeLinkNode(-1);
+                TreeLinkNode currentChild = tempChild;
+                while (root != null)
+                {
+                    if (root.left != null) { currentChild.next = root.left; currentChild = currentChild.next; }
+                    if (root.right != null) { currentChild.next = root.right; currentChild = currentChild.next; }
+                    root = root.next;
+                }
+                root = tempChild.next;
+            }
+        }
+
+
 
         //102. Binary Tree Level Order Traversal
         public IList<IList<int>> LevelOrder(TreeNode root)
@@ -396,34 +708,31 @@ namespace Interview
         //[  [3],
         //   [20,9],
         //   [15,7]
-        //]
+        //]        
         public IList<IList<int>> ZigzagLevelOrder(TreeNode root)
         {
             List<IList<int>> ret = new List<IList<int>>();
             if (root == null)
                 return ret;
 
-            treeLevelOrder(root, 0, ret);
+            treeLevelOrder(ret, root, 0);
             return ret;
         }
-        void treeLevelOrder(TreeNode root, int level, IList<IList<int>> ret)
+        void treeLevelOrder(IList<IList<int>> ret, TreeNode node, int level)
         {
-            if (root == null)
+            if (node == null)
                 return;
 
-            if (level >= ret.Count)
+            if (ret.Count <= level)
                 ret.Add(new List<int>());
 
-            List<int> curLevelList = ret[level].ToList();
-
             if (level % 2 == 0)
-                curLevelList.Add(root.val);
+                ret[level].Add(node.val);
             else
-                curLevelList.Insert(0, root.val);
+                ret[level].Insert(0, node.val);
 
-            ret[level] = curLevelList;
-            treeLevelOrder(root.left, level + 1, ret);
-            treeLevelOrder(root.right, level + 1, ret);
+            treeLevelOrder(ret, node.left, level + 1);
+            treeLevelOrder(ret, node.right, level + 1);
         }
 
         //235. Lowest Common Ancestor of a Binary Search Tree
@@ -451,6 +760,22 @@ namespace Interview
                 return true;
 
             return isChild(root.left, n) || isChild(root.right, n);
+        }
+
+        public TreeNode LowestCommonAncestor2(TreeNode root, TreeNode p, TreeNode q)
+        {
+            if (root == null || root == p || root == q)
+                return root;
+
+            TreeNode left = LowestCommonAncestor2(root.left, p, q);
+            TreeNode right = LowestCommonAncestor2(root.right, p, q);
+            
+            if (left == null)
+                return right;
+            else if (right == null)
+                return left;
+            else
+                return root;
         }
 
         //98. Validate Binary Search Tree

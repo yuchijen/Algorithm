@@ -2,13 +2,354 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Interview
 {
 
     public class ArrayString
     {
-     
+        //Envestnet simple data structure question with 2 sets of numbers. Which number is in list A, that is not in list B.
+        List<int> inAnotInB(int[] A, int[] B)
+        {
+            var hs = new HashSet<int>();
+            foreach (var x in B)
+                hs.Add(x);
+
+            var ret = new List<int>();
+            foreach(var a in A)
+            {
+                if (!hs.Contains(a))
+                    ret.Add(a); ;
+            }
+            return ret;
+        }
+
+        //402  Remove K Digits
+        //Given a non-negative integer num represented as a string, remove k digits from the number so that the 
+        //new number is the smallest possible.
+        //Note:The length of num is less than 10002 and will be ≥ k.The given num does not contain any leading zero.
+        //Example 1: Input: num = "1432219", k = 3   1412219
+        //Output: "1219" Explanation: Remove the three digits 4, 3, and 2 to form the new number 1219 which is the smallest.
+        //Example 2:
+        //Input: num = "10200", k = 1
+        //Output: "200"
+        //Explanation: Remove the leading 1 and the number is 200. Note that the output must not contain leading zeroes.
+        //Example 3:
+        //Input: num = "10", k = 2
+        //Output: "0"
+        //Explanation: Remove all the digits from the number and it is left with nothing which is 0.
+        //string removeKdigits(string num, int k)
+        //{
+
+        //}
+
+        //678. Valid Parenthesis String
+        //Given a string containing only three types of characters: '(', ')' and '*', write a function to check whether this string is valid.We define the validity of a string by these rules:
+        //Any left parenthesis '(' must have a corresponding right parenthesis ')'.
+        //Any right parenthesis ')' must have a corresponding left parenthesis '('.
+        //Left parenthesis '(' must go before the corresponding right parenthesis ')'.
+        //'*' could be treated as a single right parenthesis ')' or a single left parenthesis '(' or an empty string.
+        //An empty string is also valid.
+        //Example 1:Input: "()" Output: True
+        //Example 2:Input: "(*)"Output: True
+        //Example 3:Input: "(*))"Output: True
+        //public bool CheckValidString(string s)
+        //{
+        //}
+
+        
+        //60. Permutation Sequence
+        //The set [1,2,3,…,n] contains a total of n! unique permutations.
+        //By listing and labeling all of the permutations in order,
+        //We get the following sequence(ie, for n = 3):
+        //"123"
+        //"132"
+        //"213"
+        //"231"
+        //"312"
+        //"321"
+        //Given n and k, return the kth permutation sequence.Note: Given n will be between 1 and 9 inclusive.
+        public string GetPermutation(int n, int k)
+        {
+            if (n < 1 || k < 1)
+                return "";
+            //generate factorial array e.g. n=4 , [1,1,2,6] => [0!,1!,2!,3!] 
+            var factorial = new int[n];
+            factorial[0] = 1;
+            for (int i = 1; i < n; i++)
+                factorial[i] = factorial[i - 1] * i;
+
+            //generate candidate array
+            var candidateSet = new List<int>();
+            for (int i = 1; i <= n; i++)
+                candidateSet.Add(i);
+
+            var ret = new StringBuilder();
+
+            k--; // if k= 2 , will be 132 (the last element of prefix =1, 1(k-1) % 2 = 1 <-- index of candidateSet   
+            //iterate start from 3! to 0!  
+            for (int i = n - 1; i >= 0; i--)
+            {
+                ret.Append(candidateSet[k % factorial[i]]);
+                candidateSet.RemoveAt(k % factorial[i]);
+                k %= factorial[i];
+
+            }
+            return ret.ToString();
+        }
+        //hint:定ｎ个数字让求第k个序列．ｎ个数字总共的全排列最多有n!个，并且全排列有个规律．
+        //给定一个n，以１开头的排列有(n-1)!个，同样对２和３也是，所以如果k小于等于(n-1)!，那么首位必为１，因为以１开头的全排列有(n-1)!个．
+        //同样如果k大于(n-1)!，那么第一个数就应该为(k-1)/(n-1)! + 1．这样找到了首位数字应该是哪个，剩下了(n-1)个数字，
+        //我们只需要再重复上面的步骤，不断缩小k即可．
+
+
+        //165. Compare Version Numbers
+        //Compare two version numbers version1 and version2.
+        //If version1 > version2 return 1, if version1<version2 return -1, otherwise return 0.
+        //You may assume that the version strings are non-empty and contain only digits and the.character.
+        //The.character does not represent a decimal point and is used to separate number sequences.
+        //For instance, 2.5 is not "two and a half" or "half way to version three", it is the fifth second-level revision of the second first-level revision.
+        //Here is an example of version numbers ordering: 0.1 < 1.1 < 1.2 < 13.37
+        public int CompareVersion(string version1, string version2)
+        {
+            if (string.IsNullOrEmpty(version1) || string.IsNullOrEmpty(version2))
+                return 0;
+
+            var v1s = version1.Split('.');
+            var v2s = version2.Split('.');
+
+            int len = Math.Min(v1s.Length, v2s.Length);
+
+            for (int i = 0; i < len; i++)
+            {
+                if (int.Parse(v1s[i]) > int.Parse(v2s[i]))
+                    return 1;
+                if (int.Parse(v1s[i]) < int.Parse(v2s[i]))
+                    return -1;
+            }
+
+            if (v1s.Length < v2s.Length)
+            {
+                for (int i = v1s.Length; i < v2s.Length; i++)
+                {
+                    if (int.Parse(v2s[i]) != 0)
+                        return -1;
+                }
+                return 0;
+            }
+            if (v1s.Length > v2s.Length)
+            {
+                for (int i = v2s.Length; i < v1s.Length; i++)
+                {
+                    if (int.Parse(v1s[i]) != 0)
+                        return 1;
+                }
+                return 0;
+            }
+            return 0;
+        }
+
+
+        //MS onsite 
+        //find out max and second max value in array
+        public int[] FindMaxAndSecondMax(int[] nums)
+        {
+            var ret = new List<int>();
+            int max = int.MinValue;
+            int smax = int.MinValue;
+
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (nums[i] > max)
+                {
+                    smax = max;
+                    max = nums[i];
+                }
+                else if (nums[i] > smax && nums[i] != max)
+                {
+                    smax = nums[i];
+                }
+            }
+            ret.Add(max);
+            ret.Add(smax);
+            return ret.ToArray();
+        }
+
+        //75. Sort Colors (MS OA)
+        //Given an array with n objects colored red, white or blue, sort them so that objects of the same 
+        //color are adjacent, with the colors in the order red, white and blue.
+        //Here, we will use the integers 0, 1, and 2 to represent the color red, white, and blue respectively.
+        //Note:You are not suppose to use the library's sort function for this problem.
+        public void SortColors(int[] nums)
+        {
+            if (nums == null || nums.Length == 0)
+                return;
+
+            int ptR = 0;
+            int ptB = nums.Length - 1;
+
+            for (int i = ptR; i <= ptB;)
+            {
+                if (nums[i] == 0)
+                {
+                    swapColor(nums, i, ptR);
+                    ptR++;
+                    i++;
+                }
+                else if (nums[i] == 2)
+                {
+                    swapColor(nums, i, ptB);
+                    ptB--;
+                }
+                else
+                    i++;
+            }
+        }
+
+        void swapColor(int[] nums, int i, int j)
+        {
+            if (nums == null || nums.Length == 0 || i == j)
+                return;
+            int temp = nums[i];
+            nums[i] = nums[j];
+            nums[j] = temp;
+        }
+
+        //125. Valid Palindrome
+        //Given a string, determine if it is a palindrome, considering only alphanumeric characters and ignoring cases.
+        //For example, "A man, a plan, a canal: Panama" is a palindrome. "race a car" is not a palindrome.
+        // Note:Have you consider that the string might be empty? This is a good question to ask during an interview.
+        // For the purpose of this problem, we define empty string as valid palindrome.
+        public bool IsPalindrome(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+                return true;
+
+            int i = 0;
+            int j = s.Length - 1;
+
+            while (i < j)
+            {
+                while (i < s.Length && !(char.IsLetter(s[i]) || char.IsNumber(s[i])))
+                    i++;
+
+                while (j >= 0 && !(char.IsLetter(s[j]) || char.IsNumber(s[j])))
+                    j--;
+
+                if (i >= j)
+                    return true;
+
+                if (s[i].ToString().ToUpper() != s[j].ToString().ToUpper())
+                    return false;
+                i++;
+                j--;
+            }
+            return true;
+        }
+
+
+        //161. One Edit Distance(substring)
+        //Given two strings S and T, determine if they are both one edit distance apart.
+        //如果字符串长度相等，那么判断对应位置不同的字符数是不是1即可。
+        //如果字符串长度相差1，那么肯定是要在长的那个串删掉一个，所以两个字符串一起加加，一旦遇到一个不同，
+        //那么剩下的子串就要是一样，否则就是不止一个不同，false。
+        public bool isOneEditDistance(string s, string t)
+        {
+            if (string.IsNullOrEmpty(s) || string.IsNullOrEmpty(t))
+                return false;
+            if (Math.Abs(s.Length - t.Length) == 1)
+                return true;
+            if (s.Length == t.Length)
+            {
+                if (s == t)
+                    return false;
+                for (int i = 0; i < s.Length; i++)
+                {
+                    if (s[i] != t[i])
+                    {
+                        if (i + 1 == s.Length)
+                            return true;
+                        return s.Substring(i + 1, s.Length - i) == t.Substring(i + 1, s.Length - i);
+                    }
+                }
+            }
+            return false;
+        }
+
+
+        //157. Read N Characters Given Read4  (not resoved yet)
+        //The API: int read4(char *buf) reads 4 characters at a time from a file. 
+        //The return value is the actual number of characters read.For example, it returns 3 
+        //if there is only 3 characters left in the file.
+        //By using the read4 API, implement the function int read(char* buf, int n) that reads n characters from the file.
+        //Note:The read function will only be called once for each test case.
+        int read(char[] buf, int n)
+        {
+            return 0;
+        }
+
+        //253 meeting room2
+        //Given an array of meeting time intervals consisting of start and end times[[s1, e1],[s2, e2],...] 
+        //(si<ei), find the minimum number of conference rooms required.
+        //e.g. Given[[0, 30],[5, 10],[15, 20]], return 2.
+        int minMeetingRooms(Interval[] intervals)
+        {
+            if (intervals == null || intervals.Length == 0)
+                return 0;
+
+            int len = intervals.Length;
+            int[] starts = new int[len];
+            int[] ends = new int[len];
+            for (int i = 0; i < len; i++)
+            {
+                starts[i] = intervals[i].start;
+                ends[i] = intervals[i].end;
+            }
+            Array.Sort(starts);
+            Array.Sort(ends);
+
+
+            int ret = 0;
+            int endIdx = 0;
+            for (int i = 0; i < len; i++)
+            {
+                if (starts[i] < ends[endIdx])
+                    ret++;
+                else
+                    endIdx++;
+            }
+            return ret;
+        }
+
+
+        //252. Meeting room
+        //Given an array of meeting time intervals consisting of start and end times
+        //[[s1, e1],[s2, e2],...] (si<ei), determine if a person could attend all meetings.
+        //For example,
+        //Given[[0, 30],[5, 10],[15, 20]],return false.
+        public bool canAttendMeetings(Interval[] intervals)
+        {
+            if (intervals == null || intervals.Length == 0)
+                return false;
+            if (intervals.Length == 1)
+                return true;
+
+            Array.Sort(intervals, (Interval a, Interval b) =>
+            {
+                return a.start - b.start;
+            }
+            );
+
+            for (int i = 1; i < intervals.Length; i++)
+            {
+                if (intervals[i].start < intervals[i - 1].end)
+                    return false;
+            }
+            return true;
+        }
+
+
         //22. Generate Parentheses
         //Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
         //        For example, given n = 3, a solution set is:
@@ -28,7 +369,6 @@ namespace Interview
             helper(ret, n, "", 0, 0);
             return ret;
         }
-
 
 
         void helper(List<string> ret, int n, string cur, int st, int end)
@@ -54,24 +394,33 @@ namespace Interview
         // For example,        a = "11"  b = "1", return "100".
         public string AddBinary(string a, string b)
         {
-            int i1 = a.Length - 1;
-            int i2 = b.Length - 1;
+            if (string.IsNullOrEmpty(a) && string.IsNullOrEmpty(b))
+                return "0";
+            if (string.IsNullOrEmpty(a) && !string.IsNullOrEmpty(b))
+                return b;
+            if (!string.IsNullOrEmpty(a) && string.IsNullOrEmpty(b))
+                return a;
 
+            int idxA = a.Length - 1;
+            int idxB = b.Length - 1;
             int carry = 0;
             string ret = "";
-            while (i1 >= 0 || i2 >= 0 || carry != 0)
+
+            while (idxA >= 0 || idxB >= 0 || carry > 0)
             {
-                int aa = 0;
-                int bb = 0;
-                if (i1 >= 0) aa = a[i1] - '0';
-                if (i2 >= 0) bb = b[i2] - '0';
+                int valA = 0;
+                int valB = 0;
+                if (idxA >= 0)
+                    valA = a[idxA] - '0';
+                if (idxB >= 0)
+                    valB = b[idxB] - '0';
 
-                ret = ((aa + bb + carry) % 2).ToString() + ret;
-                carry = (aa + bb + carry) / 2;
-
-                i1--;
-                i2--;
+                ret = (valA + valB + carry) % 2 + ret;
+                carry = (valA + valB + carry) / 2;
+                idxA--;
+                idxB--;
             }
+
             return ret;
         }
 
@@ -117,7 +466,45 @@ namespace Interview
             }
         }
 
+        //242. Valid Anagram
+        //For example,  s = "anagram", t = "nagaram", return true.
+        //s = "rat", t = "car", return false.
+        public bool IsAnagram(string s, string t)
+        {
+            if (s == null || t == null || s.Length != t.Length)
+                return false;
+            if (s.Length == 0)
+                return true;
+
+            var map = new Dictionary<char, int>();
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (map.ContainsKey(s[i]))
+                    map[s[i]]++;
+                else
+                    map.Add(s[i], 1);
+            }
+            for (int i = 0; i < t.Length; i++)
+            {
+                if (map.ContainsKey(t[i]))
+                {
+                    if (map[t[i]] == 0)
+                        return false;
+                    map[t[i]]--;
+                }
+                else
+                    return false;
+            }
+
+            return !map.Any(x => x.Value != 0);
+        }
+
         //49. Group Anagrams  (Amazon onsite)
+        //Given an array of strings, group anagrams together.
+        //For example, given: ["eat", "tea", "tan", "ate", "nat", "bat"], 
+        //Return:
+        //  [  ["ate", "eat","tea"], ["nat","tan"], ["bat"] ]
         public IList<IList<string>> GroupAnagrams(string[] strs)
         {
             List<IList<string>> ret = new List<IList<string>>();
@@ -189,7 +576,7 @@ namespace Interview
         //151. Reverse Words in a String
         //Given an input string, reverse the string word by word.
         //For example,Given s = "the sky is blue",return "blue is sky the".
-        //For C programmers: Try to solve it in-place in O(1) spac
+        //For C programmers: Try to solve it in-place in O(1) spac  (NOW IS NOT IN-SPACE SOL!)
         public string ReverseWords(string s)
         {
             string[] temp = s.Split(' ');
@@ -346,9 +733,10 @@ namespace Interview
         }
 
         //238. Product of Array Except Self
-        //Given an array of n integers where n > 1, nums, return an array output such that output[i] is equal to the product of all the elements of nums except nums[i].
+        //Given an array of n integers where n > 1, nums, return an array output such that output[i] is equal to 
+        //the product of all the elements of nums except nums[i].
         //Solve it without division and in O(n).
-        //For example, given[1, 2, 3, 4], return [24,12,8,6].
+        //For example, given[1, 2, 3, 4], return [24,12,8,6].       
         public int[] ProductExceptSelf(int[] nums)
         {
             int[] result = new int[nums.Length];
@@ -506,8 +894,11 @@ namespace Interview
         }
 
         //277. Find the Celebrity
-        //Suppose you are at a party with n people (labeled from 0 to n - 1) and among them, there may exist one celebrity. The definition of a celebrity is that all the other n - 1 people know him/her but he/she does not know any of them.
-        //Note: There will be exactly one celebrity if he/she is in the party. Return the celebrity's label if there is a celebrity in the party. If there is no celebrity, return -1.
+        //Suppose you are at a party with n people (labeled from 0 to n - 1) and among them, there may 
+        //exist one celebrity. The definition of a celebrity is that all the other n - 1 people know 
+        //him/her but he/she does not know any of them.
+        //Note: There will be exactly one celebrity if he/she is in the party. Return the celebrity's 
+        //label if there is a celebrity in the party. If there is no celebrity, return -1.
         public int FindCelebrity(int n)
         {
             int maybeCelerity = 0;
@@ -533,7 +924,7 @@ namespace Interview
 
 
         //311. Sparse Matrix Multiplication
-        //Given two sparse matrices A and B, return the result of A*B.
+        //Given two sparse matrices A and B, return the result of A*B.        
         public int[,] Multiply(int[,] A, int[,] B)
         {
             int rowA = A.GetLength(0);
@@ -699,16 +1090,13 @@ namespace Interview
         //Note:You must do this in-place without making a copy of the array.Minimize the total number of operations.
         public void MoveZeroes(int[] nums)
         { //smart solution~
-            int front = 0;
+            int zIdx = 0;
             for (int i = 0; i < nums.Length; i++)
             {
                 if (nums[i] != 0)
                 {
-                    //swap
-                    int temp = nums[i];
-                    nums[i] = nums[front];
-                    nums[front] = temp;
-                    front++;
+                    swap(nums, i, zIdx);
+                    zIdx++;
                 }
             }
         }
@@ -737,23 +1125,30 @@ namespace Interview
         //191. Number of 1 Bits
         //Write a function that takes an unsigned integer and returns the number of ’1' bits it has (also known as the Hamming weight).
         //For example, the 32-bit integer ’11' has binary representation 00000000000000000000000000001011, so the function should return 3.
-
         public int HammingWeight(uint n)
         {
             if (n == 0)
                 return 0;
 
             int ret = 0;
-            while (n > 0)
+            while (n != 0)
             {
-                if (n % 2 != 0)
-                {
-                    n = n - 1;
-                    ret += 1;
-                }
-                else
-                    n /= 2;
+                if ((n & 1) == 1)
+                    ret++;
+
+                n >>= 1;
             }
+
+            //while (n > 0)
+            //{
+            //    if (n % 2 != 0)
+            //    {
+            //        n = n - 1;
+            //        ret += 1;
+            //    }
+            //    else
+            //        n /= 2;
+            //}
             return ret;
         }
 
@@ -1004,6 +1399,55 @@ namespace Interview
             return ret;
         }
 
+
+        //229. Majority Element II
+        //Given an integer array of size n, find all elements that appear more than ⌊ n/3 ⌋ times.
+        //The algorithm should run in linear time and in O(1) space.
+        public IList<int> MajorityElement2(int[] nums)
+        {
+            var ret = new HashSet<int>();
+
+            if (nums == null || nums.Length == 0)
+                return ret.ToList();
+
+
+            int count1 = 0, count2 = 0;
+            int maj1 = int.MinValue;
+            int maj2 = int.MinValue;
+
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (count1 == 0)
+                {
+                    maj1 = nums[i];
+                    count1++;
+                }
+                else if (count2 == 0)
+                {
+                    maj2 = nums[i];
+                    count2++;
+                }
+                else if (nums[i] == maj1)
+                    count1++;
+                else if (nums[i] == maj2)
+                    count2++;
+                else
+                {
+                    count1--;
+                    count2--;
+                }
+            }
+
+
+            if (nums.Where(x => x == maj1).Count() > (nums.Length / 3))
+                ret.Add(maj1);
+            if (nums.Where(x => x == maj2).Count() > (nums.Length / 3))
+                ret.Add(maj2);
+
+            return ret.ToList();
+        }
+
+
         //169. Majority Element  (in space O(1))
         //Given an array of size n, find the majority element. The majority element is the element that appears more than ⌊ n/2 ⌋ times.
         //You may assume that the array is non-empty and the majority element always exist in the array.
@@ -1177,7 +1621,7 @@ namespace Interview
         //The brackets must close in the correct order, "()" and "()[]{}" are all valid but "(]" and "([)]" are not.
         public bool IsValid(string s)
         {
-            if (s == null || s.Length == 0)
+            if (string.IsNullOrEmpty(s))
                 return true;
 
             Stack<char> st = new Stack<char>();
@@ -1253,9 +1697,12 @@ namespace Interview
         //88. Merge Sorted Array  
         //Given two sorted integer arrays nums1 and nums2, merge nums2 into nums1 as one sorted array.
         //Note:You may assume that nums1 has enough space(size that is greater or equal to m + n) to 
-        //hold additional elements from nums2.The number of elements initialized in nums1 and nums2 are m and n respectively.
+        //hold additional elements from nums2.The number of elements initialized in nums1 and nums2 are m and n respectively.        
         public void Merge(int[] nums1, int m, int[] nums2, int n)
         {
+            if (nums1 == null || nums2 == null || n <= 0)
+                return;
+
             int k = m + n - 1;
             int i = m - 1;
             int j = n - 1;
@@ -1313,12 +1760,71 @@ namespace Interview
             return max;
         }
 
+        //54. Spiral Matrix
+        //Given a matrix of m x n elements (m rows, n columns), return all elements of the matrix in spiral order.
+        //For example,  Given the following matrix:
+        //[ [ 1, 2, 3 ],
+        //  [ 4, 5, 6 ],
+        //  [ 7, 8, 9 ]
+        //]                        You should return [1,2,3,6,9,8,7,4,5].
+        public IList<int> SpiralOrder(int[,] matrix)
+        {
+            int leftFlag = 0;
+            int downFlag = matrix.GetLength(0) - 1;
+            int upFlag = 0;
+            int rightFlag = matrix.GetLength(1) - 1;
+
+            List<int> ret = new List<int>();
+
+            if (matrix.Length == 0)
+                return ret;
+
+            while (leftFlag <= rightFlag && upFlag <= downFlag)
+            {
+                //visit through most up row 
+                for (int i = leftFlag; i <= rightFlag; i++)
+                {
+                    ret.Add(matrix[upFlag, i]);
+                }
+                upFlag++;
+
+                //visit through most right col
+                for (int i = upFlag; i <= downFlag; i++)
+                {
+                    ret.Add(matrix[i, rightFlag]);
+                }
+                rightFlag--;
+
+                //visit back through down row
+                if (upFlag <= downFlag)  //need to check is it no row left
+                {
+                    for (int i = rightFlag; i >= leftFlag; i--)
+                    {
+                        ret.Add(matrix[downFlag, i]);
+                    }
+                }
+                downFlag--;
+                //visit back through up col
+                if (leftFlag <= rightFlag) //need to check is it no col left
+                {
+                    for (int i = downFlag; i >= upFlag; i--)
+                    {
+                        ret.Add(matrix[i, leftFlag]);
+                    }
+                }
+                leftFlag++;
+            }
+            return ret;
+
+        }
+
+
 
         //186. Reverse Words in a String II  
         //Given an input string, reverse the string word by word. A word is defined as a sequence of non-space characters.
         //The input string does not contain leading or trailing spaces and the words are always separated by a single space.
         //For example, Given s = "the sky is blue", return "blue is sky the".
-        // Could you do it in-place without allocating extra space?
+        // Could you do it in-place without allocating extra space?        
         public void ReverseWords(char[] s)
         {
             if (s.All(c => c != ' '))
@@ -1338,6 +1844,7 @@ namespace Interview
                 }
                 i++;
             }
+            //reverse last part
             reverseParial(s, stIdx, s.Length - 1);
 
         }
@@ -1358,32 +1865,33 @@ namespace Interview
         //leetcode 201705 53. Maximum Subarray
         //Find the contiguous subarray within an array (containing at least one number) which has the largest sum.
         //For example, given the array[-2, 1, -3, 4, -1, 2, 1, -5, 4],
-        //the contiguous subarray[4, -1, 2, 1] has the largest sum = 6.        
+        //the contiguous subarray[4, -1, 2, 1] has the largest sum = 6.                
         public int MaxSubArray(int[] nums)
         {
-            if (nums.Length == 1)
-                return nums[0];
+            if (nums == null || nums.Length == 0)
+                return 0;
 
-            int max = int.MinValue;
-            int pre = nums[0];
+            int curSum = 0;
+            int curmax = int.MinValue;
 
-            for (int i = 1; i < nums.Length; i++)
+            for (int i = 0; i < nums.Length; i++)
             {
-                pre = System.Math.Max(nums[i], pre + nums[i]);
-                max = System.Math.Max(max, pre);
+                curSum += nums[i];
+
+                if (curSum < nums[i])
+                    curSum = nums[i];
+
+                curmax = Math.Max(curSum, curmax);
             }
-
-            max = System.Math.Max(nums[0], max);
-            return max;
+            return curmax;
         }
-
 
         //leetcode 201705 121. Best Time to Buy and Sell Stock
         //Say you have an array for which the ith element is the price of a given stock on day i.
         //If you were only permitted to complete at most one transaction(ie, buy one and sell one share of the stock), design an algorithm to find the maximum profit.
         //Example 1: Input: [7, 1, 5, 3, 6, 4]  Output: 5
         // max.difference = 6 - 1 = 5(not 7 - 1 = 6, as selling price needs to be larger than buying price)
-        //Input: [7, 6, 4, 3, 1]        Output: 0
+        //Input: [7, 6, 4, 3, 1]        Output: 0              
         public int MaxProfit(int[] prices)
         {
             if (prices == null || prices.Length <= 1)
@@ -1393,11 +1901,8 @@ namespace Interview
             int max = 0;
             for (int i = 1; i < prices.Length; i++)
             {
-                if (prices[i] < min)
-                    min = prices[i];
-                else if (prices[i] - min > 0)
-                    max = Math.Max(max, prices[i] - min);
-
+                max = Math.Max(prices[i] - min, max);
+                min = Math.Min(prices[i], min);
             }
             return max;
         }
@@ -1405,7 +1910,8 @@ namespace Interview
         //leetcode 122. Best Time to Buy and Sell Stock II
         //Say you have an array for which the ith element is the price of a given stock on day i.
         //Design an algorithm to find the maximum profit.You may complete as many transactions as 
-        //you like (ie, buy one and sell one share of the stock multiple times). However, you may not engage in multiple transactions at the same time(ie, you must sell the stock before you buy again).
+        //you like (ie, buy one and sell one share of the stock multiple times). 
+        //However, you may not engage in multiple transactions at the same time(ie, you must sell the stock before you buy again).
         public int MaxProfit2(int[] prices)
         {
             int ret = 0;
@@ -1427,7 +1933,7 @@ namespace Interview
         //leetcode 1. Two Sum
         //Given an array of integers, return indices of the two numbers such that they add up to a specific target.
         //You may assume that each input would have exactly one solution, and you may not use the same element twice.
-        //Example: Given nums = [2, 7, 11, 15], target = 9,  Because nums[0] + nums[1] = 2 + 7 = 9,return [0, 1].
+        //Example: Given nums = [2, 7, 11, 15], target = 9,  Because nums[0] + nums[1] = 2 + 7 = 9,return [0, 1].       
         public int[] TwoSum(int[] nums, int target)
         {
             List<int> ret = new List<int>();
@@ -1447,8 +1953,10 @@ namespace Interview
             return ret.ToArray();
         }
 
+
         //leetcode 15. 3Sum
-        //Given an array S of n integers, are there elements a, b, c in S such that a + b + c = 0? Find all unique triplets in the array which gives the sum of zero.
+        //Given an array S of n integers, are there elements a, b, c in S such that a + b + c = 0? 
+        //Find all unique triplets in the array which gives the sum of zero.
         //For example, given array S = [-1, 0, 1, 2, -1, -4],  A solution set is:
         //[  [-1, 0, 1],  [-1, -1, 2]  ]
         public IList<IList<int>> ThreeSum2(int[] nums)
@@ -1494,15 +2002,19 @@ namespace Interview
             if (nums == null || nums.Length == 0)
                 return ret;
             Array.Sort(nums);
+            //var hs = new HashSet<string>();
 
             ThreeSumHelp(nums, 0, ret, new List<int>());
-
             return ret;
         }
+
         void ThreeSumHelp(int[] nums, int curIdx, List<IList<int>> ret, List<int> curList)
         {
-            if (curList.Count == 3 && curList.Sum() == 0 && !ret.Contains(curList))
+            //string checkRep = string.Join(",", curList);
+
+            if (curList.Count == 3 && curList.Sum() == 0 && !ret.Any(item => item[0] == curList[0] && item[1] == curList[1] && item[2] == curList[2]))
             {
+                //hs.Add(checkRep);
                 ret.Add(new List<int>(curList));
                 return;
             }
@@ -1518,7 +2030,8 @@ namespace Interview
         //268. Missing Number
         //Given an array containing n distinct numbers taken from 0, 1, 2, ..., n, find the one that is missing from the array.
         //For example, Given nums = [0, 1, 3] return 2.
-        //Your algorithm should run in linear runtime complexity. Could you implement it using only constant extra space complexity?
+        // Input: [3,0,1]    Output: 2
+        //Your algorithm should run in linear runtime complexity. Could you implement it using only constant extra space complexity?        
         public int MissingNumber(int[] nums)
         {
             if (nums == null || nums.Length == 0)
@@ -1539,14 +2052,14 @@ namespace Interview
             return ideasum - realsum;
         }
 
-        //8. String to Integer (atoi)
+        //8. String to Integer (atoi) MS OA
         //Implement atoi to convert a string to an integer.
         //Hint: Carefully consider all possible input cases.If you want a challenge, please do not see below and ask yourself what are the possible input cases.
         //If no valid conversion could be performed, a zero value is returned.If the correct value is out of the range of representable values, INT_MAX (2147483647) or INT_MIN(-2147483648) is returned.
         //e.g. -12a445  ->  -12 
         public int MyAtoi(string str)
         {
-            if (str.Length == 0)
+            if (string.IsNullOrEmpty(str))
                 return 0;
 
             str = str.Trim();
@@ -1585,7 +2098,7 @@ namespace Interview
             return (int)ret;
         }
 
-        public void SortColors(int[] nums)
+        public void SortColors2(int[] nums)
         {
             int rIdx = 0;
             int bIdx = nums.Length - 1;
@@ -1661,8 +2174,74 @@ namespace Interview
 
         //73. Set Matrix Zeroes
         //Given a m x n matrix, if an element is 0, set its entire row and column to 0. Do it in place.
+        public void SetZeroes2(int[,] matrix)
+        {
+            //space complex : O(1)
+            //use 1st row and 1st col to record zero
+            if (matrix == null)
+                return;
+
+            bool isRowZero = false;
+            bool isColZero = false;
+
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                if (matrix[i, 0] == 0)
+                {
+                    isColZero = true;
+                    break;
+                }
+            }
+            for (int j = 0; j < matrix.GetLength(1); j++)
+            {
+                if (matrix[0, j] == 0)
+                {
+                    isRowZero = true;
+                    break;
+                }
+            }
+            //use 1st row and 1st col to record zero
+            for (int i = 1; i < matrix.GetLength(0); i++)
+            {
+                for (int j = 1; j < matrix.GetLength(1); j++)
+                {
+                    if (matrix[i, j] == 0)
+                    {
+                        matrix[i, 0] = 0;
+                        matrix[0, j] = 0;
+                    }
+                }
+            }
+            //assign 0 according to 1st row and col
+            for (int i = 1; i < matrix.GetLength(0); i++)
+            {
+                for (int j = 1; j < matrix.GetLength(1); j++)
+                {
+                    if (matrix[i, 0] == 0 || matrix[0, j] == 0)
+                        matrix[i, j] = 0;
+                }
+            }
+            //taking care 1st row and col
+            if (isRowZero)
+            {
+                for (int j = 0; j < matrix.GetLength(1); j++)
+                {
+                    matrix[0, j] = 0;
+                }
+            }
+            if (isColZero)
+            {
+                for (int i = 0; i < matrix.GetLength(0); i++)
+                {
+                    matrix[i, 0] = 0;
+                }
+            }
+
+        }
+
         public void SetZeroes(int[,] matrix)
         {
+            //space complex : O(m+n) 
             int rows = matrix.GetLength(0);
             int cols = matrix.GetLength(1);
 
@@ -1692,5 +2271,37 @@ namespace Interview
                     matrix[i, zCol.ElementAt(j)] = 0;
             }
         }
+
+        //MS tech screen, 2 arrays , one is n and another is n+1, find out extra char
+        //....
+        char findExtraChar(char[] a, char[] b)
+        {
+            if (a == null || b == null)
+                return '\0';
+            if (a.Length == 0 && b.Length == 1)
+                return b[0];
+            if (a.Length == 1 && b.Length == 0)
+                return a[0];
+
+            var map = new Dictionary<char, int>();
+
+            for (int i = 0; i < a.Length; i++)
+            {
+                if (!map.ContainsKey(a[i]))
+                    map.Add(a[i], 1);
+                else
+                    map[a[i]] += 1;
+            }
+
+            for (int i = 0; i < b.Length; i++)
+            {
+                if (map.ContainsKey(b[i]))
+                    map[a[i]] -= 1;
+                else
+                    return b[i];
+            }
+            return map.Where(p => p.Value != 0).FirstOrDefault().Key;
+        }
+
     }
 }

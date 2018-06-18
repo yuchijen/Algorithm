@@ -97,5 +97,42 @@ namespace Interview
             }
             return Convert.ToInt32(ret);
         }
+
+
+        //168. Excel Sheet Column Title
+        //Given a positive integer, return its corresponding column title as appear in an Excel sheet.
+        //For example:
+        //    1 -> A
+        //    2 -> B
+        //    3 -> C
+        //...
+        //26 -> Z
+        //27 -> AA
+        //28 -> AB
+        public string ConvertToTitle(int n)
+        {
+            if (n < 1)
+                return "";
+
+            string charSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+            string ret = "";
+            while(n >0)
+            {
+                if ((n % 26) > 0)
+                {
+                    ret = charSet[(n % 26) - 1] + ret;
+                    n = n / 26;
+                }
+                else
+                {
+                    ret = 'Z' + ret;
+                    n = (n / 26) - 1;
+                }
+            }
+            return ret;
+            
+        }
+
     }
 }

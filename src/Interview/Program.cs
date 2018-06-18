@@ -9,6 +9,12 @@ namespace Interview
     {
         static void Main(string[] args)
         {
+
+            var asa = new ArrayString();
+            foreach (var x in asa.MajorityElement2(new int[5] { 2, 2, 2, 4, 4 }))
+                Console.WriteLine(x);
+
+
             var ast = new AsyncTest();
             ast.TestAsync();
 
@@ -58,7 +64,6 @@ namespace Interview
 
             dfs.KillProcess(new List<int> { 1, 3, 10, 5 }, new List<int> { 3, 0, 5, 3 }, 5);
 
-            var asa = new ArrayString();
             asa.GroupAnagrams(new string[] { "eat", "tea", "tan", "ate", "nat", "bat" });
             asa.Compress("AAABBCCCCCCAAAAA");
             asa.LongestIncreasingSubArray(new int[] { 15, 14, 12, 11, 2});

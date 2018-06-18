@@ -7,6 +7,39 @@ namespace Interview
 {
     public class BinarySearch
     {
+        //278. First Bad Version
+        //You are a product manager and currently leading a team to develop a new product. Unfortunately, the 
+        //latest version of your product fails the quality check. Since each version is developed based on the 
+        //previous version, all the versions after a bad version are also bad.
+        //Suppose you have n versions[1, 2, ..., n] and you want to find out the first bad one, which causes 
+        //all the following ones to be bad.
+        //You are given an API bool isBadVersion(version) which will return whether version is bad.Implement a 
+        //function to find the first bad version.You should minimize the number of calls to the API.
+        public int FirstBadVersion(int n)
+        {
+            if (IsBadVersion(1))
+                return 1;
+
+            int st = 1;
+            int end = n;
+
+            while (st <= end)
+            {
+                int mid = st + (end - st) / 2;
+                if (mid > 1 && IsBadVersion(mid) && !IsBadVersion(mid - 1))
+                    return mid;
+                if (IsBadVersion(mid))
+                    end = mid - 1;
+                else
+                    st = mid + 1;
+            }
+            return -1;
+        }
+
+        bool IsBadVersion(int version)
+        {
+            return true;
+        }
 
         //374. Guess Number Higher or Lower
         //We are playing the Guess Game. The game is as follows:
@@ -42,19 +75,7 @@ namespace Interview
             return -1;
         }
 
-        //29. Divide Two Integers
-        //Divide two integers without using multiplication, division and mod operator.
-        //If it is overflow, return MAX_INT.
-        //public int Divide(int dividend, int divisor)
-        //{
-        //    if (dividend == 0)
-        //        return 0;
-        //    if (divisor == 0)
-        //        return int.MaxValue;
-
-        //}
-
-
+        
         //69. Sqrt(x)
         //Implement int sqrt(int x).
         //Compute and return the square root of x.
