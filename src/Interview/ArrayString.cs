@@ -11,7 +11,7 @@ namespace Interview
     {
         //Envestnet simple data structure question with 2 sets of numbers. Which number is in list A, that is not in list B.
         List<int> inAnotInB(int[] A, int[] B)
-        {
+        {            
             var hs = new HashSet<int>();
             foreach (var x in B)
                 hs.Add(x);
@@ -289,7 +289,7 @@ namespace Interview
             return 0;
         }
 
-        //253 meeting room2
+        //253 meeting room2  (groupon phone)
         //Given an array of meeting time intervals consisting of start and end times[[s1, e1],[s2, e2],...] 
         //(si<ei), find the minimum number of conference rooms required.
         //e.g. Given[[0, 30],[5, 10],[15, 20]], return 2.
@@ -297,7 +297,7 @@ namespace Interview
         {
             if (intervals == null || intervals.Length == 0)
                 return 0;
-
+            
             int len = intervals.Length;
             int[] starts = new int[len];
             int[] ends = new int[len];
@@ -322,6 +322,35 @@ namespace Interview
             return ret;
         }
 
+        //alternative way not verified
+        int MeetingRoomsII(Interval[] intervals) {
+            if (intervals == null || intervals.Length == 0)
+                return 0;
+            if (intervals.Length == 1)
+                return 1;
+
+            int ret = 1;
+            int len = intervals.Length;
+            int[] starts = new int[len];
+            int[] ends = new int[len];
+            for (int i = 0; i < len; i++)
+            {
+                starts[i] = intervals[i].start;
+                ends[i] = intervals[i].end;
+            }
+            Array.Sort(starts);
+            Array.Sort(ends);
+            //above is the same
+            int endTimeIdx = 0;
+            for(int i = 1; i<intervals.Length; i++)
+            {
+                if(intervals[i].start < ends[endTimeIdx])
+                    ret++;
+                else
+                    endTimeIdx++;
+            }
+            return ret;
+        }
 
         //252. Meeting room
         //Given an array of meeting time intervals consisting of start and end times
@@ -335,11 +364,7 @@ namespace Interview
             if (intervals.Length == 1)
                 return true;
 
-            Array.Sort(intervals, (Interval a, Interval b) =>
-            {
-                return a.start - b.start;
-            }
-            );
+            Array.Sort(intervals, (Interval a, Interval b) => { return a.start.CompareTo(b.start);});
 
             for (int i = 1; i < intervals.Length; i++)
             {
@@ -393,7 +418,7 @@ namespace Interview
         //Given two binary strings, return their sum (also a binary string).
         // For example,        a = "11"  b = "1", return "100".
         public string AddBinary(string a, string b)
-        {
+        {            
             if (string.IsNullOrEmpty(a) && string.IsNullOrEmpty(b))
                 return "0";
             if (string.IsNullOrEmpty(a) && !string.IsNullOrEmpty(b))

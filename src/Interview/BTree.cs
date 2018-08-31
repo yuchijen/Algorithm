@@ -20,6 +20,39 @@ namespace Interview
     }
     public class BTree
     {
+        //543. Diameter of Binary Tree(Recur)
+        public int DiameterOfBinaryTree(TreeNode root)
+        {
+            if (root == null)
+                return 0;
+
+            int res = MaxDepth(root.left) + MaxDepth(root.right);
+            return Math.Max(res, Math.Max(DiameterOfBinaryTree(root.left), DiameterOfBinaryTree(root.right)));
+
+        }
+
+
+        //404. Sum of Left Leaves
+        public int SumOfLeftLeaves(TreeNode root)
+        {
+            if (root == null)
+                return 0;
+
+            return SumOfLeftLeavesHelper(root, false);            
+        }
+
+        int SumOfLeftLeavesHelper(TreeNode node, bool left)
+        {
+            if (node == null)
+                return 0;
+            int sum = 0;
+            
+            if (left && node.left == null && node.right == null)
+                sum += node.val;
+
+            return sum += SumOfLeftLeavesHelper(node.left, true) + SumOfLeftLeavesHelper(node.right, false);
+        }
+
         //110. Balanced Binary Tree
         //Given a binary tree, determine if it is height-balanced.
         //For this problem, a height-balanced binary tree is defined as:
@@ -567,6 +600,19 @@ namespace Interview
                 return 0;
 
             return 1 + Math.Max(MaxDepth(root.left), MaxDepth(root.right));
+        }
+
+        public int MaxDepthWithHashTable(TreeNode root, Dictionary<TreeNode,int> map)
+        {
+            if (root == null)
+                return 0;
+
+            if (map.ContainsKey(root))
+                return map[root];
+            
+            int dep=  1 + Math.Max(MaxDepthWithHashTable(root.left,map), MaxDepthWithHashTable(root.right,map));
+            map.Add(root, dep);
+            return dep;
         }
 
         //366. Find Leaves of Binary Tree
