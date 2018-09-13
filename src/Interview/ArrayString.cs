@@ -547,7 +547,7 @@ namespace Interview
                 else
                     map[list[i]].Add(i);
             }
-
+            
             foreach (var pair in map)
             {
                 ret.Add(new List<string>());
@@ -559,7 +559,28 @@ namespace Interview
 
             return ret;
         }
+        public IList<List<string>> GroupAnagrams2(string[] strs)
+        {
+            var ret = new List<IList<string>>();
+            if (strs == null)
+                return null;
 
+            var map = new Dictionary<string, List<string>>();
+            for(int i = 0; i<strs.Length; i++)
+            {
+                var keyStr = new string(strs[i].OrderBy(c => c).ToArray());
+
+                if (!map.ContainsKey(keyStr))
+                {
+                    map.Add(keyStr, new List<string>() { strs[i] });                    
+                }
+                else
+                {
+                    map[keyStr].Add(strs[i]);
+                }
+            }
+            return  map.Values.ToList();
+        }
 
         //14. Longest Common Prefix
         //Write a function to find the longest common prefix string amongst an array of strings
