@@ -89,22 +89,18 @@ namespace Interview
             var ret = new List<IList<int>>();
             var hashsets = new HashSet<string>();
             Array.Sort(nums);
-            subsetHelperWithoutDuplicate2(0, nums, new List<int>(), ret, hashsets);
+            subsetHelperWithoutDuplicate2(0, nums, new List<int>(), ret);
             return ret;
         }
-        void subsetHelperWithoutDuplicate2(int curIdx, int[] nums, List<int> list, IList<IList<int>> ret, HashSet<string> hashsets)
+        void subsetHelperWithoutDuplicate2(int curIdx, int[] nums, List<int> list, IList<IList<int>> ret)
         {
-            string temp = string.Join(",", list);
-
-            if (!hashsets.Contains(temp))
-            {
-                hashsets.Add(temp);
-                ret.Add(new List<int>(list));
-            }
+            ret.Add(new List<int>(list));
             for (int i = curIdx; i < nums.Length; i++)
             {
+                if (i > curIdx && nums[i] == nums[i - 1])   //key point note: i>curIdx
+                    continue;
                 list.Add(nums[i]);
-                subsetHelperWithoutDuplicate2(i + 1, nums, list, ret, hashsets);
+                subsetHelperWithoutDuplicate2(i + 1, nums, list, ret);
                 list.Remove(nums[i]);
             }
         }
@@ -138,7 +134,7 @@ namespace Interview
             for (int i = curIdx; i <= n; i++)
             {
                 curList.Add(i);
-                helper(curIdx + 1, curList, ret, n, k);
+                helper(i + 1, curList, ret, n, k);
                 curList.Remove(curList.Last());
             }
         }

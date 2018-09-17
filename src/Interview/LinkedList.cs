@@ -192,6 +192,23 @@ namespace Interview
             return ret.next;
         }
 
+        //space complex O(1);
+        public ListNode ReverseList2(ListNode head)
+        {
+            if (head == null)
+                return null;
+            var new_h = head;
+
+            while(head.next!=null)
+            {
+                var cur = head.next;
+                head.next = head.next.next;
+                cur.next = new_h;
+                new_h = cur;
+            }
+            return new_h;
+        }
+
         //24. Swap Nodes in Pairs
         //Given a linked list, swap every two adjacent nodes and return its head.
         //For example        Given 1->2->3->4, you should return the list as 2->1->4->3.

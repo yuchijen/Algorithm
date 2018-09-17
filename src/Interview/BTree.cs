@@ -170,7 +170,40 @@ namespace Interview
             }
             return null;
         }
+
+        public TreeNode inorderSuccessorBTree2(TreeNode root, TreeNode p)
+        {
+            if (root == null || p == null)
+                return null;
+            var st = new Stack<TreeNode>();
+            saveLeftSubTree(root, st);
+
+            while(st.Count>0)
+            {
+                var curNode = st.Pop();
+                if (curNode!=null && curNode == p)
+                {
+                    if (st.Count > 0)
+                        return st.Pop();
+                    else
+                        return null;
+                }
+                else
+                {
+                    saveLeftSubTree(curNode.right, st);
+                }
+            }
+            return null;
+        }
+        void saveLeftSubTree(TreeNode node, Stack<TreeNode> st)
+        {
+            if (node == null)
+                return;
+            st.Push(node);
+            saveLeftSubTree(node.left, st);
         TreeNode findMostLeftChildHelper(TreeNode node)
+        }
+
         {
             if (node == null)
                 return null;
