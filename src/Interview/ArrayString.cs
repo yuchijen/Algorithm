@@ -103,6 +103,74 @@ namespace Interview
         //同样如果k大于(n-1)!，那么第一个数就应该为(k-1)/(n-1)! + 1．这样找到了首位数字应该是哪个，剩下了(n-1)个数字，
         //我们只需要再重复上面的步骤，不断缩小k即可．
 
+        //38. Count and Say
+        //1.     1
+        //2.     11     1 is read off as "one 1" or 11
+        //3.     21     11 is read off as "two 1s" or 21.
+        //4.     1211   21 is read off as "one 2, then one 1" or 1211.
+        //5.     111221
+        public string CountAndSay(int n)
+        {
+            if (n <= 1)
+                return "1";
+
+            StringBuilder sb = new StringBuilder();
+            int ini = 1;
+            string curStr = "1";
+            
+            while(ini < n)
+            {
+                int count = 1;
+                for(int i =1; i< curStr.Length; i++)
+                {
+                    if (curStr[i] != curStr[i - 1])
+                    {
+                        sb.Append(count.ToString()).Append(curStr[i - 1].ToString());
+                        count = 1;
+                    }
+                    else
+                        count++;
+                }
+                sb.Append(count.ToString()).Append(curStr.Last().ToString());
+                curStr = sb.ToString();
+                sb.Clear();
+                ini++;
+                
+            }
+            return curStr;
+        }
+
+        //209. Minimum Size Subarray Sum
+        //Given an array of n positive integers and a positive integer s, find the minimal length of a contiguous 
+        //subarray of which the sum ≥ s.If there isn't one, return 0 instead.
+        //Example: Input: s = 7, nums = [2,3,1,2,4,3]
+        //        Output: 2
+        //Explanation: the subarray[4, 3] has the minimal length under the problem constraint.
+        //Follow up:
+        //If you have figured out the O(n) solution, try coding another solution of which the time complexity is O(n log n). 
+        public int MinSubArrayLen(int s, int[] nums)
+        {
+            if (nums == null || nums.Length == 0)
+                return 0;
+
+            int frontIdx = 0;
+            int backIdx = 0;
+            int sum = 0;
+            int min = int.MaxValue;
+            while(frontIdx < nums.Length)
+            {
+                sum += nums[frontIdx];
+                frontIdx++;
+                while(sum>=s && frontIdx > backIdx)
+                {
+                    min = Math.Min(min, frontIdx - backIdx);
+                    sum -= nums[backIdx];
+                    backIdx++;
+                }
+            }
+            return min == int.MaxValue ? 0 : min;
+        }
+
 
         //165. Compare Version Numbers
         //Compare two version numbers version1 and version2.
@@ -867,78 +935,7 @@ namespace Interview
             return ret;
         }
 
-        //81. Search in Rotated Sorted Array II  with duplicate number
-        public bool SearchRotatedSortedArray2(int[] nums, int target)
-        {
-            if (nums == null || nums.Length == 0)
-                return false;
-
-            int lo = 0;
-            int hi = nums.Length - 1;
-
-            while (lo <= hi)
-            {
-                int piv = (lo + hi) / 2;
-
-                if (nums[piv] == target)
-                    return true;
-                if (nums[piv] > nums[hi])
-                {
-                    if (target < nums[piv] && target >= nums[lo])
-                        hi = piv - 1;
-                    else
-                        lo = piv + 1;
-                }
-                else if (nums[piv] < nums[hi])
-                {
-                    if (target > nums[piv] && target <= nums[hi])
-                        lo = piv + 1;
-                    else
-                        hi = piv - 1;
-                }
-                else
-                    hi--;
-            }
-            return false;
-        }
-
-
-        //33. Search in Rotated Sorted Array
-        //Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
-        //(i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).
-        //You are given a target value to search.If found in the array return its index, otherwise return -1.
-        //You may assume no duplicate exists in the array.
-        public int SearchRotatedSortedArray(int[] nums, int target)
-        {
-            if (nums == null || nums.Length == 0)
-                return -1;
-
-            int lo = 0;
-            int hi = nums.Length - 1;
-            //find min value index, which is rotated index
-            while (lo < hi)
-            {
-                int mid = (lo + hi) / 2;
-                if (nums[mid] > nums[hi])
-                    lo = mid + 1;
-                else
-                    hi = mid;
-            }
-            // lo==hi is the index of the smallest value and also the number of places rotated.
-            int rot = lo;
-            lo = 0; hi = nums.Length - 1;
-            while (lo <= hi)
-            {
-                int mid = (lo + hi) / 2;
-                int realmid = (mid + rot) % nums.Length;
-                if (nums[realmid] == target) return realmid;
-                if (nums[realmid] < target) lo = mid + 1;
-                else hi = mid - 1;
-            }
-            return -1;
-
-        }
-
+        
         //277. Find the Celebrity
         //Suppose you are at a party with n people (labeled from 0 to n - 1) and among them, there may 
         //exist one celebrity. The definition of a celebrity is that all the other n - 1 people know 

@@ -78,6 +78,36 @@ namespace Interview
             return ret.Trim();
         }
 
+        //71. Simplify Path
+        //Given an absolute path for a file (Unix-style), simplify it. 
+        //       For example,
+        //      path = "/home/", => "/home"
+        //path = "/a/./b/../../c/", => "/c"
+        //path = "/a/../../b/../c//.//", => "/c"
+        //path = "/a//b////c/d//././/..", => "/a/b/c"
+        public string SimplifyPath(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+                return "";
+            string ret = "";
+
+            string[] segPath = path.Split('/');
+            var st = new Stack<string>();
+            for (int i =0; i< segPath.Length; i++)
+            {
+                if (segPath[i] == ".." && st.Count > 0)
+                    st.Pop();
+                else if (segPath[i] == "." || segPath[i] == "")
+                    continue;
+                else
+                    st.Push(segPath[i]);
+            }
+            while (st.Count > 0)
+            {
+                ret = "/" + st.Pop() +ret;
+            }
+            return ret == "" ? "/" : ret;
+        }
 
         //leetcode 171. Excel Sheet Column Number
         //Given a column title as appear in an Excel sheet, return its corresponding column number.

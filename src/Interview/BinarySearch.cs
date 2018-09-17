@@ -7,6 +7,113 @@ namespace Interview
 {
     public class BinarySearch
     {
+
+        //33. Search in Rotated Sorted Array
+        //Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
+        //(i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).
+        //You are given a target value to search.If found in the array return its index, otherwise return -1.
+        //You may assume no duplicate exists in the array.
+        public int SearchRotatedSortedArray(int[] nums, int target)
+        {
+            if (nums == null || nums.Length == 0)
+                return -1;
+
+            int lo = 0;
+            int hi = nums.Length - 1;
+            //find min value index, which is rotated index
+            while (lo < hi)
+            {
+                int mid = (lo + hi) / 2;
+                if (nums[mid] > nums[hi])
+                    lo = mid + 1;
+                else
+                    hi = mid;
+            }
+            // lo==hi is the index of the smallest value and also the number of places rotated.
+            int rot = lo;
+            lo = 0; hi = nums.Length - 1;
+            while (lo <= hi)
+            {
+                int mid = (lo + hi) / 2;
+                int realmid = (mid + rot) % nums.Length;
+                if (nums[realmid] == target)
+                    return realmid;
+                if (nums[realmid] < target)
+                    lo = mid + 1;
+                else
+                    hi = mid - 1;
+            }
+            return -1;
+        }
+        //anayse 2 cases : 
+        // 34567012   start to mid are sorted 
+        // 67012345   mid to end are sorted
+        public int SearchRotatedSortedArray2(int[] nums, int target)
+        {
+            if (nums == null || nums.Length == 0)
+                return -1;
+            int st = 0;
+            int end = nums.Length-1;
+
+            while (st <= end)
+            {
+                int mid = st + (end - st) / 2;
+                if (nums[mid] == target)
+                    return mid;
+                if(nums[mid] < nums[end]) //right side sorted
+                {
+                    if (nums[mid] < target && target < nums[end])
+                        st = mid + 1;  //go right
+                    else
+                        end = mid - 1;
+                }
+                else //left side sorted
+                {
+                    if (target >= nums[st] && target < nums[mid])
+                        end = mid - 1;  //go left
+                    else
+                        st = mid + 1;
+                }
+            }
+            return -1;            
+        }
+
+        //81. Search in Rotated Sorted Array II  with duplicate number
+        public bool SearchRotatedSortedArrayII(int[] nums, int target)
+        {
+            if (nums == null || nums.Length == 0)
+                return false;
+
+            int lo = 0;
+            int hi = nums.Length - 1;
+
+            while (lo <= hi)
+            {
+                int piv = (lo + hi) / 2;
+
+                if (nums[piv] == target)
+                    return true;
+                if (nums[piv] > nums[hi])
+                {
+                    if (target < nums[piv] && target >= nums[lo])
+                        hi = piv - 1;
+                    else
+                        lo = piv + 1;
+                }
+                else if (nums[piv] < nums[hi])
+                {
+                    if (target > nums[piv] && target <= nums[hi])
+                        lo = piv + 1;
+                    else
+                        hi = piv - 1;
+                }
+                else
+                    hi--;
+            }
+            return false;
+        }
+
+
         //278. First Bad Version
         //You are a product manager and currently leading a team to develop a new product. Unfortunately, the 
         //latest version of your product fails the quality check. Since each version is developed based on the 
