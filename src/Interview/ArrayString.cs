@@ -9,6 +9,19 @@ namespace Interview
 
     public class ArrayString
     {
+        //301. Remove Invalid Parentheses
+        //Remove the minimum number of invalid parentheses in order to make the input string valid. 
+        //Return all possible results.
+        // Note: The input string may contain letters other than the parentheses(and ).
+        //e.g.1 Input: "()())()"      Output: ["()()()", "(())()"]
+        //e.g.2 Input: "(a)())()"  Output: ["(a)()()", "(a())()"]
+        //e.g.3 Input: ")("   Output: [""]
+        //public IList<string> RemoveInvalidParentheses(string s)
+        //{
+
+        //}
+
+        
         //60. Permutation Sequence
         //The set [1,2,3,…,n] contains a total of n! unique permutations.
         //By listing and labeling all of the permutations in order,
@@ -98,6 +111,40 @@ namespace Interview
                 return 0;
             }
             return 0;
+        }
+
+        //43. Multiply Strings
+        //Given two non-negative integers num1 and num2 represented as strings, return the product of num1 and 
+        //num2, also represented as a string.
+        //e.g. 1: Input: num1 = "2", num2 = "3" Output: "6"
+        //e.g.2: Input: num1 = "123", num2 = "456"  Output: "56088"
+        public string Multiply(string num1, string num2)
+        {
+            if (string.IsNullOrEmpty(num1) || string.IsNullOrEmpty(num2))
+                return "0";
+
+            var retArr = new int[num1.Length + num2.Length];
+
+            var sb = new StringBuilder();
+
+            for(int i= num1.Length - 1; i>=0; i--)
+            {
+                for(int j = num2.Length-1; j>=0; j--)
+                {
+                    retArr[i + j + 1] += (num1[i] - '0') * (num2[j] - '0');
+                    retArr[i + j] += retArr[i + j + 1] / 10;
+                    retArr[i + j + 1] = retArr[i + j + 1] % 10;
+                }
+            }
+            for (int i = 0; i < retArr.Length; i++)
+            {
+                if (retArr[i] == 0 && sb.Length == 0)
+                    continue;
+                sb.Append(retArr[i]);
+            }
+            if (sb.Length == 0)
+                return "0";
+            return sb.ToString();
         }
 
 
@@ -1040,15 +1087,28 @@ namespace Interview
         //Note:You must do this in-place without making a copy of the array.Minimize the total number of operations.
         public void MoveZeroes(int[] nums)
         { //smart solution~
-            int zIdx = 0;
-            for (int i = 0; i < nums.Length; i++)
+            if (nums == null || nums.Length == 0)
+                return;
+
+            int zIdxx = -1;
+            for(int i =0; i< nums.Length; i++)
             {
-                if (nums[i] != 0)
+                if (nums[i] == 0)
                 {
-                    swap(nums, i, zIdx);
-                    zIdx++;
-                }
+                    zIdxx = i;
+                    break;
+                }                    
             }
+            if (zIdxx == -1)
+                return;
+            for(int j= zIdxx+1; j <nums.Length; j++)
+            {
+                if (nums[j] != 0)
+                {
+                    swap(nums, j, zIdxx);
+                    zIdxx++;
+                }
+            }            
         }
 
 
