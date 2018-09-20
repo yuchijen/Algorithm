@@ -64,7 +64,7 @@ namespace Interview
         //{
         //}
 
-        
+
         //60. Permutation Sequence
         //The set [1,2,3,…,n] contains a total of n! unique permutations.
         //By listing and labeling all of the permutations in order,
@@ -813,6 +813,11 @@ namespace Interview
         }
 
         //5. Longest Palindromic Substring
+        //Given a string s, find the longest palindromic substring in s.You may assume that the maximum length of s is 1000.
+        //Example 1:
+        //Input: "babad"
+        //Output: "bab"
+        //Note: "aba" is also a valid answer.
         int startIdx = 0;
         int maxLen = 0;
         public string LongestPalindrome(string s)
@@ -830,7 +835,7 @@ namespace Interview
                 maxCheck(s, i, i + 1);
             }
             return s.Substring(startIdx, maxLen);
-        }
+        }        
         void maxCheck(string s, int st, int ed)
         {
             while (st >= 0 && ed < s.Length && s[st] == s[ed])
@@ -1263,7 +1268,7 @@ namespace Interview
                     jumpCount++;
                 else
                 {
-                    nums[i - jumpCount] = nums[i];
+                    nums[i - jumpCount] = nums[i];//or swap
                     ret += 1;
                 }
             }
@@ -1790,6 +1795,7 @@ namespace Interview
             return ret;
         }
 
+        
         //88. Merge Sorted Array  
         //Given two sorted integer arrays nums1 and nums2, merge nums2 into nums1 as one sorted array.
         //Note:You may assume that nums1 has enough space(size that is greater or equal to m + n) to 

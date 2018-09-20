@@ -62,6 +62,39 @@ namespace Interview
             return head;
         }
 
+
+        //21 Merge Two Sorted Lists
+        public ListNode MergeTwoLists(ListNode l1, ListNode l2)
+        {
+            if (l1 == null)
+                return l2;
+            if (l2 == null)
+                return l1;
+            var preHead = new ListNode(-1);
+            
+            var cur = preHead;
+
+            while (l1 != null && l2 != null)
+            {
+                if (l1.val < l2.val)
+                {
+                    cur.next = l1;
+                    l1 = l1.next;
+                }
+                else
+                {
+                    cur.next = l2;
+                    l2 = l2.next;
+                }
+                cur = cur.next;
+            }
+            if (l1 != null)
+                cur.next = l1;
+            if (l2 != null)
+                cur.next = l2;
+
+            return preHead.next;
+        }
         //Sort 2 Sorted LinkedList
         public ListNode SortTwo(ListNode n1, ListNode n2)
         {
@@ -106,8 +139,37 @@ namespace Interview
             }
             return ret.next;
         }
-       
-        
+
+
+        //23. Merge k Sorted Lists
+        //Merge k sorted linked lists and return it as one sorted list.Analyze and describe its complexity.
+        //Example: Input:
+        //[
+        //  1->4->5,
+        //  1->3->4,
+        //  2->6
+        //]        Output: 1->1->2->3->4->4->5->6
+        public ListNode MergeKLists(ListNode[] lists)
+        {
+            if (lists == null || lists.Length == 0)
+                return null;
+            int st = 0;
+            int end = lists.Length-1;
+
+            while (end > 0)
+            {
+                st = 0;
+                while(st < end)
+                {
+                    lists[st] = MergeTwoLists(lists[st], lists[end]);
+                    st++;
+                    end--;
+                }
+            }
+            return lists[0];
+        }
+
+
         //328. Odd Even Linked List
         //Given a singly linked list, group all odd nodes together followed by the even nodes. 
         //Please note here we are talking about the node number and not the value in the nodes.
