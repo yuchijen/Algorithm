@@ -64,7 +64,28 @@ namespace Interview
         //{
         //}
 
-        
+        //28. Implement strStr()
+        //Input: haystack = "hello", needle = "ll"
+        //Output: 2
+        public int StrStr(string haystack, string needle)
+        {
+            if (string.IsNullOrEmpty(haystack) || string.IsNullOrEmpty(needle) || needle.Length> haystack.Length)
+                return -1;
+
+            for(int i =0; i<= haystack.Length-needle.Length; i++)
+            {
+                int cnt = 0;
+                for(int j = 0; j<needle.Length; j++)
+                {
+                    if (needle[j] == haystack[i+j])
+                        cnt++;
+                }
+                if (cnt == needle.Length)
+                    return i;
+            }
+            return -1;
+        }
+
         //60. Permutation Sequence
         //The set [1,2,3,…,n] contains a total of n! unique permutations.
         //By listing and labeling all of the permutations in order,

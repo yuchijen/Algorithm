@@ -36,6 +36,18 @@ namespace Interview
             bm.CountOneBit(4294967295);
 
             var bk = new BackTracking();
+            Console.WriteLine("Permutation:########");
+            var perret = bk.Permute(new int[3] { 1, 2, 3 });
+            foreach (var x in perret)
+            {
+                foreach(var y in x)
+                {
+                    Console.Write(y);
+                    Console.Write(",");
+                }
+                Console.WriteLine();    
+            }
+
             bk.GetFactors(12);
 
             TreeNode root = new TreeNode(1);
