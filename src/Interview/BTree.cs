@@ -201,9 +201,9 @@ namespace Interview
                 return;
             st.Push(node);
             saveLeftSubTree(node.left, st);
-        TreeNode findMostLeftChildHelper(TreeNode node)
         }
 
+        TreeNode findMostLeftChildHelper(TreeNode node)
         {
             if (node == null)
                 return null;

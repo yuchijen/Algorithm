@@ -7,6 +7,42 @@ namespace Interview
 {
     public class DynamicProgramming
     {
+        //5.Longest Palindromic Substring
+        //Given a string S, find the longest palindromic substring in S. You may assume that the 
+        //maximum length of S is 1000, and there exists one unique longest palindromic substring.
+        public string LongestPalindrome(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+                return "";
+            if (s.Length == 1)
+                return s;
+
+            int maxLen = 0;
+            int startIdx = 0;
+            //record i to j is palindrom or not
+            var dpPalindrom = new bool[1000,1000];
+            for (int i = 0; i < s.Length; i++)
+                dpPalindrom[i, i] = true;
+
+            for(int i = s.Length -1; i>=0; i--)
+            {
+                for(int j = i; j<=i; j--)
+                {
+                    if(dpPalindrom[i-1,j+1]  && s[i] == s[j])
+                    {
+                        dpPalindrom[i, j] = true;
+                        if(j-i+1 > maxLen)
+                        {
+                            maxLen = j - i + 1;
+                            startIdx = i;
+                        }
+                    }
+                }
+            }
+            return s.Substring(startIdx, maxLen);            
+        }
+
+
         //322. Coin Change
         //You are given coins of different denominations and a total amount of money amount.
         //Write a function to compute the fewest number of coins that you need to make up that 

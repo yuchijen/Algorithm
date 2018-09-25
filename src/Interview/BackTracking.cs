@@ -7,6 +7,36 @@ namespace Interview
 {
     public class BackTracking
     {
+        //494. Target Sum
+        //You are given a list of non-negative integers, a1, a2, ..., an, and a target, S. Now you have 2 symbols + and -. For each integer, you should choose one from + and - as its new symbol.
+        //Find out how many ways to assign symbols to make sum of integers equal to target S
+        //Input: nums is [1, 1, 1, 1, 1], S is 3. 
+        //Output: 5
+        int result_sumWay = 0;
+        public int FindTargetSumWays(int[] nums, int S)
+        {
+            if (nums == null || nums.Length == 0)
+                return 0;
+
+            helper(nums, 0, S, 0);
+            return result_sumWay;
+        }
+        void helper(int[] nums, int level, int S, int curSum)
+        {
+            if (nums.Length == level && curSum == S)
+            {
+                result_sumWay++;
+                return;
+            }
+            else if (nums.Length <= level)
+                return;
+
+            helper(nums, level + 1, S, curSum + nums[level]);
+            helper(nums, level + 1, S, curSum - nums[level]);
+
+        }
+
+
         //254. Factor Combinations
         //Numbers can be regarded as product of its factors.For example,
         //input: 12        output:
@@ -228,10 +258,30 @@ namespace Interview
         public IList<IList<int>> PermuteUnique(int[] nums)
         {
             var ret = new List<IList<int>>();
+            var ret1 = new HashSet<IList<int>>();
             Array.Sort(nums);
-            backtrack(nums, 0, ret);
-            return ret;
+            backtrackPerm(nums, 0, ret1);
+            return ret1.ToList();   // ret;
         }
+        void backtrackPerm(int[] nums, int idx, HashSet<IList<int>> ret)
+        {
+            if (idx == nums.Length)
+            {                
+                ret.Add(new List<int>(nums));
+                return;
+            }
+            for (int i = idx; i < nums.Length; i++)
+            {
+                if (i > idx && nums[i] == nums[idx])
+                    continue;
+
+                swap(nums, idx, i);
+                backtrackPerm(nums, idx + 1, ret);
+                swap(nums, i, idx);
+            }
+        }
+
+
         HashSet<string> hashSet = new HashSet<string>();
         void backtrack(int[] nums, int idx, IList<IList<int>> ret)
         {
