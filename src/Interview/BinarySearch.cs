@@ -7,6 +7,165 @@ namespace Interview
 {
     public class BinarySearch
     {
+        //4. Median of Two Sorted Arrays
+        //There are two sorted arrays nums1 and nums2 of size m and n respectively.
+        //Find the median of the two sorted arrays.The overall run time complexity should be O(log (m+n)).
+        //You may assume nums1 and nums2 cannot be both empty.
+        //Example 1:
+        //nums1 = [1, 3]
+        //nums2 = [2]  The median is 2.0
+        //hint: need find k elememts in half, start nums1's half and nums2's half
+        public double FindMedianSortedArrays(int[] nums1, int[] nums2)
+        {
+            //const int n1 = nums1.size();
+            //const int n2 = nums2.size();
+            //// Make sure n1 <= n2
+            //if (n1 > n2) return findMedianSortedArrays(nums2, nums1);
+
+            int k = (nums1.Length + nums2.Length + 1) / 2;
+
+            int st = 0;
+            int end = nums1.Length - 1;
+
+            //find where is k-th (mid)  
+            while (st < end)
+            {
+                int m1 = (st + end) / 2;  //index in nums1
+                int m2 = k - m1;          //index in nums2
+
+                if (nums1[m1] < nums2[m2 - 1])
+                    st = m1 + 1;  //max of m1 still too small , go right 1 more
+                else
+                    end = m1;
+            }
+
+            int seg1 = st;
+            int seg2 = k - seg1;
+            //consider odd or even in total number)
+
+            int c1 = Math.Max(nums1[seg1-1], nums2[seg2 - 1]);
+            if ((nums1.Length + nums2.Length) % 2 == 1)
+                return c1;
+
+            int c2 = Math.Min(nums1[seg1], nums2[seg2]);
+            return (c1 + c2) * 0.5;
+
+            //const int c1 = max(m1 <= 0 ? INT_MIN : nums1[m1 - 1],
+            //               m2 <= 0 ? INT_MIN : nums2[m2 - 1]);
+            //if ((n1 + n2) % 2 == 1)
+            //    return c1;
+            //const int c2 = min(m1 >= n1 ? INT_MAX : nums1[m1],
+            //                   m2 >= n2 ? INT_MAX : nums2[m2]);
+            //return (c1 + c2) * 0.5;
+        }
+
+
+        //33. Search in Rotated Sorted Array
+        //Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
+        //(i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).
+        //You are given a target value to search.If found in the array return its index, otherwise return -1.
+        //You may assume no duplicate exists in the array.
+        public int SearchRotatedSortedArray(int[] nums, int target)
+        {
+            if (nums == null || nums.Length == 0)
+                return -1;
+
+            int lo = 0;
+            int hi = nums.Length - 1;
+            //find min value index, which is rotated index
+            while (lo < hi)
+            {
+                int mid = (lo + hi) / 2;
+                if (nums[mid] > nums[hi])
+                    lo = mid + 1;
+                else
+                    hi = mid;
+            }
+            // lo==hi is the index of the smallest value and also the number of places rotated.
+            int rot = lo;
+            lo = 0; hi = nums.Length - 1;
+            while (lo <= hi)
+            {
+                int mid = (lo + hi) / 2;
+                int realmid = (mid + rot) % nums.Length;
+                if (nums[realmid] == target)
+                    return realmid;
+                if (nums[realmid] < target)
+                    lo = mid + 1;
+                else
+                    hi = mid - 1;
+            }
+            return -1;
+        }
+        //anayse 2 cases : 
+        // 34567012   start to mid are sorted 
+        // 67012345   mid to end are sorted
+        public int SearchRotatedSortedArray2(int[] nums, int target)
+        {
+            if (nums == null || nums.Length == 0)
+                return -1;
+            int st = 0;
+            int end = nums.Length-1;
+
+            while (st <= end)
+            {
+                int mid = st + (end - st) / 2;
+                if (nums[mid] == target)
+                    return mid;
+                if(nums[mid] < nums[end]) //right side sorted
+                {
+                    if (nums[mid] < target && target < nums[end])
+                        st = mid + 1;  //go right
+                    else
+                        end = mid - 1;
+                }
+                else //left side sorted
+                {
+                    if (target >= nums[st] && target < nums[mid])
+                        end = mid - 1;  //go left
+                    else
+                        st = mid + 1;
+                }
+            }
+            return -1;            
+        }
+
+        //81. Search in Rotated Sorted Array II  with duplicate number
+        public bool SearchRotatedSortedArrayII(int[] nums, int target)
+        {
+            if (nums == null || nums.Length == 0)
+                return false;
+
+            int lo = 0;
+            int hi = nums.Length - 1;
+
+            while (lo <= hi)
+            {
+                int piv = (lo + hi) / 2;
+
+                if (nums[piv] == target)
+                    return true;
+                if (nums[piv] > nums[hi])
+                {
+                    if (target < nums[piv] && target >= nums[lo])
+                        hi = piv - 1;
+                    else
+                        lo = piv + 1;
+                }
+                else if (nums[piv] < nums[hi])
+                {
+                    if (target > nums[piv] && target <= nums[hi])
+                        lo = piv + 1;
+                    else
+                        hi = piv - 1;
+                }
+                else
+                    hi--;
+            }
+            return false;
+        }
+
+
         //278. First Bad Version
         //You are a product manager and currently leading a team to develop a new product. Unfortunately, the 
         //latest version of your product fails the quality check. Since each version is developed based on the 

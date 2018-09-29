@@ -13,6 +13,61 @@ namespace Interview
     }
     public class DFS_BFS
     {
+
+        //79. Word Search
+        //Given a 2D board and a word, find if the word exists in the grid.
+        //The word can be constructed from letters of sequentially adjacent cell, where "adjacent" cells are 
+        //those horizontally or vertically neighboring.The same letter cell may not be used more than once.
+        //Example:board =
+        //[
+        //  ['A','B','C','E'],
+        //  ['S','F','C','S'],
+        //  ['A','D','E','E']
+        //]
+        //Given word = "ABCCED", return true.
+        //Given word = "SEE", return true.
+        //Given word = "ABCB", return false.
+        public bool Exist(char[,] board, string word)
+        {
+            if (board == null || string.IsNullOrEmpty(word))
+                return false;
+            int row = board.GetLength(0);
+            int col = board.GetLength(1);
+            var visited = new bool[row, col];
+
+            for (int i = 0; i < row; i++)
+            {
+                for (int j = 0; j < col; j++)
+                {
+                    if (existHelper(board, word, visited, 0, i, j))
+                        return true;
+                }
+            }
+            return false;
+        }
+        bool existHelper(char[,] board, string word, bool[,] visited, int wordIdx, int i, int j)
+        {
+            if (word.Length == wordIdx)
+                return true;
+
+            if (i >= board.GetLength(0) || j >= board.GetLength(1) || i < 0 || j < 0)
+                return false;
+
+            if (visited[i, j] || board[i, j] != word[wordIdx])
+                return false;
+
+            visited[i, j] = true;
+            if (existHelper(board, word, visited, wordIdx + 1, i + 1, j) ||
+            existHelper(board, word, visited, wordIdx + 1, i, j + 1) ||
+            existHelper(board, word, visited, wordIdx + 1, i - 1, j) ||
+            existHelper(board, word, visited, wordIdx + 1, i, j - 1))
+                return true;
+
+            visited[i, j] = false;
+            return false;
+        }
+
+
         //419. Battleships in a Board
         //Given an 2D board, count how many battleships are in it. The battleships are represented with 'X's, 
         //empty slots are represented with '.'s. You may assume the following rules:
