@@ -169,6 +169,12 @@ namespace Interview
             return curStr;
         }
 
+        //219. Contains Duplicate II
+        //Given an array of integers and an integer k, find out whether there are two distinct indices i and j in the array such that nums[i] = nums[j] and the absolute difference between i and j is at most k.
+        //Example 1: Input: nums = [1,2,3,1], k = 3  Output: true
+
+
+
         //209. Minimum Size Subarray Sum
         //Given an array of n positive integers and a positive integer s, find the minimal length of a contiguous 
         //subarray of which the sum ≥ s.If there isn't one, return 0 instead.
@@ -212,6 +218,9 @@ namespace Interview
         {
             if (string.IsNullOrEmpty(version1) || string.IsNullOrEmpty(version2))
                 return 0;
+
+            //check format
+            var regex2 = new Regex("^[0-9]+([.]{1}[0-9]+)*$");
 
             var v1s = version1.Split('.');
             var v2s = version2.Split('.');

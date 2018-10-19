@@ -11,12 +11,31 @@ namespace Interview
         {
 
             var asa = new ArrayString();
-            foreach (var x in asa.MajorityElement2(new int[5] { 2, 2, 2, 4, 4 }))
-                Console.WriteLine(x);
+            //foreach (var x in asa.MajorityElement2(new int[5] { 2, 2, 2, 4, 4 }))
+            //    Console.WriteLine(x);
+            ////forwarding = [[1, 1000],[2, 7000],[3, 12000]], retrun = [[1, 10000],[2, 9000],[3, 3000],[4, 2000]]
+            //var f = new List<List<int>>();
+            //var r = new List<List<int>>();
+            //f.Add(new List<int>() { 1, 1000 });
+            //f.Add(new List<int>() { 2, 7000 });
+            //f.Add(new List<int>() { 3, 12000 });
+            //r.Add(new List<int>() { 1, 10000 });
+            //r.Add(new List<int>() { 2, 9000 });
+            //r.Add(new List<int>() { 3, 3000 });
+            //r.Add(new List<int>() { 4, 2000 });
+
+            //var cpair = asa.ClosestPair(f, r, 10000);
+            //foreach(var x in cpair)
+            //{
+            //    foreach (var y in x)
+            //        Console.Write(y+',');
+            //    Console.WriteLine();
+            //}
 
 
             var ast = new AsyncTest();
             ast.TestAsync();
+            Console.WriteLine("doesn't block main thread");
 
             Console.WriteLine("Press any key to exit...");
             Console.ReadLine();
@@ -80,7 +99,7 @@ namespace Interview
             asa.Compress("AAABBCCCCCCAAAAA");
             asa.LongestIncreasingSubArray(new int[] { 15, 14, 12, 11, 2});
             asa.ProductExceptSelf(new int[] { 1, 2, 3, 4, });
-            asa.SearchRotatedSortedArray(new int[] { 2,2,2,0,2,2 }, 0);
+            //asa.SearchRotatedSortedArray(new int[] { 2,2,2,0,2,2 }, 0);
             asa.MaxSubArray(new int[] { 1, 2, -4, 4, 5, 6 });
             asa.SortColors(new int[] { 1, 2, 0 });
             asa.Equi(new int[] { -1, 3, -4, 5, 1, -6, 2, 1 });
