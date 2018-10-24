@@ -196,6 +196,78 @@ namespace Interview
         }
 
 
+        //219. Contains Duplicate II
+        //Given an array of integers and an integer k, find out whether there are two distinct indices i and j in the array such that nums[i] = nums[j] and the absolute difference between i and j is at most k.
+        //Example 1: Input: nums = [1,2,3,1], k = 3  Output: true
+        public bool ContainsNearbyDuplicate(int[] nums, int k)
+        {
+            if (nums == null && nums.Length == 0)
+                return false;
+
+            //var set = new HashSet<int>();
+            var dMap = new Dictionary<int, List<int>>();
+            for (int i=0; i< nums.Length; i++)
+            {
+                if (!dMap.ContainsKey(nums[i]))
+                    dMap.Add(nums[i], new List<int>() { i });
+                else
+                    dMap[nums[i]].Add(i);                
+            }
+
+            foreach(var pair in dMap)
+            {
+                if (pair.Value.Count <= 1)
+                    continue;
+                else {
+                    for(int i = 0; i< pair.Value.Count-1; i++)
+                    {
+                        if (pair.Value[i + 1] - pair.Value[i] == k)
+                            return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+
+        //220. Contains Duplicate III
+        //Given an array of integers, find out whether there are two distinct indices i and j in the array 
+        //such that the absolute difference between nums[i] and nums[j] is at most t and the absolute 
+        //difference between i and j is at most k.
+        public bool ContainsNearbyAlmostDuplicate(int[] nums, int k, int t)
+        {
+            //use bucket in slide window range k, if any 2 in the same bucket or adjacent bucket within t is true
+            // bucket[idx] idx = floor[num[i] / t]  
+            //find min and (nums[i] - min) / t+1  as bucket index   (t+1 prevent t=0)
+            if (nums == null || nums.Length == 0 || k <= 0 || t < 0)
+                return false;
+            //find min 
+            int min = nums.Min();
+            int diff = t + 1;
+            var map = new Dictionary<long, int>(); // record bucket idx as key , nums[i] as value
+            for(int i = 0;i < nums.Length; i++)
+            {
+                long bucketIdx = ((long)nums[i] - (long)min) / diff;
+
+                //if this bucket already has value, then means another number is in the same range
+                if (map.ContainsKey(bucketIdx))
+                    return true;
+                //adjacent bucket might have value in range too, so check left and right neighbors
+                if (map.ContainsKey(bucketIdx + 1)&& Math.Abs(map[bucketIdx + 1] - nums[i]) <= t)
+                        return true;                    
+                if (map.ContainsKey(bucketIdx - 1)&& Math.Abs(map[bucketIdx - 1] - nums[i]) <= t)
+                        return true;
+
+                map.Add(bucketIdx, nums[i]);
+                if (i >= k)
+                {
+                    map.Remove(((long)nums[i-k]- (long)min)/diff);
+                }
+            }
+            return false;
+        }
+
 
         //209. Minimum Size Subarray Sum
         //Given an array of n positive integers and a positive integer s, find the minimal length of a contiguous 

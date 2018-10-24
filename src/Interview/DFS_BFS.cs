@@ -269,8 +269,7 @@ namespace Interview
                 return true;
             return false;
         }
-
-
+        
         //139. Word Break
         //Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, determine if s can be segmented into a space-separated sequence of one or more dictionary words. You may assume the dictionary does not contain duplicate words.
         //For example, given s = "leetcode", dict = ["leet", "code"].
@@ -281,22 +280,87 @@ namespace Interview
                 return false;
             if (s.Length == 0)
                 return true;
-
-            for (int i = 0; i < s.Length; i++)
+            
+            for (int i = 0; i <= s.Length; i++)
             {
                 string front = s.Substring(0, i);
 
                 if (wordDict.Contains(front))
                 {
-                    if (WordBreak(s.Substring(i + 1), wordDict))
+                    if (WordBreak(s.Substring(i ), wordDict))
                         return true;
-
-                    wordDict.Remove(front);
+                    
                 }
             }
             return false;
         }
 
+        public bool WordBreakHelper(string s, HashSet<string> wordDict, Dictionary<string, bool> map)
+        {
+            if (map.ContainsKey(s))
+                return map[s];
+            
+            if(wordDict.Contains(s))
+            {
+                map.Add(s, true);
+                return true;
+            }
+            
+            for(int i =1; i< s.Length; i++)
+            {
+                string left = s.Substring(0,i);
+                string right = s.Substring(i);
+
+                if(WordBreakHelper(left,wordDict, map) && wordDict.Contains(right))
+                {
+                    map.Add(s, true);
+                    return true;
+                }
+
+            }
+            map.Add(s, false);
+            return false;
+        }
+
+        //Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, add spaces in s to construct a sentence where each word is a valid dictionary word. Return all such possible sentences.
+        //Note: The same word in the dictionary may be reused multiple times in the segmentation.
+        //You may assume the dictionary does not contain duplicate words.
+        //Example 1: Input: s = "catsanddog"  wordDict = ["cat", "cats", "and", "sand", "dog"]
+        //Output: [  "cats and dog",   "cat sand dog" ]
+        public IList<string> WordBreakII(string s, HashSet<string> wordDict)
+        {
+            var ret = new List<string>();
+            //WordBreakIIHelper(s, wordDict, new Dictionary<string, bool>(), "", ret);
+
+            return ret;
+        }
+
+        public IList<string> WordBreakIIHelper(string s, HashSet<string> wordDict, Dictionary<string, List<string>> map, List<string> cur, List<string> ret)
+        {
+            //if (!string.IsNullOrEmpty(cur) && s == "")
+            //    ret.Add(cur);
+            
+            if (map.ContainsKey(s))
+                return map[s];
+
+            if (wordDict.Contains(s))
+                cur.Add(s);
+            
+            for (int i = 1; i < s.Length; i++)
+            {
+                string left = s.Substring(0, i);
+                string right = s.Substring(i);
+                if (!wordDict.Contains(right))
+                    continue;
+                
+                List<string> left_ans = new List<string>(WordBreakIIHelper(left, wordDict, map, cur, ret));
+                left_ans.Add(right);
+
+                //cur = left_ans.Concat(cur);                
+            }
+            map.Add(s, cur);
+            return map[s];
+        }
 
         //200. Number of Islands
         //Given a 2d grid map of '1's (land) and '0's (water), count the number of islands. 

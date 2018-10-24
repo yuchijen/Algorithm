@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TSP;
+using static Interview.ArrayString;
+
 namespace Interview
 {
     class Program
@@ -11,15 +13,17 @@ namespace Interview
         {
 
             var asa = new ArrayString();
+            
+
             foreach (var x in asa.MajorityElement2(new int[5] { 2, 2, 2, 4, 4 }))
                 Console.WriteLine(x);
 
 
-            var ast = new AsyncTest();
-            ast.TestAsync();
+            //var ast = new AsyncTest();
+            //ast.TestAsync();
 
-            Console.WriteLine("Press any key to exit...");
-            Console.ReadLine();
+            //Console.WriteLine("Press any key to exit...");
+            //Console.ReadLine();
 
             var C = new Circle();
             Console.WriteLine("circumference:"+ C.Calculate((x) => { return x * 2 * 3.14; }));
@@ -68,6 +72,9 @@ namespace Interview
 
             var dfs = new DFS_BFS();
 
+            Console.WriteLine("word break");
+            Console.WriteLine(dfs.WordBreak("leetcode", new List<string> { "leet", "code" }));
+
             Point pt = new Point() { x=100,y=100};
             Point pt2 = new Point() { x = 0, y = 0 };
             dfs.refSwap(ref pt, ref pt2);
@@ -80,7 +87,7 @@ namespace Interview
             asa.Compress("AAABBCCCCCCAAAAA");
             asa.LongestIncreasingSubArray(new int[] { 15, 14, 12, 11, 2});
             asa.ProductExceptSelf(new int[] { 1, 2, 3, 4, });
-            asa.SearchRotatedSortedArray(new int[] { 2,2,2,0,2,2 }, 0);
+            //asa.SearchRotatedSortedArray(new int[] { 2,2,2,0,2,2 }, 0);
             asa.MaxSubArray(new int[] { 1, 2, -4, 4, 5, 6 });
             asa.SortColors(new int[] { 1, 2, 0 });
             asa.Equi(new int[] { -1, 3, -4, 5, 1, -6, 2, 1 });
