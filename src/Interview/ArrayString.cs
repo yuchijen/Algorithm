@@ -2244,6 +2244,22 @@ namespace Interview
             return ideasum - realsum;
         }
 
+        //[-2,0, 1,2] missing -1 
+        int missingNumberII(int[] nums)
+        {
+            //find min first ; 
+            int min = -2; //e.g. 
+
+            int res = 0;
+
+            for (int i = 0; i < nums.Length; ++i)
+            {
+                res ^= (i+min) ^ nums[i];
+            }
+            res ^= (min + nums.Length);
+            return res;
+        }
+
         //8. String to Integer (atoi) MS OA
         //Implement atoi to convert a string to an integer.
         //Hint: Carefully consider all possible input cases.If you want a challenge, please do not see below and ask yourself what are the possible input cases.
