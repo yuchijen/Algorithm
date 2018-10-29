@@ -9,6 +9,71 @@ namespace Interview
 {
     public class Dsign
     {
+
+        //VIZIO OA: implement Hairachy sort , first by ancestors , then by name
+        public class Genre
+        {
+            public string Name { get; set; }
+            public string Parent { get; set; }
+            public int Level = 0;
+
+            public override string ToString()
+            {
+                return $"{Name}|{Parent}";
+            }
+        }
+
+        // IMPLEMENT THIS METHOD
+        public List<Genre> SortByNumberOfAncestorsThenAlphabetically(List<Genre> unsorted)
+        {
+            if (unsorted == null || unsorted.Count == 0)
+                return null;
+
+            //find root/level 1 items , assign level 
+
+            var q = new Queue<Genre>();
+
+            //find root level =1
+            var roots = new List<Genre>();
+            for (int i = 0; i < unsorted.Count; i++)
+            {
+                if (string.IsNullOrEmpty(unsorted[i].Parent))
+                {
+                    unsorted[i].Level = 1;
+                    roots.Add(unsorted[i]);
+                }
+            }
+
+            // queue roots level-1 genre then do BFS assign level to all other items
+            foreach (var g in roots)
+            {
+                q.Enqueue(g);
+            }
+
+            while (q.Count != 0)
+            {
+                Genre curGenre = q.Dequeue();
+
+                int curLevel = curGenre.Level;
+
+                foreach (var uG in unsorted)
+                {
+                    if (curGenre.Name != uG.Name && uG.Parent == curGenre.Name)
+                    {
+                        uG.Level = curLevel + 1;
+                        q.Enqueue(uG);
+                    }
+                }
+            }
+
+            // after assign level to each one, if any item still in level 0, which means they are not in any category or root, return null 
+            if (unsorted.Any((g) => g.Level == 0))
+                return null;
+            
+            var sorted = unsorted.OrderBy((g) => g.Level).ThenBy((g) => g.Name).ToList();
+            return sorted;
+        }
+
         //218. The Skyline Problem
         //A city's skyline is the outer contour of the silhouette formed by all the buildings in that city when 
         //viewed from a distance. Now suppose you are given the locations and height of all the buildings as 
@@ -170,7 +235,7 @@ namespace Interview
                 if (i == len - 1 - j)
                     RDarr += add;
 
-                if (Math.Abs(Harr.Sum()) == len || Math.Abs(Varr.Sum()) == len || Math.Abs(Darr) == len || Math.Abs(RDarr) == len)
+                if (Harr.Any(item=> Math.Abs(item) == len) || Varr.Any(item => Math.Abs(item) == len) || Math.Abs(Darr) == len || Math.Abs(RDarr) == len)
                     return player;
                 else
                     return 0;

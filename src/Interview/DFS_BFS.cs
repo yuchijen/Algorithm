@@ -68,6 +68,63 @@ namespace Interview
         }
 
 
+        //212. Word Search II
+        //Given a 2D board and a list of words from the dictionary, find all words in the board.
+        //Each word must be constructed from letters of sequentially adjacent cell, where "adjacent" 
+        //cells are those horizontally or vertically neighboring.The same letter cell may not be used 
+        //more than once in a word.
+        //Input:  words = ["oath","pea","eat","rain"]
+        //and board =[        
+        //  ['o', 'a', 'a', 'n'],        
+        //  ['e', 't', 'a', 'e'],        
+        //  ['i', 'h', 'k', 'r'],        
+        //  ['i', 'f', 'l', 'v']
+        //  ]
+        //        Output: ["eat","oath"]
+        public IList<string> FindWords(char[,] board, string[] words)
+        {
+            var ret = new List<string>();
+            int row = board.GetLength(0);
+            int col = board.GetLength(1);
+
+            for(int k = 0; k < words.Length; k++)
+            {
+                var visited = new bool[row, col];
+
+                for (int i = 0; i < row; i++)
+                {
+                    for (int j = 0; j < col; j++)
+                    {
+                        if (findWordsHelper(board, words[k], visited, i, j, 0))
+                            ret.Add(words[k]);
+                        
+                    }
+                }
+            }
+
+            return ret;
+        }
+        bool findWordsHelper(char[,] board, string word, bool[,] visited, int i , int j, int count)
+        {
+            if (word.Length == count)
+                return true;
+            if (i < 0 || j < 0 || i >= board.GetLength(0) || j >= board.GetLength(1))
+                return false;
+
+            if (visited[i, j] || word[count] != board[i, j])
+                return false;
+
+            visited[i, j] = true;
+            if (findWordsHelper(board, word, visited, i + 1, j, count + 1) ||
+                findWordsHelper(board, word, visited, i , j + 1, count + 1) ||
+                findWordsHelper(board, word, visited, i - 1, j, count + 1) ||
+                findWordsHelper(board, word, visited, i, j - 1, count + 1))
+                return true;
+            visited[i, j] = false;
+            return false;
+        }
+
+
         //419. Battleships in a Board
         //Given an 2D board, count how many battleships are in it. The battleships are represented with 'X's, 
         //empty slots are represented with '.'s. You may assume the following rules:
@@ -116,7 +173,50 @@ namespace Interview
             Console.WriteLine(pt2.x + "," + pt2.y);
         }
 
-        //NVIDIA Shortest path in a Binary Maze
+        //amazon OA Shortest path in a Binary Maze , to point 9 
+        public int PathBinaryMaze2(int[,] mat, Point source, Point dest)
+        {
+            if (mat == null || mat.GetLength(0) == 0 || mat.GetLength(1) == 0)
+                return -1;
+
+            var q = new Queue<Point>();
+
+            q.Enqueue(source);
+            var visited = new bool[mat.GetLength(0), mat.GetLength(1)];
+            var adjx = new int[] { 1, 0, -1, 0 };
+            var adjy = new int[] { 0, -1, 0, 1 };
+
+            while (q.Count != 0)
+            {
+                var curP = q.Dequeue();
+                if (mat[curP.x,curP.y] == mat[dest.x,dest.y])
+                    return curP.dist;
+
+                for(int i =0; i< adjx.Length; i++)
+                {
+                    var adjRow = curP.x + adjx[i];
+                    int adjCol = curP.y + adjy[i];
+
+                    if (isValidP(adjRow, adjCol, mat)&& !visited[adjRow, adjCol]&& mat[adjRow, adjCol]==1){
+                        var adjP = new Point();
+                        adjP.x = adjRow;
+                        adjP.y = adjCol;
+                        adjP.dist = curP.dist + 1;
+                        visited[adjRow, adjCol] = true;
+                        q.Enqueue(adjP);
+                    }
+                }
+            }
+            return -1;
+        }
+        bool isValidP(int x, int y, int[,] mx)
+        {
+            if (x < 0 || y < 0 || x >= mx.GetLength(0) || y >= mx.GetLength(1))
+                return false;
+            return true;
+        }
+
+        //Amazon OA, NVIDIA Shortest path in a Binary Maze
         //Given a MxN matrix where each element can either be 0 or 1. We need to find the shortest 
         //path between a given source cell to a destination cell.
         //The path can only be created out of a cell if its value is 1.
@@ -169,8 +269,7 @@ namespace Interview
                 return true;
             return false;
         }
-
-
+        
         //139. Word Break
         //Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, determine if s can be segmented into a space-separated sequence of one or more dictionary words. You may assume the dictionary does not contain duplicate words.
         //For example, given s = "leetcode", dict = ["leet", "code"].
@@ -181,22 +280,87 @@ namespace Interview
                 return false;
             if (s.Length == 0)
                 return true;
-
-            for (int i = 0; i < s.Length; i++)
+            
+            for (int i = 0; i <= s.Length; i++)
             {
                 string front = s.Substring(0, i);
 
                 if (wordDict.Contains(front))
                 {
-                    if (WordBreak(s.Substring(i + 1), wordDict))
+                    if (WordBreak(s.Substring(i ), wordDict))
                         return true;
-
-                    wordDict.Remove(front);
+                    
                 }
             }
             return false;
         }
 
+        public bool WordBreakHelper(string s, HashSet<string> wordDict, Dictionary<string, bool> map)
+        {
+            if (map.ContainsKey(s))
+                return map[s];
+            
+            if(wordDict.Contains(s))
+            {
+                map.Add(s, true);
+                return true;
+            }
+            
+            for(int i =1; i< s.Length; i++)
+            {
+                string left = s.Substring(0,i);
+                string right = s.Substring(i);
+
+                if(WordBreakHelper(left,wordDict, map) && wordDict.Contains(right))
+                {
+                    map.Add(s, true);
+                    return true;
+                }
+
+            }
+            map.Add(s, false);
+            return false;
+        }
+
+        //Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, add spaces in s to construct a sentence where each word is a valid dictionary word. Return all such possible sentences.
+        //Note: The same word in the dictionary may be reused multiple times in the segmentation.
+        //You may assume the dictionary does not contain duplicate words.
+        //Example 1: Input: s = "catsanddog"  wordDict = ["cat", "cats", "and", "sand", "dog"]
+        //Output: [  "cats and dog",   "cat sand dog" ]
+        public IList<string> WordBreakII(string s, HashSet<string> wordDict)
+        {
+            var ret = new List<string>();
+            //WordBreakIIHelper(s, wordDict, new Dictionary<string, bool>(), "", ret);
+
+            return ret;
+        }
+
+        public IList<string> WordBreakIIHelper(string s, HashSet<string> wordDict, Dictionary<string, List<string>> map, List<string> cur, List<string> ret)
+        {
+            //if (!string.IsNullOrEmpty(cur) && s == "")
+            //    ret.Add(cur);
+            
+            if (map.ContainsKey(s))
+                return map[s];
+
+            if (wordDict.Contains(s))
+                cur.Add(s);
+            
+            for (int i = 1; i < s.Length; i++)
+            {
+                string left = s.Substring(0, i);
+                string right = s.Substring(i);
+                if (!wordDict.Contains(right))
+                    continue;
+                
+                List<string> left_ans = new List<string>(WordBreakIIHelper(left, wordDict, map, cur, ret));
+                left_ans.Add(right);
+
+                //cur = left_ans.Concat(cur);                
+            }
+            map.Add(s, cur);
+            return map[s];
+        }
 
         //200. Number of Islands
         //Given a 2d grid map of '1's (land) and '0's (water), count the number of islands. 

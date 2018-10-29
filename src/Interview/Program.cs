@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TSP;
+using static Interview.ArrayString;
+
 namespace Interview
 {
     class Program
@@ -36,9 +38,17 @@ namespace Interview
             var ast = new AsyncTest();
             ast.TestAsync();
             Console.WriteLine("doesn't block main thread");
+            
 
-            Console.WriteLine("Press any key to exit...");
-            Console.ReadLine();
+            foreach (var x in asa.MajorityElement2(new int[5] { 2, 2, 2, 4, 4 }))
+                Console.WriteLine(x);
+
+
+            //var ast = new AsyncTest();
+            //ast.TestAsync();
+
+            //Console.WriteLine("Press any key to exit...");
+            //Console.ReadLine();
 
             var C = new Circle();
             Console.WriteLine("circumference:"+ C.Calculate((x) => { return x * 2 * 3.14; }));
@@ -86,6 +96,9 @@ namespace Interview
             //tt.Execute(10, 10);
 
             var dfs = new DFS_BFS();
+
+            Console.WriteLine("word break");
+            Console.WriteLine(dfs.WordBreak("leetcode", new List<string> { "leet", "code" }));
 
             Point pt = new Point() { x=100,y=100};
             Point pt2 = new Point() { x = 0, y = 0 };

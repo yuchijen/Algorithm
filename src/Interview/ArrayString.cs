@@ -8,7 +8,7 @@ namespace Interview
 {
 
     public class ArrayString
-    {
+    {        
         //301. Remove Invalid Parentheses
         //Remove the minimum number of invalid parentheses in order to make the input string valid. 
         //Return all possible results.
@@ -70,21 +70,47 @@ namespace Interview
         //Output: 2
         public int StrStr(string haystack, string needle)
         {
-            if (string.IsNullOrEmpty(haystack) || string.IsNullOrEmpty(needle) || needle.Length> haystack.Length)
+            if (string.IsNullOrEmpty(haystack) || string.IsNullOrEmpty(needle) || needle.Length > haystack.Length)
                 return -1;
 
-            for(int i =0; i<= haystack.Length-needle.Length; i++)
+            for (int i = 0; i <= haystack.Length - needle.Length; i++)
             {
                 int cnt = 0;
-                for(int j = 0; j<needle.Length; j++)
+                for (int j = 0; j < needle.Length; j++)
                 {
-                    if (needle[j] == haystack[i+j])
+                    if (needle[j] == haystack[i + j])
                         cnt++;
                 }
                 if (cnt == needle.Length)
                     return i;
             }
             return -1;
+        }
+
+
+        //692. Top K Frequent Words
+        //Given a non-empty list of words, return the k most frequent elements.
+        //Your answer should be sorted by frequency from highest to lowest.If two words have the same frequency, then the word with the lower alphabetical order comes first.
+        //Example 1:    Input: ["i", "love", "leetcode", "i", "love", "coding"], k = 2
+        //Output: ["i", "love"]
+        //Explanation: "i" and "love" are the two most frequent words.
+        //Note that "i" comes before "love" due to a lower alphabetical order.
+        public IList<string> TopKFrequent(string[] words, int k)
+        {
+            var ret = new List<string>();
+            if (words == null || words.Length == 0)
+                return ret;
+
+            var map = new Dictionary<string, int>();
+
+            for (int i = 0; i < words.Length; i++)
+            {
+                if (!map.ContainsKey(words[i]))
+                    map.Add(words[i], 1);
+                else
+                    map[words[i]]++;
+            }
+            return map.OrderByDescending(pair => pair.Value).ThenBy(x => x.Key).Take(k).Select(x => x.Key).ToList();
         }
 
 
@@ -146,11 +172,11 @@ namespace Interview
             StringBuilder sb = new StringBuilder();
             int ini = 1;
             string curStr = "1";
-            
-            while(ini < n)
+
+            while (ini < n)
             {
                 int count = 1;
-                for(int i =1; i< curStr.Length; i++)
+                for (int i = 1; i < curStr.Length; i++)
                 {
                     if (curStr[i] != curStr[i - 1])
                     {
@@ -164,15 +190,126 @@ namespace Interview
                 curStr = sb.ToString();
                 sb.Clear();
                 ini++;
-                
+
             }
             return curStr;
         }
 
+
         //219. Contains Duplicate II
         //Given an array of integers and an integer k, find out whether there are two distinct indices i and j in the array such that nums[i] = nums[j] and the absolute difference between i and j is at most k.
         //Example 1: Input: nums = [1,2,3,1], k = 3  Output: true
+        public bool ContainsNearbyDuplicate(int[] nums, int k)
+        {
+            if (nums == null && nums.Length == 0)
+                return false;
 
+            //var set = new HashSet<int>();
+            var dMap = new Dictionary<int, List<int>>();
+            for (int i=0; i< nums.Length; i++)
+            {
+                if (!dMap.ContainsKey(nums[i]))
+                    dMap.Add(nums[i], new List<int>() { i });
+                else
+                    dMap[nums[i]].Add(i);                
+            }
+
+            foreach(var pair in dMap)
+            {
+                if (pair.Value.Count <= 1)
+                    continue;
+                else {
+                    for(int i = 0; i< pair.Value.Count-1; i++)
+                    {
+                        if (pair.Value[i + 1] - pair.Value[i] == k)
+                            return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+
+        //220. Contains Duplicate III
+        //Given an array of integers, find out whether there are two distinct indices i and j in the array 
+        //such that the absolute difference between nums[i] and nums[j] is at most t and the absolute 
+        //difference between i and j is at most k.
+        public bool ContainsNearbyAlmostDuplicate(int[] nums, int k, int t)
+        {
+            //use bucket in slide window range k, if any 2 in the same bucket or adjacent bucket within t is true
+            // bucket[idx] idx = floor[num[i] / t]  
+            //find min and (nums[i] - min) / t+1  as bucket index   (t+1 prevent t=0)
+            if (nums == null || nums.Length == 0 || k <= 0 || t < 0)
+                return false;
+            //find min 
+            int min = nums.Min();
+            int diff = t + 1;
+            var map = new Dictionary<long, int>(); // record bucket idx as key , nums[i] as value
+            for(int i = 0;i < nums.Length; i++)
+            {
+                long bucketIdx = ((long)nums[i] - (long)min) / diff;
+
+                //if this bucket already has value, then means another number is in the same range
+                if (map.ContainsKey(bucketIdx))
+                    return true;
+                //adjacent bucket might have value in range too, so check left and right neighbors
+                if (map.ContainsKey(bucketIdx + 1)&& Math.Abs(map[bucketIdx + 1] - nums[i]) <= t)
+                        return true;                    
+                if (map.ContainsKey(bucketIdx - 1)&& Math.Abs(map[bucketIdx - 1] - nums[i]) <= t)
+                        return true;
+
+                map.Add(bucketIdx, nums[i]);
+                if (i >= k)
+                {
+                    map.Remove(((long)nums[i-k]- (long)min)/diff);
+                }
+            }
+            return false;
+        }
+
+        //4. Median of Two Sorted Arrays
+        //There are two sorted arrays nums1 and nums2 of size m and n respectively.
+        //Find the median of the two sorted arrays.The overall run time complexity should be O(log (m+n)).
+        //Example 1: nums1 = [1, 3]   nums2 = [2]    The median is 2.0
+        //Example 2: nums1 = [1, 2]   nums2 = [3, 4] The median is (2 + 3)/2 = 2.5
+        public double findMedianSortedArrays(int[] nums1, int[] nums2)
+        {
+            int n1 = nums1.Length;
+            int n2 = nums2.Length;
+            if (n1 > n2)
+                return findMedianSortedArrays(nums2, nums1);
+
+            int k = (n1 + n2 + 1) / 2;  //mid count of all nums
+            int l = 0;       // left segment start   
+            int r = n1;      // left segment end
+            int m1 = 0;
+            int m2 = 0;
+
+            while (l < r)
+            {
+                m1 = l + (r - l) / 2;
+                m2 = k - m1;
+                if (nums1[m1] < nums2[m2 - 1])
+                    l = m1 + 1;
+                else
+                    r = m1;
+            }
+
+            m1 = l;
+            m2 = k - l;
+
+            int c1 = Math.Max(m1 <= 0 ? int.MinValue : nums1[m1 - 1],
+                              m2 <= 0 ? int.MinValue : nums2[m2 - 1]);
+
+            if ((n1 + n2) % 2 == 1)
+                return c1;
+
+            int c2 = Math.Min(m1 >= n1 ? int.MaxValue : nums1[m1],
+                              m2 >= n2 ? int.MaxValue : nums2[m2]);
+
+            return (c1 + c2) * 0.5;
+        }
 
 
         //209. Minimum Size Subarray Sum
@@ -192,11 +329,11 @@ namespace Interview
             int backIdx = 0;
             int sum = 0;
             int min = int.MaxValue;
-            while(frontIdx < nums.Length)
+            while (frontIdx < nums.Length)
             {
                 sum += nums[frontIdx];
                 frontIdx++;
-                while(sum>=s && frontIdx > backIdx)
+                while (sum >= s && frontIdx > backIdx)
                 {
                     min = Math.Min(min, frontIdx - backIdx);
                     sum -= nums[backIdx];
@@ -270,9 +407,9 @@ namespace Interview
 
             var sb = new StringBuilder();
 
-            for(int i= num1.Length - 1; i>=0; i--)
+            for (int i = num1.Length - 1; i >= 0; i--)
             {
-                for(int j = num2.Length-1; j>=0; j--)
+                for (int j = num2.Length - 1; j >= 0; j--)
                 {
                     retArr[i + j + 1] += (num1[i] - '0') * (num2[j] - '0');
                     retArr[i + j] += retArr[i + j + 1] / 10;
@@ -463,7 +600,8 @@ namespace Interview
         }
 
         //alternative way not verified
-        int MeetingRoomsII(Interval[] intervals) {
+        int MeetingRoomsII(Interval[] intervals)
+        {
             if (intervals == null || intervals.Length == 0)
                 return 0;
             if (intervals.Length == 1)
@@ -482,9 +620,9 @@ namespace Interview
             Array.Sort(ends);
             //above is the same
             int endTimeIdx = 0;
-            for(int i = 1; i<intervals.Length; i++)
+            for (int i = 1; i < intervals.Length; i++)
             {
-                if(intervals[i].start < ends[endTimeIdx])
+                if (intervals[i].start < ends[endTimeIdx])
                     ret++;
                 else
                     endTimeIdx++;
@@ -706,20 +844,20 @@ namespace Interview
                 return null;
 
             var map = new Dictionary<string, List<string>>();
-            for(int i = 0; i<strs.Length; i++)
+            for (int i = 0; i < strs.Length; i++)
             {
                 var keyStr = new string(strs[i].OrderBy(c => c).ToArray());
 
                 if (!map.ContainsKey(keyStr))
                 {
-                    map.Add(keyStr, new List<string>() { strs[i] });                    
+                    map.Add(keyStr, new List<string>() { strs[i] });
                 }
                 else
                 {
                     map[keyStr].Add(strs[i]);
                 }
             }
-            return  map.Values.ToList();
+            return map.Values.ToList();
         }
 
         //14. Longest Common Prefix
@@ -1214,24 +1352,24 @@ namespace Interview
                 return;
 
             int zIdxx = -1;
-            for(int i =0; i< nums.Length; i++)
+            for (int i = 0; i < nums.Length; i++)
             {
                 if (nums[i] == 0)
                 {
                     zIdxx = i;
                     break;
-                }                    
+                }
             }
             if (zIdxx == -1)
                 return;
-            for(int j= zIdxx+1; j <nums.Length; j++)
+            for (int j = zIdxx + 1; j < nums.Length; j++)
             {
                 if (nums[j] != 0)
                 {
                     swap(nums, j, zIdxx);
                     zIdxx++;
                 }
-            }            
+            }
         }
 
 
@@ -2060,6 +2198,101 @@ namespace Interview
                 }
                 ret += curMax;
                 curMax = 0;
+            }
+            return ret;
+        }
+
+        //amazon OA k nearest point，背景是一个城市有N个牛排馆，牛排馆的坐标都是存在allocations的list里面
+        //(类型是List<List<Integer>>)，然后要求返回k个最近的牛排馆给用户，用户位置在坐标(0, 0)
+        public List<List<int>> ClosestXdestinations(int numDestinations, int[,] allLocations, int numDeliveries)
+        {
+            // WRITE YOUR CODE HERE
+            // considering edge case:
+            var ret = new List<List<int>>();
+            if (allLocations == null || allLocations.GetLength(0) == 0 || allLocations.GetLength(1) == 0 || numDeliveries > numDestinations)
+                return ret;
+
+            //get all delivery point into class, then we can find distance and sort it 
+            var delList = new List<LFromOrigin>();
+
+            for (int i = 0; i < allLocations.GetLength(0); i++)
+            {
+                delList.Add(new LFromOrigin(allLocations[i, 0], allLocations[i, 1]));
+            }
+
+            //sort by distance and just take numDeliveries
+            delList = delList.OrderBy((d) => d.dist).Take(numDeliveries).ToList();
+
+            for (int i = 0; i < delList.Count; i++)
+            {
+                ret.Add(new List<int>() { delList[i].x, delList[i].y });
+            }
+            return ret;
+        }
+        class LFromOrigin
+        {
+            public int x;
+            public int y;
+            public int dist;
+
+            public LFromOrigin(int i, int j)
+            {
+                x = i;
+                y = j;
+                dist = (x * x) + (y * y);
+            }
+        }
+
+        //amazon OA 背景是无人机送货，无人机有最大里程，然后给了两个list，分别是出发和返回的里程数，数据类型是List<List<Integer>>，
+        //list里面只有id和里程两个值，要求找出所有出发和返回里程数之和最接近无人机最大里程的pair。比如，最大里程M = 10000，
+        //forwarding = [[1, 1000],[2, 7000],[3, 12000]], retrun = [[1, 10000],[2, 9000],[3, 3000],[4, 2000]], 
+        //最接近的里程和是10000，所以结果是[[1, 2],[2, 3]].
+        public List<List<int>> ClosestPair(List<List<int>> forward, List<List<int>> returning, int target)
+        {
+            var ret = new List<List<int>>();
+            if (forward == null || returning == null)
+                return ret;
+            forward = forward.OrderBy((x) => x[1]).ToList();
+            returning = returning.OrderBy((r) => r[1]).ToList();
+            int i = 0;
+            int j = returning.Count - 1;
+            int min = int.MaxValue;
+            int targetSum = int.MinValue;
+            while (i < forward.Count && j >= 0)
+            {
+                int curSum = forward[i][1] + returning[j][1];
+                if (target - curSum > 0)
+                {
+                    i++;
+                    if (target - curSum < min)
+                    {
+                        min = target - curSum;
+                        targetSum = curSum;
+                    }
+                }
+                else
+                {
+                    j--;
+                    if (curSum - target < min)
+                    {
+                        min = curSum - target;
+                        targetSum = curSum;
+                    }
+                }
+            }
+            //already find out closet sum value (max) , then go to and index combination
+            //var fMap = new Dictionary<int, int>();
+            //use 2 sum skill
+            var rMap = new Dictionary<int, int>();
+            foreach (var r in returning)
+                rMap.Add(r[1], r[0]);
+
+            for (int idx = 0; idx < forward.Count; idx++)
+            {
+                if (rMap.ContainsKey(targetSum - forward[idx][1]))
+                {
+                    ret.Add(new List<int>() { forward[idx][0], rMap[targetSum - forward[idx][1]] });
+                }
             }
             return ret;
         }
