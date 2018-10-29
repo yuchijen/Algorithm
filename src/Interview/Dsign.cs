@@ -235,7 +235,7 @@ namespace Interview
                 if (i == len - 1 - j)
                     RDarr += add;
 
-                if (Math.Abs(Harr.Sum()) == len || Math.Abs(Varr.Sum()) == len || Math.Abs(Darr) == len || Math.Abs(RDarr) == len)
+                if (Harr.Any(item=> Math.Abs(item) == len) || Varr.Any(item => Math.Abs(item) == len) || Math.Abs(Darr) == len || Math.Abs(RDarr) == len)
                     return player;
                 else
                     return 0;

@@ -20,15 +20,15 @@ namespace Interview
             int maxLen = 0;
             int startIdx = 0;
             //record i to j is palindrom or not
-            var dpPalindrom = new bool[1000,1000];
+            var dpPalindrom = new bool[s.Length, s.Length];
             for (int i = 0; i < s.Length; i++)
                 dpPalindrom[i, i] = true;
 
             for(int i = s.Length -1; i>=0; i--)
             {
-                for(int j = i; j<=i; j--)
+                for(int j = i; j<s.Length; j++)
                 {
-                    if(dpPalindrom[i-1,j+1]  && s[i] == s[j])
+                    if (((i + 1 < s.Length && j - 1 >= 0 && dpPalindrom[i + 1, j - 1]) || j - i <= 2) && s[i] == s[j])
                     {
                         dpPalindrom[i, j] = true;
                         if(j-i+1 > maxLen)
