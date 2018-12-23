@@ -7,6 +7,150 @@ namespace Interview
 {
     public class BinarySearch
     {
+        //378. Kth Smallest Element in a Sorted Matrix
+        //Given a n x n matrix where each of the rows and columns are sorted in ascending order, find the kth smallest element in the matrix.
+        //Note that it is the kth smallest element in the sorted order, not the kth distinct element.
+        //Example:
+        //matrix = [[ 1,  5,  9],
+        //          [10, 11, 13],
+        //          [12, 13, 15]],
+        // k = 8,  return 13.
+        // nlogn * log(max val - min val in matrix)
+        public int KthSmallest(int[,] matrix, int k)
+        {
+            if (matrix == null || matrix.GetLength(0)==0 || matrix.GetLength(1)==0)
+                return -1;
+
+            int n = matrix.GetLength(0);
+            int st = matrix[0, 0];
+            int end = matrix[matrix.GetLength(0) - 1, matrix.GetLength(1) - 1];
+            //use mid-value as assumption to do b-search, 
+            
+            while (st <= end)
+            {
+                int mid = st + (end - st) / 2;
+                //search all elements: b-search each row
+                int count = 0;
+                for(int i=0; i<n; i++)
+                {
+                    count += BSearchFindCountLessThanVal(matrix,i ,n, mid);
+                }
+                if (count < k)
+                    st = mid + 1;
+                else
+                    end = mid - 1;
+            }
+            return st;
+            
+        }
+        int BSearchFindCountLessThanVal(int[,] matrix, int row, int n, int val)
+        {
+            int st = 0;
+            
+            while(st <= n)
+            {
+                int midIdx = st + (n - st) / 2;
+
+                if (matrix[row, midIdx] <= val)
+                    st = midIdx + 1;
+                else
+                    n = midIdx - 1;                
+            }
+            return st;
+        }
+
+        //240. Search a 2D Matrix II
+        //Write an efficient algorithm that searches for a value in an m x n matrix. This matrix has the following properties:
+        //Integers in each row are sorted in ascending from left to right.
+        //Integers in each column are sorted in ascending from top to bottom.
+        //Example: Consider the following matrix:
+        //[
+        // [1,   4,  7, 11, 15],
+        // [2,   5,  8, 12, 19],
+        // [3,   6,  9, 16, 22],
+        // [10, 13, 14, 17, 24],
+        // [18, 21, 23, 26, 30]
+        //]     Given target = 5, return true.
+        public bool SearchMatrix2(int[,] matrix, int target)
+        {
+            if (matrix == null || matrix.GetLength(0) == 0 || matrix.GetLength(1) == 0)
+                return false;
+            if (target < matrix[0, 0] || target > matrix[matrix.GetLength(0) - 1, matrix.GetLength(1) - 1])
+                return false;
+
+            //b-search 1st column then decide clostest row then search that row's  
+            //O(log N x log M)
+            int st = 0;
+            int end = matrix.GetLength(0)-1;
+            while (st <= end)
+            {
+                int mid = (st + end) / 2;
+                if (matrix[mid, 0] == target)
+                    return true;
+                if (matrix[mid, 0] < target)
+                    st = mid + 1;
+                else
+                    end = mid - 1;
+            }
+            //keep closest row number
+            int closestRow = end;
+            st = 0;
+            end = matrix.GetLength(1) - 1;
+
+            while (st <= end)
+            {
+                int mid = (st + end) / 2;
+                if (matrix[closestRow, mid] == target)
+                    return true;
+                if (matrix[closestRow, mid] < target)
+                    st = mid + 1;
+                else
+                    end = mid - 1;
+            }
+            return false;
+        }
+        public bool SearchMatrix(int[,] matrix, int target)
+        {
+            int n = matrix.GetLength(0);
+            int m = matrix.GetLength(1);
+            if (n == 0 || m == 0)
+                return false;
+
+            int row = 0;
+            int col = m - 1;
+
+            while (row < n && col >= 0)
+            {
+                if (target > matrix[row, col])
+                    row++;
+                else if (target < matrix[row, col])
+                    col--;
+                else
+                    return true;
+            }
+            return false;
+        }
+
+
+        bool bSearch(int[,] matrix, int row, int target, int st, int end)
+        {
+            while (st <= end)
+            {
+                int pivol = (st + end) / 2;
+
+                if (target > matrix[row, pivol])
+                    st = pivol + 1;
+                else if (target < matrix[row, pivol])
+                    end = pivol - 1;
+                else
+                    return true;
+            }
+            return false;
+        }
+
+
+
+
         //4. Median of Two Sorted Arrays
         //There are two sorted arrays nums1 and nums2 of size m and n respectively.
         //Find the median of the two sorted arrays.The overall run time complexity should be O(log (m+n)).

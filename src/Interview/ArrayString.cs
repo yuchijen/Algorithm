@@ -8,15 +8,189 @@ namespace Interview
 {
 
     public class ArrayString
-    {        
-        //301. Remove Invalid Parentheses
-        //Remove the minimum number of invalid parentheses in order to make the input string valid. 
-        //Return all possible results.
-        // Note: The input string may contain letters other than the parentheses(and ).
-        //e.g.1 Input: "()())()"      Output: ["()()()", "(())()"]
-        //e.g.2 Input: "(a)())()"  Output: ["(a)()()", "(a())()"]
-        //e.g.3 Input: ")("   Output: [""]
-        //public IList<string> RemoveInvalidParentheses(string s)
+    {
+        //76. Minimum Window Substring
+        //Given a string S and a string T, find the minimum window in S which will contain all the characters in T in complexity O(n).
+        //Example: Input: S = "ADOBECODEBANC", T = "ABC"
+        //Output: "BANC"
+        public string minWindow2(string s, string t)
+        {
+            int[] map = new int[256];
+            for (int i=0; i<t.Length; i++)
+            {
+                map[t[i]]++;
+            }
+            int len = int.MaxValue, cnt = 0;
+            int first = -1, last = -1;
+            int slow = 0;
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (map[s[i]] > 0)
+                {
+                    cnt++;
+                }
+                map[s[i]]--;
+                while (cnt == t.Length)
+                {
+                    if (i - slow + 1 < len)
+                    {
+                        first = slow;
+                        last = i;
+                        len = i - slow + 1;
+                    }
+                    if (map[s[slow]] >= 0)
+                    {
+                        cnt--;
+                    }
+                    map[s[slow]]++;
+                    slow++;
+                }
+            }
+            return len == int.MaxValue ? "" : s.Substring(first, last + 1);
+        }
+
+        string minWindow(string s, string t)
+        {
+            if (string.IsNullOrEmpty(s) || string.IsNullOrEmpty(t)|| t.Length > s.Length)
+                return "";
+            int i=0, j = 0;
+            var map = new Dictionary<char, int>();
+            
+            for(int k=0; k < t.Length; k++)
+            {
+                if (map.ContainsKey(t[k]))
+                    map[t[k]]++;
+                else
+                    map.Add(t[k], 1);
+            }
+            string ret = s;
+            bool forward = true;
+
+            while (i < s.Length)
+            {
+                if (forward)
+                {
+                    if (map.ContainsKey(s[i]))
+                    {
+                        map[s[i]]--;
+                        if (map.All(kp => kp.Value <= 0))  //match condition 
+                        {
+                            forward = false;
+                            if (ret.Length < s.Substring(j, i - j+1).Length)
+                                ret = s.Substring(j, i - j+1);                            
+                        }                       
+                    }
+                    i++;
+                    
+                }
+                else  //back pointer start to move
+                {
+                    if (map.ContainsKey(s[j]))
+                    {
+                        map[s[j]]++;
+                        if (map.Any(kp => kp.Value > 0))  //leaving match condition 
+                        {
+                            forward = true;
+                        }
+                        else
+                        {
+                            if (ret.Length < s.Substring(j+1, i - j).Length)
+                                ret = s.Substring(j+1, i - j);
+                        }
+                        j++;
+                    }
+                    else
+                    {
+                        if (ret.Length < s.Substring(j+1, i - j).Length)
+                            ret = s.Substring(j+1, i - j);
+                        j++;
+                    }
+                }
+                if (j < i)
+                {
+                    if (map.ContainsKey(s[j]))
+                    {
+                        map[s[j]]++;
+                        if (map.Any(kp => kp.Value > 0))  //leaving match condition 
+                        {
+                            forward = true;
+                        }
+                        else
+                        {
+                            if (ret.Length < s.Substring(j + 1, i - j).Length)
+                                ret = s.Substring(j + 1, i - j);
+                        }
+                        j++;
+                    }
+                    else
+                    {
+                        if (ret.Length < s.Substring(j + 1, i - j).Length)
+                            ret = s.Substring(j + 1, i - j);
+                        j++;
+                    }
+                }
+            }
+            return ret;
+        }
+
+
+        //31. Next Permutation
+        //Implement next permutation, which rearranges numbers into the lexicographically next greater permutation of numbers.
+        //If such arrangement is not possible, it must rearrange it as the lowest possible order(ie, sorted in ascending order).
+        //The replacement must be in-place and use only constant extra memory.
+        //Here are some examples.Inputs are in the left-hand column and its corresponding outputs are in the right-hand column.
+        //1,2,3 → 1,3,2
+        //3,2,1 → 1,2,3
+        //1,1,5 → 1,5,1
+        public void NextPermutation(int[] nums)
+        {
+            if (nums == null)
+                return;
+
+            //find from tail digits index until it becomes descendent (find first descendent index from tail) 
+            int fDescIdx = int.MaxValue;
+
+            for (int i = nums.Length - 1; i > 0; i--)
+            {
+                if (nums[i] > nums[i - 1])
+                {
+                    fDescIdx = i - 1;
+                    break;
+                }
+            }
+            if (fDescIdx == int.MaxValue)  //input is all ascedent from tail, sort whole nums
+            {
+                int st = 0, end = nums.Length - 1;
+                while (st < end)
+                {
+                    int temp = nums[st];
+                    nums[st] = nums[end];
+                    nums[end] = temp;
+                    st++;
+                    end--;
+                }
+            }
+            else
+            {
+                //swap fDescIdx with right min greater than fDescIdx value
+                //find out right min greater than fDescIdx value (first greater than fDescIdx value from left)
+                int exchangeIndex = -1;
+                for (int i = nums.Length - 1; i > fDescIdx; i--)
+                {
+                    if (nums[i] > nums[fDescIdx])
+                    {
+                        exchangeIndex = i;
+                        break;
+                    }
+                }
+                int temp = nums[exchangeIndex];
+                nums[exchangeIndex] = nums[fDescIdx];
+                nums[fDescIdx] = temp;
+
+                Array.Sort(nums, fDescIdx + 1, nums.Length - 1 - fDescIdx);
+            }
+        }
+
 
         //Envestnet simple data structure question with 2 sets of numbers. Which number is in list A, that is not in list B.
         List<int> inAnotInB(int[] A, int[] B)

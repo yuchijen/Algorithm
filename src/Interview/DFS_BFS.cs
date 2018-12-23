@@ -13,6 +13,233 @@ namespace Interview
     }
     public class DFS_BFS
     {
+        //680. Valid Palindrome II
+        //Given a non-empty string s, you may delete at most one character. Judge whether you can make it a palindrome.
+        // Example 1:Input: "aba"   Output: True
+        //Example 2:   Input: "abca"  Output: True
+        //Explanation: You could delete the character 'c'.
+        public bool ValidPalindrome(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+                return false;
+
+            return ValidPalindromeHelper(s, true);
+        }
+        bool ValidPalindromeHelper(string s, bool firstTime)
+        {
+            int st = 0;
+            int end = s.Length - 1;
+
+            while (st < end)
+            {
+                if(s[st]!=s[end] && !firstTime)
+                {
+                    return false;
+                }
+                else if(s[st]!=s[end] && firstTime)
+                {
+                    return ValidPalindromeHelper(s.Remove(st, 1), false) || ValidPalindromeHelper(s.Remove(end, 1), false);
+                }
+                else
+                {
+                    st++;
+                    end--;
+                }
+            }
+            return true;
+        }
+
+        //426. Convert Binary Search Tree to Sorted Doubly Linked List
+        public class Node
+        {
+            public int val;
+            public Node left;
+            public Node right;
+
+            public Node() { }
+            public Node(int _val, Node _left, Node _right)
+            {
+                val = _val;
+                left = _left;
+                right = _right;
+            }
+        }
+        public Node treeToDoublyList(Node root)
+        {
+            Node head = null;
+            Node prev = null;
+            var st = new Stack<Node>();
+            while(root!=null || st.Count > 0)
+            {
+                if (root != null) //push sub-left tree nodes
+                {
+                    st.Push(root);
+                    root = root.left;
+                }
+                else
+                {
+                    var curNode = st.Pop();
+                    if(prev==null)
+                    {
+                        head = root;
+                    }
+                    else
+                    {
+                        prev.right = root;  //connect double links
+                        root.left = prev;
+                    }
+                    prev = root;
+                    root = root.right;
+                }
+            }
+            prev.right = head;
+            head.left = prev;
+            return head;
+        }
+
+
+        //621. Task Scheduler
+        //Given a char array representing tasks CPU need to do. It contains capital letters A to Z where 
+        //different letters represent different tasks.Tasks could be done without original order. 
+        //Each task could be done in one interval. For each interval, CPU could finish one task or just be idle.
+        //However, there is a non-negative cooling interval n that means between two same tasks, there must 
+        //be at least n intervals that CPU are doing different tasks or just be idle.
+        //You need to return the least number of intervals the CPU will take to finish all the given tasks.
+        //Example:    Input: tasks = ["A","A","A","B","B","B"], n = 2
+        //Output: 8   Explanation: A -> B -> idle -> A -> B -> idle -> A -> B.
+        //ref:https://zxi.mytechroad.com/blog/greedy/leetcode-621-task-scheduler/
+        public int LeastInterval(char[] tasks, int n)
+        {
+            if (n == 0)
+                return 0;
+
+            if (tasks == null || tasks.Length == 0)
+                return 0;
+
+            int[] vector = new int[26];
+            for(int i=0; i<tasks.Length; i++)
+            {
+                vector[tasks[i] - 'A']++;
+            }
+
+            //find max count char 
+            int maxCount = vector.Max();
+            int ret = (maxCount - 1) * (n + 1);
+
+            //find how many char has max count
+            int p = 0;
+            p = vector.Where(i => i == maxCount).Count();
+
+            return tasks.Length > ret + p ? tasks.Length : ret + p;
+        }
+
+
+        //282. Expression Add Operators
+        //Given a string that contains only digits 0-9 and a target value, return all possibilities to add binary operators(not unary) +, -, or* between the digits so they evaluate to the target value.
+        //Example 1:
+        //Input: num = "123", target = 6
+        //Output: ["1+2+3", "1*2*3"]
+        //ref:https://zxi.mytechroad.com/blog/searching/leetcode-282-expression-add-operators/
+        public IList<string> AddOperators(string num, int target)
+        {
+            if (string.IsNullOrEmpty(num))
+                return null;
+
+            var ret = new List<string>();
+
+            //time complex O( 4^(n-1)) = O(4^n)  (n= length of num, 4 possible operator (including none) put between numbers (n-1) between space 
+
+
+            operatorDFS("", 0, 0, 0, num, target,ret);
+            return ret;
+        }
+        
+        void operatorDFS(string expr, int position, int prev, int curSum, string num, int target, List<string> ret)
+        {
+            if (position == num.Length && curSum == target)
+            {
+                ret.Add(expr);
+                return;
+            }
+
+            for(int i =1; position+i < num.Length; i++)
+            {
+                int n = int.Parse(num.Substring(position, i));
+
+                operatorDFS(expr + '+', position + i, n, curSum + n, num, target, ret);
+                operatorDFS(expr + '-', position + i, -n, curSum - n, num, target, ret);
+                operatorDFS(expr + '*', position + i, prev * n, curSum + prev * n - prev, num, target, ret);
+            }
+        
+        }
+
+
+        //301. Remove Invalid Parentheses
+        //Remove the minimum number of invalid parentheses in order to make the input string valid.Return all possible results.
+        //Note: The input string may contain letters other than the parentheses (and ).
+        //Example 1: Input: "()())()"  Output: ["()()()", "(())()"]
+        //Example 2: Input: "(a)())()" Output: ["(a)()()", "(a())()"]
+        public IList<string> RemoveInvalidParentheses(string s)
+        {
+            int removeLeft = 0;
+            int removeRight = 0;
+
+            for(int i =0; i< s.Length; i++)
+            {
+                removeLeft += s[i] == '(' ? 1 : 0;
+                if(removeLeft == 0)
+                    removeRight += s[i] == ')' ? 1 : 0; 
+                else
+                    removeLeft -= s[i] == ')' ? 1 : 0;
+            }
+
+            var ret = new List<string>();
+            dfsFindValidParentheses(s, 0, removeLeft, removeRight, ret);
+            return ret;
+        }
+        bool isValidParenthses(string s)
+        {
+            int count = 0;
+            for(int i =0; i< s.Length; i++)
+            {
+                if (s[i] == '(')
+                    count++;
+                if (s[i] == ')')
+                    count--;
+                if (count < 0)
+                    return false;
+            }
+            return count == 0;
+        }
+        void dfsFindValidParentheses(string s, int startIdx, int left, int right, List<string> ret)
+        {
+            if (left == 0 && right == 0)
+            {
+                if(isValidParenthses(s))
+                {
+                    ret.Add(s);
+                    return;
+                }
+            }
+                
+            for(int i= startIdx; i < s.Length; i++)
+            {   //just remove the first one if have repeated ?  not sure
+                if (i != startIdx && s[i] == s[i - 1])
+                    continue;
+
+                if (s[i] == '(' || s[i] == ')')
+                {
+                    string cur = s;
+                    var curStr = s.Remove(i, 1);
+                    if (left > 0 && s[i]=='(')
+                        dfsFindValidParentheses(curStr, i, left - 1, right, ret);
+                    else if(right > 0 && s[i] == ')')
+                        dfsFindValidParentheses(curStr, i, left, right - 1, ret);                    
+                }
+            }
+            
+        }
+
 
         //79. Word Search
         //Given a 2D board and a word, find if the word exists in the grid.

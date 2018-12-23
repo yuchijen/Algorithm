@@ -20,6 +20,35 @@ namespace Interview
     }
     public class BTree
     {
+        //199. Binary Tree Right Side View
+        //Example: Input: [1,2,3,null,5,null,4]  Output: [1, 3, 4]
+        //Explanation:
+        //           1            <---
+        //         /   \
+        //         2     3         <---
+        //          \     \
+        //           5     4       <---
+        public IList<int> RightSideView(TreeNode root)
+        {
+            var ret = new List<int>();
+            if (root == null)
+                return ret;
+            DFSRightSideView(0, root, ret);
+            return ret;
+        }
+        void DFSRightSideView(int depth, TreeNode root, List<int> ret)
+        {
+            if (root == null)
+                return;
+            if (ret.Count == depth)
+            {
+                ret.Add(root.val);                
+            }
+            DFSRightSideView(depth + 1, root.right, ret);
+            DFSRightSideView(depth + 1, root.left, ret);
+        }
+
+
         //543. Diameter of Binary Tree(Recur)
         public int DiameterOfBinaryTree(TreeNode root)
         {
@@ -895,6 +924,40 @@ namespace Interview
                 return false;
 
             return helper(root.left, min, root.val) && helper(root.right, root.val, max);
+        }
+
+        //in-order is sorted in BST
+        public bool isValidBST2(TreeNode root)
+        {
+            if (root == null)
+                return true;
+
+            var st = new Stack<TreeNode>();
+
+            putLeftNodeToStack(root,st);
+            int prev = int.MinValue;
+
+            while (st.Count > 0)
+            {
+                var curN = st.Pop();
+                if (curN.val < prev)
+                    return false;
+
+                prev = curN.val;
+                if (curN.right != null)
+                    putLeftNodeToStack(curN.right, st);
+
+            }
+            return true;
+        }
+
+        void putLeftNodeToStack(TreeNode r, Stack<TreeNode> st)
+        {
+            while (r != null)
+            {
+                st.Push(r);
+                r = r.left;
+            }
         }
 
         //270. Closest Binary Search Tree Value

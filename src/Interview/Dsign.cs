@@ -9,6 +9,85 @@ namespace Interview
 {
     public class Dsign
     {
+        //211. Add and Search Word - Data structure design
+        //Example:
+        //addWord("bad")
+        //addWord("dad")
+        //addWord("mad")
+        //search("pad") -> false
+        //search("bad") -> true
+        //search(".ad") -> true
+        //search("b..") -> true
+        //follow up : what if '.' is in start position
+        //Time Complexity:  addWord - O(L) ,   search - O(26L)，  Space Complexity - O(26L)   这里 L是单词的平均长度
+        public class WordDictionary
+        {
+            public class WordNode
+            {
+                public char val;
+                public WordNode[] children;
+                public bool isWordFinished = false;
+
+                public WordNode()
+                {
+                    children = new WordNode[26];
+                }
+                public WordNode(char c)
+                {
+                    val = c;
+                    children = new WordNode[26];
+                }
+            }
+
+            WordNode root = new WordNode();
+
+            // Adds a word into the data structure.
+            public void AddWord(String word)
+            {
+                WordNode node = root;
+                for (int i = 0; i < word.Length; i++)
+                {
+                    char c = word[i];
+                    if (node.children[c - 'a'] == null)
+                        node.children[c - 'a'] = new WordNode(c);
+
+                    node = node.children[c - 'a'];
+                }
+                node.isWordFinished = true;
+            }
+
+            // Returns if the word is in the data structure. A word could
+            // contain the dot character '.' to represent any one letter.
+            public bool Search(string word)
+            {
+                return SearchNode(word, root, 0);
+            }
+
+            public bool SearchNode(string word, WordNode node, int level)
+            {
+                if (node == null)
+                    return false;
+
+                if (level == word.Length)
+                    return node.isWordFinished;
+
+                char c = word[level];
+                if (c != '.')
+                {
+                    return node.children[c - 'a'] != null && SearchNode(word, node.children[c - 'a'], level + 1);
+                }
+                else
+                {
+                    for (int i = 0; i < 26; i++)
+                    {
+                        if (node.children[i] != null && SearchNode(word, node.children[i], level + 1))
+                            return true;
+                    }
+                }
+                return false;
+            }
+
+        }
 
         //VIZIO OA: implement Hairachy sort , first by ancestors , then by name
         public class Genre

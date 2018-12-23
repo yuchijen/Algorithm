@@ -8,6 +8,66 @@ namespace Interview
 {
     public class HashTable
     {
+        //523. Continuous Subarray Sum
+        //Given a list of non-negative numbers and a target integer k, write a function to check if the array 
+        //has a continuous subarray of size at least 2 that sums up to the multiple of k, that is, sums up 
+        //to n*k where n is also an integer.
+        // Example 1:input: [23, 2, 4, 6, 7],  k=6
+        //Output: True Explanation: Because[2, 4] is a continuous subarray of size 2 and sums up to 6. or 6xn
+        public bool CheckSubarraySum(int[] nums, int k)
+        {
+            if (nums == null)
+                return false;
+
+            for(int i =0; i< nums.Length; i++)
+            {
+                int sum = nums[i];
+                for(int j =i+1; j<nums.Length; j++)
+                {
+                    sum += nums[j];
+                    if (sum == k)  //case k =sum=0
+                        return true;
+                    if (k != 0 && sum % k == 0)
+                        return true;
+                }               
+            }
+            return false;
+        }
+
+
+        //560. Subarray Sum Equals K
+        //Given an array of integers and an integer k, you need to find the total number of 
+        //continuous subarrays whose sum equals to k.
+        //Example 1: Input:nums = [1,1,1], k = 2
+        //Output: 2
+        //Note:The length of the array is in range[1, 20, 000].
+        //The range of numbers in the array is [-1000, 1000] and the range of the integer k is [-1e7, 1e7].
+        public int SubarraySum(int[] nums, int k)
+        {
+            if (nums == null || nums.Length == 0)
+                return 0;
+
+            Dictionary<int, int> map = new Dictionary<int, int>();
+            map.Add(0, 1);
+
+            int curSum = 0;
+            int ret = 0;
+            for (int i = 0; i < nums.Length; i++)
+            {
+                curSum += nums[i];
+                //sum2- sum1 =k correct results is between 2 parts of sum curSum = sum2 
+                if (map.ContainsKey(curSum - k))
+                    ret += map[curSum - k];
+
+                if (!map.ContainsKey(curSum))
+                    map.Add(curSum, 1);
+                else
+                    map[curSum] += 1;
+            }
+            return ret;
+        }
+
+
         //325.Maximum Size Subarray Sum Equals k 
         //Given an array nums and a target value k, find the maximum length of a subarray that sums to k.
         //If there isn't one, return 0 instead.
