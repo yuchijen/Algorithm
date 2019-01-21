@@ -9,6 +9,40 @@ namespace Interview
 
     public class ArrayString
     {
+        //438. Find All Anagrams in a String
+        //Given a string s and a non-empty string p, find all the start indices of p's anagrams in s.    
+        // Strings consists of lowercase English letters only and the length of both strings s and p will not be larger than 20,100.
+        // The order of output does not matter.
+        // Example 1: Input: s: "cbaebabacd" p: "abc"
+        // Output: [0, 6]
+        public IList<int> FindAnagrams(string s, string p) {
+                               var ret = new List<int>();
+            if (string.IsNullOrEmpty(s) || s.Length < p.Length)
+                return ret;
+
+            int n = s.Length;
+            int l = p.Length;
+
+            var arrP = new int[26];
+            var arrS = new int[26];
+
+            for(int i=0; i< p.Length; i++)
+            {
+                arrP[p[i] - 'a']++;
+            }
+
+            for(int i = 0; i < n; i++)
+            {
+                if (i >= l)
+                    arrS[s[i - l] - 'a']--;
+                arrS[s[i] - 'a']++;
+                if (arrP.SequenceEqual(arrS))
+                    ret.Add(i - l + 1);
+            }
+            return ret;    
+        }        
+
+
         //Envestnet simple data structure question with 2 sets of numbers. Which number is in list A, that is not in list B.
         List<int> inAnotInB(int[] A, int[] B)
         {
