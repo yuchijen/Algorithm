@@ -15,7 +15,32 @@ namespace Interview
             var asa = new ArrayString();
 
 
-            asa.FindAnagrams("cbaebabacd", "abc");
+            //asa.FindAnagrams("cbaebabacd", "abc");
+            //foreach (var x in asa.MajorityElement2(new int[5] { 2, 2, 2, 4, 4 }))
+            //    Console.WriteLine(x);
+            ////forwarding = [[1, 1000],[2, 7000],[3, 12000]], retrun = [[1, 10000],[2, 9000],[3, 3000],[4, 2000]]
+            //var f = new List<List<int>>();
+            //var r = new List<List<int>>();
+            //f.Add(new List<int>() { 1, 1000 });
+            //f.Add(new List<int>() { 2, 7000 });
+            //f.Add(new List<int>() { 3, 12000 });
+            //r.Add(new List<int>() { 1, 10000 });
+            //r.Add(new List<int>() { 2, 9000 });
+            //r.Add(new List<int>() { 3, 3000 });
+            //r.Add(new List<int>() { 4, 2000 });
+
+            //var cpair = asa.ClosestPair(f, r, 10000);
+            //foreach(var x in cpair)
+            //{
+            //    foreach (var y in x)
+            //        Console.Write(y+',');
+            //    Console.WriteLine();
+            //}
+
+
+            var ast = new AsyncTest();
+            ast.TestAsync();
+            Console.WriteLine("doesn't block main thread");
 
             foreach (var x in asa.MajorityElement2(new int[5] { 2, 2, 2, 4, 4 }))
                 Console.WriteLine(x);

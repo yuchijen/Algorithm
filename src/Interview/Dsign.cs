@@ -534,6 +534,42 @@ namespace Interview
 
     }
 
+    //Navigate History: 输入一个URL，这个history加这个URL，go back 返回之前的url，go forward 返回之后的url
+    public class NavigateHistory
+    {
+        public NavigateHistory()
+        {
+            list = new List<string>();
+        }
+        List<string> list;
+        int curIdx;
+
+        public string goBack()
+        {
+            if(list!=null && list.Count > 0)
+            {
+                curIdx--;
+                return list[curIdx];
+            }
+            return null;
+        }
+        public string goForward()
+        {
+            if (list != null && list.Count > 0 && curIdx < list.Count -1)
+            {
+                curIdx++; 
+                return list[curIdx];
+            }
+            return null;
+        }
+
+        public void addNewUrl(string url)
+        {
+            list.Add(url);
+            curIdx = list.Count - 1;
+        }
+    }
+
 
     //535. Encode and Decode TinyURL
     //TinyURL is a URL shortening service where you enter a URL such as https://leetcode.com/problems/design-tinyurl 
@@ -654,10 +690,12 @@ namespace Interview
             node.post.pre = node.pre;
         }
 
-        void removeTail()
+        int removeTail()
         {
             DLinkedList node = tail.pre;
+            int key = map.FirstOrDefault(pair => pair.Value == node).Key;
             deleteNode(node);
+            return key;
         }
 
         public void Put(int key, int value)
@@ -677,9 +715,8 @@ namespace Interview
                 count++;
 
                 if (count > cap)
-                {
-                    removeTail();
-                    map.Remove(key);
+                {                    
+                    map.Remove(removeTail());
                     count--;
                 }
             }
@@ -804,25 +841,61 @@ namespace Interview
 
     public class AsyncTest
     {
-        public async void TestAsync()
+
+
+
+        public void TestAsync()
         {
-            Task<string> tt = longRunTaskAsync();
-            Console.WriteLine("doesn't block main thread");
-            Thread.Sleep(5000);
-            //await AsyncMethod();
+            foreach (var x in RunMultipleTasksParallelAsync(5).Result)
+                Console.WriteLine(x);
 
-            string x = await tt;
+            //foreach (var x in runMultipleTasksAwaitAsync(5).Result)
+            //    Console.WriteLine(x); 
 
-            Console.WriteLine(x);
             Console.WriteLine("waiting for long run thread feedback...");
+            
+            Console.WriteLine("done!");
         }
 
-        public async Task<string> longRunTaskAsync()
+        async Task<List<string>> RunMultipleTasksParallelAsync(int cnt)
         {
-            await Task.Delay(5000);
-            return "long run finished";
+            // Console.WriteLine("starting run long method, doesn't block main thread");
+            var ret = new List<string>();
+            var tasks = new List<Task<string>>();
 
+            for (int i = 0; i < cnt; i++)
+            {   
+                tasks.Add( Task.Run(() => longRunTask(i)));
+                //Console.WriteLine(result);
+            }
+            ret = (await Task.WhenAll(tasks)).ToList();
+
+            
+            return ret;
         }
+
+
+        async Task<List<string>> runMultipleTasksAwaitAsync(int cnt)
+        {
+            var ret = new List<string>();
+            for(int i =0; i< cnt; i++)
+            {
+                //var result = await longRunTask(i);
+                var result = await Task.Run(() => longRunTask(i));
+                ret.Add(result);
+            }
+
+            return ret; 
+        }
+
+        private  string longRunTask(int i)
+        {
+            //await Task.Delay(2000);
+            Thread.Sleep(2000);
+            return i+" finished";
+        }
+
+       
 
     }
 

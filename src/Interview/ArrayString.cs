@@ -362,7 +362,6 @@ namespace Interview
         }
 
 
-
         //209. Minimum Size Subarray Sum
         //Given an array of n positive integers and a positive integer s, find the minimal length of a contiguous 
         //subarray of which the sum ≥ s.If there isn't one, return 0 instead.
@@ -406,6 +405,9 @@ namespace Interview
         {
             if (string.IsNullOrEmpty(version1) || string.IsNullOrEmpty(version2))
                 return 0;
+
+            //check format
+            var regex2 = new Regex("^[0-9]+([.]{1}[0-9]+)*$");
 
             var v1s = version1.Split('.');
             var v2s = version2.Split('.');
@@ -2290,60 +2292,7 @@ namespace Interview
                 dist = (x * x) + (y * y);
             }
         }
-
-        //amazon OA 背景是无人机送货，无人机有最大里程，然后给了两个list，分别是出发和返回的里程数，数据类型是List<List<Integer>>，
-        //list里面只有id和里程两个值，要求找出所有出发和返回里程数之和最接近无人机最大里程的pair。比如，最大里程M = 10000，
-        //forwarding = [[1, 1000],[2, 7000],[3, 12000]], retrun = [[1, 10000],[2, 9000],[3, 3000],[4, 2000]], 
-        //最接近的里程和是10000，所以结果是[[1, 2],[2, 3]].
-        public List<List<int>> ClosestPair(List<List<int>> forward, List<List<int>> returning, int target)
-        {
-            var ret = new List<List<int>>();
-            if (forward == null || returning == null)
-                return ret;
-            forward = forward.OrderBy((x) => x[1]).ToList();
-            returning = returning.OrderBy((r) => r[1]).ToList();
-            int i = 0;
-            int j = returning.Count - 1;
-            int min = int.MaxValue;
-            int targetSum = int.MinValue;
-            while (i < forward.Count && j >= 0)
-            {
-                int curSum = forward[i][1] + returning[j][1];
-                if (target - curSum > 0)
-                {
-                    i++;
-                    if (target - curSum < min)
-                    {
-                        min = target - curSum;
-                        targetSum = curSum;
-                    }
-                }
-                else
-                {
-                    j--;
-                    if (curSum - target < min)
-                    {
-                        min = curSum - target;
-                        targetSum = curSum;
-                    }
-                }
-            }
-            //already find out closet sum value (max) , then go to and index combination
-            //var fMap = new Dictionary<int, int>();
-            //use 2 sum skill
-            var rMap = new Dictionary<int, int>();
-            foreach (var r in returning)
-                rMap.Add(r[1], r[0]);
-
-            for (int idx = 0; idx < forward.Count; idx++)
-            {
-                if (rMap.ContainsKey(targetSum - forward[idx][1]))
-                {
-                    ret.Add(new List<int>() { forward[idx][0], rMap[targetSum - forward[idx][1]] });
-                }
-            }
-            return ret;
-        }
+        
 
         //leetcode 1. Two Sum
         //Given an array of integers, return indices of the two numbers such that they add up to a specific target.
@@ -2367,6 +2316,64 @@ namespace Interview
             }
             return ret.ToArray();
         }
+
+        //amazon OA 背景是无人机送货，无人机有最大里程，然后给了两个list，分别是出发和返回的里程数，数据类型是List<List<Integer>>，
+        //list里面只有id和里程两个值，要求找出所有出发和返回里程数之和最接近无人机最大里程的pair。比如，最大里程M = 10000，
+        //forwarding = [[1, 1000],[2, 7000],[3, 12000]], retrun = [[1, 10000],[2, 9000],[3, 3000],[4, 2000]], 
+        //最接近的里程和是10000，所以结果是[[1, 2],[2, 3]].
+        public List<List<int>> ClosestPair(List<List<int>> forward, List<List<int>> returning, int target)
+        {
+            var ret = new List<List<int>>();
+            if (forward == null || returning == null)
+                return ret;
+
+            forward = forward.OrderBy((x) => x[1]).ToList();
+            returning = returning.OrderBy((r)=>r[1]).ToList();
+
+            int i = 0;
+            int j = returning.Count - 1;
+            int min = int.MaxValue;
+            int targetSum = int.MinValue;
+            while(i < forward.Count && j >= 0)
+            {                
+                    int curSum = forward[i][1] + returning[j][1];
+                    if (target - curSum > 0)
+                    {
+                        i++;
+                        if(target - curSum < min)
+                        {
+                            min = target - curSum;
+                            targetSum = curSum;
+                        }
+                    }
+                    else
+                    {
+                        j--;
+                        if (curSum - target < min)
+                        {
+                            min = curSum - target;
+                            targetSum = curSum;
+                        }
+                    }                
+            }
+            //already find out closet sum value (max) , then go to and index combination
+            //var fMap = new Dictionary<int, int>();
+            //use 2 sum skill
+            var rMap = new Dictionary<int, int>();
+            foreach(var r in returning)
+                rMap.Add(r[1],r[0]);
+                        
+            for(int idx = 0; idx < forward.Count; idx++)
+            {
+                if(rMap.ContainsKey(targetSum - forward[idx][1]))
+                {
+                    ret.Add(new List<int>() { forward[idx][0], rMap[targetSum - forward[idx][1]] });
+                }
+            }
+
+            return ret;
+        }
+
 
 
         //leetcode 15. 3Sum
@@ -2465,6 +2472,22 @@ namespace Interview
             int ideasum = ((nums.Length) * (1 + nums.Length)) / 2;
 
             return ideasum - realsum;
+        }
+
+        //[-2,0, 1,2] missing -1 
+        int missingNumberII(int[] nums)
+        {
+            //find min first ; 
+            int min = -2; //e.g. 
+
+            int res = 0;
+
+            for (int i = 0; i < nums.Length; ++i)
+            {
+                res ^= (i+min) ^ nums[i];
+            }
+            res ^= (min + nums.Length);
+            return res;
         }
 
         //8. String to Integer (atoi) MS OA
