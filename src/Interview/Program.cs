@@ -13,7 +13,9 @@ namespace Interview
         {
 
             var asa = new ArrayString();
-            
+
+
+            asa.FindAnagrams("cbaebabacd", "abc");
 
             foreach (var x in asa.MajorityElement2(new int[5] { 2, 2, 2, 4, 4 }))
                 Console.WriteLine(x);

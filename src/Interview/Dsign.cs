@@ -89,7 +89,7 @@ namespace Interview
 
         }
 
-        //VIZIO OA: implement Hairachy sort , first by ancestors , then by name
+        //VIZIO OA: implement Hairachy sort (topological sort), first by ancestors , then by name
         public class Genre
         {
             public string Name { get; set; }

@@ -7,6 +7,59 @@ namespace Interview
 {
     public class BinarySearch
     {
+        //215. Kth Largest Element in an Array
+        //use q-sort 核心思想是每次都要先找一个中枢点Pivot，然后遍历其他所有的数字，像这道题从小往大排的话，
+        //就把小于中枢点的数字放到左半边，把大于中枢点的放在右半边，这样中枢点是整个数组中第几大的数字就确定了，
+        //虽然左右两部分不一定是完全有序的，但是并不影响本题要求的结果，所以我们求出中枢点的位置，如果正好是k-1，
+        //那么直接返回该位置上的数字；如果大于k-1，说明要求的数字在左半部分，更新右边界，再求新的中枢点位置；
+        //反之则更新右半部分，求中枢点的位置；不得不说，这个思路真的是巧妙啊～
+        //quickSort(arr[], low, high)
+        //{
+        //  if (low<high)
+        //  {   /* pi is partitioning index, arr[pi] is now at right place */
+        //      pi = partition(arr, low, high);
+        //      quickSort(arr, low, pi - 1);  // Before pi
+        //      quickSort(arr, pi + 1, high); // After pi
+        //  }
+        //}
+        public int FindKthLargest(int[] nums, int k)
+        {
+            int left = 0, right = nums.Length - 1;
+            while (true)
+            {
+                int pos = partition(nums, left, right);
+                if (pos == k - 1)
+                    return nums[pos];
+                else if (pos > k - 1)
+                    right = pos - 1;
+                else
+                    left = pos + 1;
+            }
+        }
+        int partition(int[] nums, int left, int right)
+        {
+            int pivot = nums[left], l = left + 1, r = right;
+            while (l <= r)
+            {
+                if (nums[l] < pivot && nums[r] > pivot)
+                {
+                    swap(nums, l, r);
+                    l++;
+                    r--;
+                }
+                if (nums[l] >= pivot) ++l;
+                if (nums[r] <= pivot) --r;
+            }
+            swap(nums, left, r);
+            return r;
+        }
+
+        void swap(int[] arr, int i, int j)
+        {
+            int temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
         //378. Kth Smallest Element in a Sorted Matrix
         //Given a n x n matrix where each of the rows and columns are sorted in ascending order, find the kth smallest element in the matrix.
         //Note that it is the kth smallest element in the sorted order, not the kth distinct element.
@@ -18,22 +71,22 @@ namespace Interview
         // nlogn * log(max val - min val in matrix)
         public int KthSmallest(int[,] matrix, int k)
         {
-            if (matrix == null || matrix.GetLength(0)==0 || matrix.GetLength(1)==0)
+            if (matrix == null || matrix.GetLength(0) == 0 || matrix.GetLength(1) == 0)
                 return -1;
 
             int n = matrix.GetLength(0);
             int st = matrix[0, 0];
             int end = matrix[matrix.GetLength(0) - 1, matrix.GetLength(1) - 1];
             //use mid-value as assumption to do b-search, 
-            
+
             while (st <= end)
             {
                 int mid = st + (end - st) / 2;
                 //search all elements: b-search each row
                 int count = 0;
-                for(int i=0; i<n; i++)
+                for (int i = 0; i < n; i++)
                 {
-                    count += BSearchFindCountLessThanVal(matrix,i ,n, mid);
+                    count += BSearchFindCountLessThanVal(matrix, i, n, mid);
                 }
                 if (count < k)
                     st = mid + 1;
@@ -41,20 +94,20 @@ namespace Interview
                     end = mid - 1;
             }
             return st;
-            
+
         }
         int BSearchFindCountLessThanVal(int[,] matrix, int row, int n, int val)
         {
             int st = 0;
-            
-            while(st <= n)
+
+            while (st <= n)
             {
                 int midIdx = st + (n - st) / 2;
 
                 if (matrix[row, midIdx] <= val)
                     st = midIdx + 1;
                 else
-                    n = midIdx - 1;                
+                    n = midIdx - 1;
             }
             return st;
         }
@@ -81,7 +134,7 @@ namespace Interview
             //b-search 1st column then decide clostest row then search that row's  
             //O(log N x log M)
             int st = 0;
-            int end = matrix.GetLength(0)-1;
+            int end = matrix.GetLength(0) - 1;
             while (st <= end)
             {
                 int mid = (st + end) / 2;
@@ -187,7 +240,7 @@ namespace Interview
             int seg2 = k - seg1;
             //consider odd or even in total number)
 
-            int c1 = Math.Max(nums1[seg1-1], nums2[seg2 - 1]);
+            int c1 = Math.Max(nums1[seg1 - 1], nums2[seg2 - 1]);
             if ((nums1.Length + nums2.Length) % 2 == 1)
                 return c1;
 
@@ -249,14 +302,14 @@ namespace Interview
             if (nums == null || nums.Length == 0)
                 return -1;
             int st = 0;
-            int end = nums.Length-1;
+            int end = nums.Length - 1;
 
             while (st <= end)
             {
                 int mid = st + (end - st) / 2;
                 if (nums[mid] == target)
                     return mid;
-                if(nums[mid] < nums[end]) //right side sorted
+                if (nums[mid] < nums[end]) //right side sorted
                 {
                     if (nums[mid] < target && target < nums[end])
                         st = mid + 1;  //go right
@@ -271,7 +324,7 @@ namespace Interview
                         st = mid + 1;
                 }
             }
-            return -1;            
+            return -1;
         }
 
         //81. Search in Rotated Sorted Array II  with duplicate number
@@ -355,14 +408,14 @@ namespace Interview
                 return 0;
 
             int st = 1, end = n;
-            
-            while(st <= end)
+
+            while (st <= end)
             {
                 int piv = (st + end) / 2;
 
                 if (guess(piv) == 0)
                     return piv;
-                else if(guess(piv) >0)
+                else if (guess(piv) > 0)
                 {
                     end = piv - 1;
                 }
@@ -378,7 +431,7 @@ namespace Interview
             return -1;
         }
 
-        
+
         //69. Sqrt(x)
         //Implement int sqrt(int x).
         //Compute and return the square root of x.
@@ -400,7 +453,7 @@ namespace Interview
                     if ((piv + 1) > x / (piv + 1))
                         return piv;
                     st = piv + 1;
-                }                 
+                }
             }
         }
 
@@ -421,7 +474,7 @@ namespace Interview
             while (st <= end)
             {
                 int piv = (st + end) >> 1;
-                if (piv==0 || piv==nums.Length-1 || ( piv < nums.Length-1 && piv > 1 && nums[piv] > nums[piv + 1] && nums[piv] > nums[piv - 1]))
+                if (piv == 0 || piv == nums.Length - 1 || (piv < nums.Length - 1 && piv > 1 && nums[piv] > nums[piv + 1] && nums[piv] > nums[piv - 1]))
                     return piv;
                 if (piv < nums.Length - 1 && nums[piv] < nums[piv + 1])
                     st = piv + 1;
@@ -436,20 +489,20 @@ namespace Interview
         //Given two arrays, write a function to compute their intersection.
         // Example:Given nums1 = [1, 2, 2, 1], nums2 = [2, 2], return [2].
         public int[] Intersection(int[] nums1, int[] nums2)
-        {            
+        {
             var l1 = nums1.ToList();
             var l2 = nums2.ToList();
 
             var cc = from item in l1
-                    where (nums2.Contains(item))
-                    select item;
-            
+                     where (nums2.Contains(item))
+                     select item;
+
             HashSet<int> hs = new HashSet<int>();
 
             foreach (var x in cc)
                 hs.Add(x);
             return hs.ToArray();
-            
+
         }
 
 
@@ -583,7 +636,7 @@ namespace Interview
             while (st <= end)
             {
                 int pivol = (st + end) / 2;
-                if (pivol == 0 || pivol == nums.Length - 1 || (pivol > 0 && pivol < nums.Length-1 && nums[pivol] > nums[pivol - 1] && nums[pivol] > nums[pivol + 1]))
+                if (pivol == 0 || pivol == nums.Length - 1 || (pivol > 0 && pivol < nums.Length - 1 && nums[pivol] > nums[pivol - 1] && nums[pivol] > nums[pivol + 1]))
                     return pivol;
 
                 if (pivol < nums.Length - 1 && nums[pivol] > nums[pivol + 1])

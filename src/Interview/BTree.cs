@@ -20,6 +20,41 @@ namespace Interview
     }
     public class BTree
     {
+        //124. Binary Tree Maximum Path Sum
+        //Given a non-empty binary tree, find the maximum path sum.
+        //For this problem, a path is defined as any sequence of nodes from some starting node to 
+        //any node in the tree along the parent-child connections. The path must contain at least one 
+        //node and does not need to go through the root.
+        //Example 2:   Input: [-10,9,20,null,null,15,7]
+        //         -10
+        //          / \
+        //         9  20
+        //           /  \
+        //          15   7      Output: 42
+        public int MaxPathSum(TreeNode root)
+        {
+            var ret = new int[] { int.MinValue };
+            MaxPathSumDfs(root, ret);
+            return ret[0];
+        }
+        int MaxPathSumDfs(TreeNode node, int[] ret)
+        {
+            if (node == null)
+                return 0;
+
+            int left = MaxPathSumDfs(node.left, ret);
+            int right = MaxPathSumDfs(node.right, ret);
+
+            left = left > 0 ? left : 0;
+            right = right > 0 ? right : 0;
+
+            ret[0] = Math.Max(ret[0], left + right + node.val);
+            return Math.Max(left, right) + node.val;
+
+        }
+
+
+
         //199. Binary Tree Right Side View
         //Example: Input: [1,2,3,null,5,null,4]  Output: [1, 3, 4]
         //Explanation:
@@ -869,7 +904,19 @@ namespace Interview
         //235. Lowest Common Ancestor of a Binary Search Tree
         //Given a binary search tree (BST), find the lowest common ancestor (LCA) of two given nodes in the BST.
         //According to the definition of LCA on Wikipedia: “The lowest common ancestor is defined between two 
-        //nodes v and w as the lowest node in T that has both v and w as descendants(where we allow a node to be a descendant of itself).”
+        //nodes v and w as the lowest node in T that has both v and w as descendants(where we allow a node to be 
+        //a descendant of itself).”
+        public TreeNode LowestCommonAncestorBST(TreeNode root, TreeNode p, TreeNode q)
+        {
+            if (root == null)
+                return null;
+            if (root.val > p.val && root.val > q.val)
+                return LowestCommonAncestorBST(root.left, p, q);
+            else if (root.val < p.val && root.val < q.val)
+                return LowestCommonAncestorBST(root.right, p, q);
+            else
+                return root;
+        }
         public TreeNode LowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q)
         {
             if (root == null)
@@ -893,6 +940,7 @@ namespace Interview
             return isChild(root.left, n) || isChild(root.right, n);
         }
 
+        //236. Lowest Common Ancestor of a Binary Tree
         public TreeNode LowestCommonAncestor2(TreeNode root, TreeNode p, TreeNode q)
         {
             if (root == null || root == p || root == q)

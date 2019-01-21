@@ -32,6 +32,55 @@ namespace Interview
 
     public class LinkedList
     {
+
+        //143. Reorder List
+        //Given a singly linked list L: L0→L1→…→Ln-1→Ln, reorder it to: L0→Ln→L1→Ln-1→L2→Ln-2→…
+        //You may not modify the values in the list's nodes, only nodes itself may be changed.
+        //Example 1:  Given 1->2->3->4->5, reorder it to 1->5->2->4->3.
+        public void ReorderList(ListNode head)
+        {
+            if (head == null || head.next == null)
+                return;
+
+            ListNode ptr = head;
+            ListNode ptr2 = head;
+            //find middle ptr
+            while (ptr2.next != null && ptr2.next.next != null)
+            {
+                ptr = ptr.next;
+                ptr2 = ptr2.next.next;
+            }
+
+            //reverse second half list e.g. 1->2->3->4->5->6 to 1->2->3->6->5->4
+            ListNode midPre = ptr;
+            ListNode midHead = ptr.next;
+            ListNode pivol = ptr.next;
+            ListNode front = null;
+            while (pivol != null && pivol.next != null)
+            {
+                front = pivol.next;
+                pivol.next = pivol.next.next;
+                front.next = midHead;
+                midHead = front;
+                midPre.next = midHead;
+            }
+
+            //Start reorder one by one  1->2->3->6->5->4 to 1->6->2->5->3->4
+
+            ListNode ptr1 = head;
+            ListNode ptr22 = midPre.next;
+
+            while (ptr1 != midPre)
+            {
+                midPre.next = ptr22.next;
+                ptr22.next = ptr1.next;
+                ptr1.next = ptr22;
+                ptr1 = ptr22.next;
+                ptr22 = midPre.next;
+            }
+        }
+
+
         //Doubly linkedlist contains 0 and 1 only, sort it in O(n), in-space
         // e.g.  0 <-> 1 <-> 1 <-> 0 <-> 1 <-> 0  
         //return 0 <-> 0 <-> 0 <-> 1 <-> 1 <-> 1
@@ -261,7 +310,7 @@ namespace Interview
                 return null;
             var new_h = head;
 
-            while(head.next!=null)
+            while(head!= null && head.next!=null)
             {
                 var cur = head.next;
                 head.next = head.next.next;

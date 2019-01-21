@@ -10,6 +10,9 @@ namespace Interview
         //5.Longest Palindromic Substring
         //Given a string S, find the longest palindromic substring in S. You may assume that the 
         //maximum length of S is 1000, and there exists one unique longest palindromic substring.
+        //Example 1: Input: "babad"
+        //Output: "bab"
+        //Note: "aba" is also a valid answer.
         public string LongestPalindrome(string s)
         {
             if (string.IsNullOrEmpty(s))
@@ -21,24 +24,27 @@ namespace Interview
             int startIdx = 0;
             //record i to j is palindrom or not
             var dpPalindrom = new bool[s.Length, s.Length];
-            for (int i = 0; i < s.Length; i++)
-                dpPalindrom[i, i] = true;
+            //for (int i = 0; i < s.Length; i++)
+            //    dpPalindrom[i, i] = true;
 
-            for(int i = s.Length -1; i>=0; i--)
+            for(int j =0; j < s.Length; j++)
             {
-                for(int j = i; j<s.Length; j++)
+                for(int i=0; i<=j; i++)
                 {
-                    if (((i + 1 < s.Length && j - 1 >= 0 && dpPalindrom[i + 1, j - 1]) || j - i <= 2) && s[i] == s[j])
+                    if (s[i] == s[j] && (j - i <= 2 || dpPalindrom[i + 1, j - 1]))
                     {
                         dpPalindrom[i, j] = true;
-                        if(j-i+1 > maxLen)
+                        if (maxLen < j - i + 1)
                         {
                             maxLen = j - i + 1;
                             startIdx = i;
                         }
                     }
+                    else
+                        dpPalindrom[i, j] = false;
                 }
             }
+            
             return s.Substring(startIdx, maxLen);            
         }
 
