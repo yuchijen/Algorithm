@@ -7,6 +7,36 @@ namespace Interview
 {
     public class BackTracking
     {
+        //494. Target Sum
+        //You are given a list of non-negative integers, a1, a2, ..., an, and a target, S. Now you have 2 symbols + and -. For each integer, you should choose one from + and - as its new symbol.
+        //Find out how many ways to assign symbols to make sum of integers equal to target S
+        //Input: nums is [1, 1, 1, 1, 1], S is 3. 
+        //Output: 5
+        int result_sumWay = 0;
+        public int FindTargetSumWays(int[] nums, int S)
+        {
+            if (nums == null || nums.Length == 0)
+                return 0;
+
+            helper(nums, 0, S, 0);
+            return result_sumWay;
+        }
+        void helper(int[] nums, int level, int S, int curSum)
+        {
+            if (nums.Length == level && curSum == S)
+            {
+                result_sumWay++;
+                return;
+            }
+            else if (nums.Length <= level)
+                return;
+
+            helper(nums, level + 1, S, curSum + nums[level]);
+            helper(nums, level + 1, S, curSum - nums[level]);
+
+        }
+
+
         //254. Factor Combinations
         //Numbers can be regarded as product of its factors.For example,
         //input: 12        output:
@@ -89,22 +119,18 @@ namespace Interview
             var ret = new List<IList<int>>();
             var hashsets = new HashSet<string>();
             Array.Sort(nums);
-            subsetHelperWithoutDuplicate2(0, nums, new List<int>(), ret, hashsets);
+            subsetHelperWithoutDuplicate2(0, nums, new List<int>(), ret);
             return ret;
         }
-        void subsetHelperWithoutDuplicate2(int curIdx, int[] nums, List<int> list, IList<IList<int>> ret, HashSet<string> hashsets)
+        void subsetHelperWithoutDuplicate2(int curIdx, int[] nums, List<int> list, IList<IList<int>> ret)
         {
-            string temp = string.Join(",", list);
-
-            if (!hashsets.Contains(temp))
-            {
-                hashsets.Add(temp);
-                ret.Add(new List<int>(list));
-            }
+            ret.Add(new List<int>(list));
             for (int i = curIdx; i < nums.Length; i++)
             {
+                if (i > curIdx && nums[i] == nums[i - 1])   //key point note: i>curIdx
+                    continue;
                 list.Add(nums[i]);
-                subsetHelperWithoutDuplicate2(i + 1, nums, list, ret, hashsets);
+                subsetHelperWithoutDuplicate2(i + 1, nums, list, ret);
                 list.Remove(nums[i]);
             }
         }
@@ -138,7 +164,7 @@ namespace Interview
             for (int i = curIdx; i <= n; i++)
             {
                 curList.Add(i);
-                helper(curIdx + 1, curList, ret, n, k);
+                helper(i + 1, curList, ret, n, k);
                 curList.Remove(curList.Last());
             }
         }
@@ -232,10 +258,30 @@ namespace Interview
         public IList<IList<int>> PermuteUnique(int[] nums)
         {
             var ret = new List<IList<int>>();
+            var ret1 = new HashSet<IList<int>>();
             Array.Sort(nums);
-            backtrack(nums, 0, ret);
-            return ret;
+            backtrackPerm(nums, 0, ret1);
+            return ret1.ToList();   // ret;
         }
+        void backtrackPerm(int[] nums, int idx, HashSet<IList<int>> ret)
+        {
+            if (idx == nums.Length)
+            {                
+                ret.Add(new List<int>(nums));
+                return;
+            }
+            for (int i = idx; i < nums.Length; i++)
+            {
+                if (i > idx && nums[i] == nums[idx])
+                    continue;
+
+                swap(nums, idx, i);
+                backtrackPerm(nums, idx + 1, ret);
+                swap(nums, i, idx);
+            }
+        }
+
+
         HashSet<string> hashSet = new HashSet<string>();
         void backtrack(int[] nums, int idx, IList<IList<int>> ret)
         {

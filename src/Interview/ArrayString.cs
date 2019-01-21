@@ -27,10 +27,8 @@ namespace Interview
             var arrS = new int[26];
 
             for(int i=0; i< p.Length; i++)
-            {
                 arrP[p[i] - 'a']++;
-            }
-
+            
             for(int i = 0; i < n; i++)
             {
                 if (i >= l)
@@ -41,11 +39,69 @@ namespace Interview
             }
             return ret;    
         }        
+        
+
+        //31. Next Permutation
+        //Implement next permutation, which rearranges numbers into the lexicographically next greater permutation of numbers.
+        //If such arrangement is not possible, it must rearrange it as the lowest possible order(ie, sorted in ascending order).
+        //The replacement must be in-place and use only constant extra memory.
+        //Here are some examples.Inputs are in the left-hand column and its corresponding outputs are in the right-hand column.
+        //1,2,3 → 1,3,2
+        //3,2,1 → 1,2,3
+        //1,1,5 → 1,5,1
+        public void NextPermutation(int[] nums)
+        {
+            if (nums == null)
+                return;
+
+            //find from tail digits index until it becomes descendent (find first descendent index from tail) 
+            int fDescIdx = int.MaxValue;
+
+            for (int i = nums.Length - 1; i > 0; i--)
+            {
+                if (nums[i] > nums[i - 1])
+                {
+                    fDescIdx = i - 1;
+                    break;
+                }
+            }
+            if (fDescIdx == int.MaxValue)  //input is all ascedent from tail, sort whole nums
+            {
+                int st = 0, end = nums.Length - 1;
+                while (st < end)
+                {
+                    int temp = nums[st];
+                    nums[st] = nums[end];
+                    nums[end] = temp;
+                    st++;
+                    end--;
+                }
+            }
+            else
+            {
+                //swap fDescIdx with right min greater than fDescIdx value
+                //find out right min greater than fDescIdx value (first greater than fDescIdx value from left)
+                int exchangeIndex = -1;
+                for (int i = nums.Length - 1; i > fDescIdx; i--)
+                {
+                    if (nums[i] > nums[fDescIdx])
+                    {
+                        exchangeIndex = i;
+                        break;
+                    }
+                }
+                int temp = nums[exchangeIndex];
+                nums[exchangeIndex] = nums[fDescIdx];
+                nums[fDescIdx] = temp;
+
+                Array.Sort(nums, fDescIdx + 1, nums.Length - 1 - fDescIdx);
+            }
+        }
 
 
         //Envestnet simple data structure question with 2 sets of numbers. Which number is in list A, that is not in list B.
         List<int> inAnotInB(int[] A, int[] B)
-        {
+        {            
             var hs = new HashSet<int>();
             foreach (var x in B)
                 hs.Add(x);
@@ -74,9 +130,6 @@ namespace Interview
         //Output: "0"
         //Explanation: Remove all the digits from the number and it is left with nothing which is 0.
         //string removeKdigits(string num, int k)
-        //{
-
-        //}
 
         //678. Valid Parenthesis String
         //Given a string containing only three types of characters: '(', ')' and '*', write a function to check whether this string is valid.We define the validity of a string by these rules:
@@ -92,7 +145,56 @@ namespace Interview
         //{
         //}
 
-        
+
+        //28. Implement strStr()
+        //Input: haystack = "hello", needle = "ll"
+        //Output: 2
+        public int StrStr(string haystack, string needle)
+        {
+            if (string.IsNullOrEmpty(haystack) || string.IsNullOrEmpty(needle) || needle.Length > haystack.Length)
+                return -1;
+
+            for (int i = 0; i <= haystack.Length - needle.Length; i++)
+            {
+                int cnt = 0;
+                for (int j = 0; j < needle.Length; j++)
+                {
+                    if (needle[j] == haystack[i + j])
+                        cnt++;
+                }
+                if (cnt == needle.Length)
+                    return i;
+            }
+            return -1;
+        }
+
+
+        //692. Top K Frequent Words
+        //Given a non-empty list of words, return the k most frequent elements.
+        //Your answer should be sorted by frequency from highest to lowest.If two words have the same frequency, then the word with the lower alphabetical order comes first.
+        //Example 1:    Input: ["i", "love", "leetcode", "i", "love", "coding"], k = 2
+        //Output: ["i", "love"]
+        //Explanation: "i" and "love" are the two most frequent words.
+        //Note that "i" comes before "love" due to a lower alphabetical order.
+        public IList<string> TopKFrequent(string[] words, int k)
+        {
+            var ret = new List<string>();
+            if (words == null || words.Length == 0)
+                return ret;
+
+            var map = new Dictionary<string, int>();
+
+            for (int i = 0; i < words.Length; i++)
+            {
+                if (!map.ContainsKey(words[i]))
+                    map.Add(words[i], 1);
+                else
+                    map[words[i]]++;
+            }
+            return map.OrderByDescending(pair => pair.Value).ThenBy(x => x.Key).Take(k).Select(x => x.Key).ToList();
+        }
+
+
         //60. Permutation Sequence
         //The set [1,2,3,…,n] contains a total of n! unique permutations.
         //By listing and labeling all of the permutations in order,
@@ -137,6 +239,191 @@ namespace Interview
         //同样如果k大于(n-1)!，那么第一个数就应该为(k-1)/(n-1)! + 1．这样找到了首位数字应该是哪个，剩下了(n-1)个数字，
         //我们只需要再重复上面的步骤，不断缩小k即可．
 
+        //38. Count and Say
+        //1.     1
+        //2.     11     1 is read off as "one 1" or 11
+        //3.     21     11 is read off as "two 1s" or 21.
+        //4.     1211   21 is read off as "one 2, then one 1" or 1211.
+        //5.     111221
+        public string CountAndSay(int n)
+        {
+            if (n <= 1)
+                return "1";
+
+            StringBuilder sb = new StringBuilder();
+            int ini = 1;
+            string curStr = "1";
+
+            while (ini < n)
+            {
+                int count = 1;
+                for (int i = 1; i < curStr.Length; i++)
+                {
+                    if (curStr[i] != curStr[i - 1])
+                    {
+                        sb.Append(count.ToString()).Append(curStr[i - 1].ToString());
+                        count = 1;
+                    }
+                    else
+                        count++;
+                }
+                sb.Append(count.ToString()).Append(curStr.Last().ToString());
+                curStr = sb.ToString();
+                sb.Clear();
+                ini++;
+
+            }
+            return curStr;
+        }
+
+
+        //219. Contains Duplicate II
+        //Given an array of integers and an integer k, find out whether there are two distinct indices i and j in the array such that nums[i] = nums[j] and the absolute difference between i and j is at most k.
+        //Example 1: Input: nums = [1,2,3,1], k = 3  Output: true
+        public bool ContainsNearbyDuplicate(int[] nums, int k)
+        {
+            if (nums == null && nums.Length == 0)
+                return false;
+
+            //var set = new HashSet<int>();
+            var dMap = new Dictionary<int, List<int>>();
+            for (int i=0; i< nums.Length; i++)
+            {
+                if (!dMap.ContainsKey(nums[i]))
+                    dMap.Add(nums[i], new List<int>() { i });
+                else
+                    dMap[nums[i]].Add(i);                
+            }
+
+            foreach(var pair in dMap)
+            {
+                if (pair.Value.Count <= 1)
+                    continue;
+                else {
+                    for(int i = 0; i< pair.Value.Count-1; i++)
+                    {
+                        if (pair.Value[i + 1] - pair.Value[i] == k)
+                            return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+
+        //220. Contains Duplicate III
+        //Given an array of integers, find out whether there are two distinct indices i and j in the array 
+        //such that the absolute difference between nums[i] and nums[j] is at most t and the absolute 
+        //difference between i and j is at most k.
+        public bool ContainsNearbyAlmostDuplicate(int[] nums, int k, int t)
+        {
+            //use bucket in slide window range k, if any 2 in the same bucket or adjacent bucket within t is true
+            // bucket[idx] idx = floor[num[i] / t]  
+            //find min and (nums[i] - min) / t+1  as bucket index   (t+1 prevent t=0)
+            if (nums == null || nums.Length == 0 || k <= 0 || t < 0)
+                return false;
+            //find min 
+            int min = nums.Min();
+            int diff = t + 1;
+            var map = new Dictionary<long, int>(); // record bucket idx as key , nums[i] as value
+            for(int i = 0;i < nums.Length; i++)
+            {
+                long bucketIdx = ((long)nums[i] - (long)min) / diff;
+
+                //if this bucket already has value, then means another number is in the same range
+                if (map.ContainsKey(bucketIdx))
+                    return true;
+                //adjacent bucket might have value in range too, so check left and right neighbors
+                if (map.ContainsKey(bucketIdx + 1)&& Math.Abs(map[bucketIdx + 1] - nums[i]) <= t)
+                        return true;                    
+                if (map.ContainsKey(bucketIdx - 1)&& Math.Abs(map[bucketIdx - 1] - nums[i]) <= t)
+                        return true;
+
+                map.Add(bucketIdx, nums[i]);
+                if (i >= k)
+                {
+                    map.Remove(((long)nums[i-k]- (long)min)/diff);
+                }
+            }
+            return false;
+        }
+
+        //4. Median of Two Sorted Arrays
+        //There are two sorted arrays nums1 and nums2 of size m and n respectively.
+        //Find the median of the two sorted arrays.The overall run time complexity should be O(log (m+n)).
+        //Example 1: nums1 = [1, 3]   nums2 = [2]    The median is 2.0
+        //Example 2: nums1 = [1, 2]   nums2 = [3, 4] The median is (2 + 3)/2 = 2.5
+        public double findMedianSortedArrays(int[] nums1, int[] nums2)
+        {
+            int n1 = nums1.Length;
+            int n2 = nums2.Length;
+            if (n1 > n2)
+                return findMedianSortedArrays(nums2, nums1);
+
+            int k = (n1 + n2 + 1) / 2;  //mid count of all nums
+            int l = 0;       // left segment start   
+            int r = n1;      // left segment end
+            int m1 = 0;
+            int m2 = 0;
+
+            while (l < r)
+            {
+                m1 = l + (r - l) / 2;
+                m2 = k - m1;
+                if (nums1[m1] < nums2[m2 - 1])
+                    l = m1 + 1;
+                else
+                    r = m1;
+            }
+
+            m1 = l;
+            m2 = k - l;
+
+            int c1 = Math.Max(m1 <= 0 ? int.MinValue : nums1[m1 - 1],
+                              m2 <= 0 ? int.MinValue : nums2[m2 - 1]);
+
+            if ((n1 + n2) % 2 == 1)
+                return c1;
+
+            int c2 = Math.Min(m1 >= n1 ? int.MaxValue : nums1[m1],
+                              m2 >= n2 ? int.MaxValue : nums2[m2]);
+
+            return (c1 + c2) * 0.5;
+        }
+
+
+        //209. Minimum Size Subarray Sum
+        //Given an array of n positive integers and a positive integer s, find the minimal length of a contiguous 
+        //subarray of which the sum ≥ s.If there isn't one, return 0 instead.
+        //Example: Input: s = 7, nums = [2,3,1,2,4,3]
+        //        Output: 2
+        //Explanation: the subarray[4, 3] has the minimal length under the problem constraint.
+        //Follow up:
+        //If you have figured out the O(n) solution, try coding another solution of which the time complexity is O(n log n). 
+        public int MinSubArrayLen(int s, int[] nums)
+        {
+            if (nums == null || nums.Length == 0)
+                return 0;
+
+            int frontIdx = 0;
+            int backIdx = 0;
+            int sum = 0;
+            int min = int.MaxValue;
+            while (frontIdx < nums.Length)
+            {
+                sum += nums[frontIdx];
+                frontIdx++;
+                while (sum >= s && frontIdx > backIdx)
+                {
+                    min = Math.Min(min, frontIdx - backIdx);
+                    sum -= nums[backIdx];
+                    backIdx++;
+                }
+            }
+            return min == int.MaxValue ? 0 : min;
+        }
+
 
         //165. Compare Version Numbers
         //Compare two version numbers version1 and version2.
@@ -149,6 +436,9 @@ namespace Interview
         {
             if (string.IsNullOrEmpty(version1) || string.IsNullOrEmpty(version2))
                 return 0;
+
+            //check format
+            var regex2 = new Regex("^[0-9]+([.]{1}[0-9]+)*$");
 
             var v1s = version1.Split('.');
             var v2s = version2.Split('.');
@@ -182,6 +472,40 @@ namespace Interview
                 return 0;
             }
             return 0;
+        }
+
+        //43. Multiply Strings
+        //Given two non-negative integers num1 and num2 represented as strings, return the product of num1 and 
+        //num2, also represented as a string.
+        //e.g. 1: Input: num1 = "2", num2 = "3" Output: "6"
+        //e.g.2: Input: num1 = "123", num2 = "456"  Output: "56088"
+        public string Multiply(string num1, string num2)
+        {
+            if (string.IsNullOrEmpty(num1) || string.IsNullOrEmpty(num2))
+                return "0";
+
+            var retArr = new int[num1.Length + num2.Length];
+
+            var sb = new StringBuilder();
+
+            for (int i = num1.Length - 1; i >= 0; i--)
+            {
+                for (int j = num2.Length - 1; j >= 0; j--)
+                {
+                    retArr[i + j + 1] += (num1[i] - '0') * (num2[j] - '0');
+                    retArr[i + j] += retArr[i + j + 1] / 10;
+                    retArr[i + j + 1] = retArr[i + j + 1] % 10;
+                }
+            }
+            for (int i = 0; i < retArr.Length; i++)
+            {
+                if (retArr[i] == 0 && sb.Length == 0)
+                    continue;
+                sb.Append(retArr[i]);
+            }
+            if (sb.Length == 0)
+                return "0";
+            return sb.ToString();
         }
 
 
@@ -323,7 +647,7 @@ namespace Interview
             return 0;
         }
 
-        //253 meeting room2
+        //253 meeting room2  (groupon phone)
         //Given an array of meeting time intervals consisting of start and end times[[s1, e1],[s2, e2],...] 
         //(si<ei), find the minimum number of conference rooms required.
         //e.g. Given[[0, 30],[5, 10],[15, 20]], return 2.
@@ -331,7 +655,7 @@ namespace Interview
         {
             if (intervals == null || intervals.Length == 0)
                 return 0;
-
+            
             int len = intervals.Length;
             int[] starts = new int[len];
             int[] ends = new int[len];
@@ -356,6 +680,36 @@ namespace Interview
             return ret;
         }
 
+        //alternative way not verified
+        int MeetingRoomsII(Interval[] intervals)
+        {
+            if (intervals == null || intervals.Length == 0)
+                return 0;
+            if (intervals.Length == 1)
+                return 1;
+
+            int ret = 1;
+            int len = intervals.Length;
+            int[] starts = new int[len];
+            int[] ends = new int[len];
+            for (int i = 0; i < len; i++)
+            {
+                starts[i] = intervals[i].start;
+                ends[i] = intervals[i].end;
+            }
+            Array.Sort(starts);
+            Array.Sort(ends);
+            //above is the same
+            int endTimeIdx = 0;
+            for (int i = 1; i < intervals.Length; i++)
+            {
+                if (intervals[i].start < ends[endTimeIdx])
+                    ret++;
+                else
+                    endTimeIdx++;
+            }
+            return ret;
+        }
 
         //252. Meeting room
         //Given an array of meeting time intervals consisting of start and end times
@@ -369,11 +723,7 @@ namespace Interview
             if (intervals.Length == 1)
                 return true;
 
-            Array.Sort(intervals, (Interval a, Interval b) =>
-            {
-                return a.start - b.start;
-            }
-            );
+            Array.Sort(intervals, (Interval a, Interval b) => { return a.start.CompareTo(b.start);});
 
             for (int i = 1; i < intervals.Length; i++)
             {
@@ -427,7 +777,7 @@ namespace Interview
         //Given two binary strings, return their sum (also a binary string).
         // For example,        a = "11"  b = "1", return "100".
         public string AddBinary(string a, string b)
-        {
+        {            
             if (string.IsNullOrEmpty(a) && string.IsNullOrEmpty(b))
                 return "0";
             if (string.IsNullOrEmpty(a) && !string.IsNullOrEmpty(b))
@@ -556,7 +906,7 @@ namespace Interview
                 else
                     map[list[i]].Add(i);
             }
-
+            
             foreach (var pair in map)
             {
                 ret.Add(new List<string>());
@@ -568,7 +918,28 @@ namespace Interview
 
             return ret;
         }
+        public IList<List<string>> GroupAnagrams2(string[] strs)
+        {
+            var ret = new List<IList<string>>();
+            if (strs == null)
+                return null;
 
+            var map = new Dictionary<string, List<string>>();
+            for (int i = 0; i < strs.Length; i++)
+            {
+                var keyStr = new string(strs[i].OrderBy(c => c).ToArray());
+
+                if (!map.ContainsKey(keyStr))
+                {
+                    map.Add(keyStr, new List<string>() { strs[i] });
+                }
+                else
+                {
+                    map[keyStr].Add(strs[i]);
+                }
+            }
+            return map.Values.ToList();
+        }
 
         //14. Longest Common Prefix
         //Write a function to find the longest common prefix string amongst an array of strings
@@ -693,6 +1064,11 @@ namespace Interview
         }
 
         //5. Longest Palindromic Substring
+        //Given a string s, find the longest palindromic substring in s.You may assume that the maximum length of s is 1000.
+        //Example 1:
+        //Input: "babad"
+        //Output: "bab"
+        //Note: "aba" is also a valid answer.
         int startIdx = 0;
         int maxLen = 0;
         public string LongestPalindrome(string s)
@@ -710,7 +1086,7 @@ namespace Interview
                 maxCheck(s, i, i + 1);
             }
             return s.Substring(startIdx, maxLen);
-        }
+        }        
         void maxCheck(string s, int st, int ed)
         {
             while (st >= 0 && ed < s.Length && s[st] == s[ed])
@@ -855,78 +1231,7 @@ namespace Interview
             return ret;
         }
 
-        //81. Search in Rotated Sorted Array II  with duplicate number
-        public bool SearchRotatedSortedArray2(int[] nums, int target)
-        {
-            if (nums == null || nums.Length == 0)
-                return false;
-
-            int lo = 0;
-            int hi = nums.Length - 1;
-
-            while (lo <= hi)
-            {
-                int piv = (lo + hi) / 2;
-
-                if (nums[piv] == target)
-                    return true;
-                if (nums[piv] > nums[hi])
-                {
-                    if (target < nums[piv] && target >= nums[lo])
-                        hi = piv - 1;
-                    else
-                        lo = piv + 1;
-                }
-                else if (nums[piv] < nums[hi])
-                {
-                    if (target > nums[piv] && target <= nums[hi])
-                        lo = piv + 1;
-                    else
-                        hi = piv - 1;
-                }
-                else
-                    hi--;
-            }
-            return false;
-        }
-
-
-        //33. Search in Rotated Sorted Array
-        //Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.
-        //(i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).
-        //You are given a target value to search.If found in the array return its index, otherwise return -1.
-        //You may assume no duplicate exists in the array.
-        public int SearchRotatedSortedArray(int[] nums, int target)
-        {
-            if (nums == null || nums.Length == 0)
-                return -1;
-
-            int lo = 0;
-            int hi = nums.Length - 1;
-            //find min value index, which is rotated index
-            while (lo < hi)
-            {
-                int mid = (lo + hi) / 2;
-                if (nums[mid] > nums[hi])
-                    lo = mid + 1;
-                else
-                    hi = mid;
-            }
-            // lo==hi is the index of the smallest value and also the number of places rotated.
-            int rot = lo;
-            lo = 0; hi = nums.Length - 1;
-            while (lo <= hi)
-            {
-                int mid = (lo + hi) / 2;
-                int realmid = (mid + rot) % nums.Length;
-                if (nums[realmid] == target) return realmid;
-                if (nums[realmid] < target) lo = mid + 1;
-                else hi = mid - 1;
-            }
-            return -1;
-
-        }
-
+        
         //277. Find the Celebrity
         //Suppose you are at a party with n people (labeled from 0 to n - 1) and among them, there may 
         //exist one celebrity. The definition of a celebrity is that all the other n - 1 people know 
@@ -1124,13 +1429,26 @@ namespace Interview
         //Note:You must do this in-place without making a copy of the array.Minimize the total number of operations.
         public void MoveZeroes(int[] nums)
         { //smart solution~
-            int zIdx = 0;
+            if (nums == null || nums.Length == 0)
+                return;
+
+            int zIdxx = -1;
             for (int i = 0; i < nums.Length; i++)
             {
-                if (nums[i] != 0)
+                if (nums[i] == 0)
                 {
-                    swap(nums, i, zIdx);
-                    zIdx++;
+                    zIdxx = i;
+                    break;
+                }
+            }
+            if (zIdxx == -1)
+                return;
+            for (int j = zIdxx + 1; j < nums.Length; j++)
+            {
+                if (nums[j] != 0)
+                {
+                    swap(nums, j, zIdxx);
+                    zIdxx++;
                 }
             }
         }
@@ -1201,7 +1519,7 @@ namespace Interview
                     jumpCount++;
                 else
                 {
-                    nums[i - jumpCount] = nums[i];
+                    nums[i - jumpCount] = nums[i];//or swap
                     ret += 1;
                 }
             }
@@ -1728,6 +2046,7 @@ namespace Interview
             return ret;
         }
 
+        
         //88. Merge Sorted Array  
         //Given two sorted integer arrays nums1 and nums2, merge nums2 into nums1 as one sorted array.
         //Note:You may assume that nums1 has enough space(size that is greater or equal to m + n) to 
@@ -1964,6 +2283,48 @@ namespace Interview
             return ret;
         }
 
+        //amazon OA k nearest point，背景是一个城市有N个牛排馆，牛排馆的坐标都是存在allocations的list里面
+        //(类型是List<List<Integer>>)，然后要求返回k个最近的牛排馆给用户，用户位置在坐标(0, 0)
+        public List<List<int>> ClosestXdestinations(int numDestinations, int[,] allLocations, int numDeliveries)
+        {
+            // WRITE YOUR CODE HERE
+            // considering edge case:
+            var ret = new List<List<int>>();
+            if (allLocations == null || allLocations.GetLength(0) == 0 || allLocations.GetLength(1) == 0 || numDeliveries > numDestinations)
+                return ret;
+
+            //get all delivery point into class, then we can find distance and sort it 
+            var delList = new List<LFromOrigin>();
+
+            for (int i = 0; i < allLocations.GetLength(0); i++)
+            {
+                delList.Add(new LFromOrigin(allLocations[i, 0], allLocations[i, 1]));
+            }
+
+            //sort by distance and just take numDeliveries
+            delList = delList.OrderBy((d) => d.dist).Take(numDeliveries).ToList();
+
+            for (int i = 0; i < delList.Count; i++)
+            {
+                ret.Add(new List<int>() { delList[i].x, delList[i].y });
+            }
+            return ret;
+        }
+        class LFromOrigin
+        {
+            public int x;
+            public int y;
+            public int dist;
+
+            public LFromOrigin(int i, int j)
+            {
+                x = i;
+                y = j;
+                dist = (x * x) + (y * y);
+            }
+        }
+        
+
         //leetcode 1. Two Sum
         //Given an array of integers, return indices of the two numbers such that they add up to a specific target.
         //You may assume that each input would have exactly one solution, and you may not use the same element twice.
@@ -1986,6 +2347,64 @@ namespace Interview
             }
             return ret.ToArray();
         }
+
+        //amazon OA 背景是无人机送货，无人机有最大里程，然后给了两个list，分别是出发和返回的里程数，数据类型是List<List<Integer>>，
+        //list里面只有id和里程两个值，要求找出所有出发和返回里程数之和最接近无人机最大里程的pair。比如，最大里程M = 10000，
+        //forwarding = [[1, 1000],[2, 7000],[3, 12000]], retrun = [[1, 10000],[2, 9000],[3, 3000],[4, 2000]], 
+        //最接近的里程和是10000，所以结果是[[1, 2],[2, 3]].
+        public List<List<int>> ClosestPair(List<List<int>> forward, List<List<int>> returning, int target)
+        {
+            var ret = new List<List<int>>();
+            if (forward == null || returning == null)
+                return ret;
+
+            forward = forward.OrderBy((x) => x[1]).ToList();
+            returning = returning.OrderBy((r)=>r[1]).ToList();
+
+            int i = 0;
+            int j = returning.Count - 1;
+            int min = int.MaxValue;
+            int targetSum = int.MinValue;
+            while(i < forward.Count && j >= 0)
+            {                
+                    int curSum = forward[i][1] + returning[j][1];
+                    if (target - curSum > 0)
+                    {
+                        i++;
+                        if(target - curSum < min)
+                        {
+                            min = target - curSum;
+                            targetSum = curSum;
+                        }
+                    }
+                    else
+                    {
+                        j--;
+                        if (curSum - target < min)
+                        {
+                            min = curSum - target;
+                            targetSum = curSum;
+                        }
+                    }                
+            }
+            //already find out closet sum value (max) , then go to and index combination
+            //var fMap = new Dictionary<int, int>();
+            //use 2 sum skill
+            var rMap = new Dictionary<int, int>();
+            foreach(var r in returning)
+                rMap.Add(r[1],r[0]);
+                        
+            for(int idx = 0; idx < forward.Count; idx++)
+            {
+                if(rMap.ContainsKey(targetSum - forward[idx][1]))
+                {
+                    ret.Add(new List<int>() { forward[idx][0], rMap[targetSum - forward[idx][1]] });
+                }
+            }
+
+            return ret;
+        }
+
 
 
         //leetcode 15. 3Sum
@@ -2084,6 +2503,22 @@ namespace Interview
             int ideasum = ((nums.Length) * (1 + nums.Length)) / 2;
 
             return ideasum - realsum;
+        }
+
+        //[-2,0, 1,2] missing -1 
+        int missingNumberII(int[] nums)
+        {
+            //find min first ; 
+            int min = -2; //e.g. 
+
+            int res = 0;
+
+            for (int i = 0; i < nums.Length; ++i)
+            {
+                res ^= (i+min) ^ nums[i];
+            }
+            res ^= (min + nums.Length);
+            return res;
         }
 
         //8. String to Integer (atoi) MS OA

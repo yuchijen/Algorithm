@@ -32,6 +32,55 @@ namespace Interview
 
     public class LinkedList
     {
+
+        //143. Reorder List
+        //Given a singly linked list L: L0→L1→…→Ln-1→Ln, reorder it to: L0→Ln→L1→Ln-1→L2→Ln-2→…
+        //You may not modify the values in the list's nodes, only nodes itself may be changed.
+        //Example 1:  Given 1->2->3->4->5, reorder it to 1->5->2->4->3.
+        public void ReorderList(ListNode head)
+        {
+            if (head == null || head.next == null)
+                return;
+
+            ListNode ptr = head;
+            ListNode ptr2 = head;
+            //find middle ptr
+            while (ptr2.next != null && ptr2.next.next != null)
+            {
+                ptr = ptr.next;
+                ptr2 = ptr2.next.next;
+            }
+
+            //reverse second half list e.g. 1->2->3->4->5->6 to 1->2->3->6->5->4
+            ListNode midPre = ptr;
+            ListNode midHead = ptr.next;
+            ListNode pivol = ptr.next;
+            ListNode front = null;
+            while (pivol != null && pivol.next != null)
+            {
+                front = pivol.next;
+                pivol.next = pivol.next.next;
+                front.next = midHead;
+                midHead = front;
+                midPre.next = midHead;
+            }
+
+            //Start reorder one by one  1->2->3->6->5->4 to 1->6->2->5->3->4
+
+            ListNode ptr1 = head;
+            ListNode ptr22 = midPre.next;
+
+            while (ptr1 != midPre)
+            {
+                midPre.next = ptr22.next;
+                ptr22.next = ptr1.next;
+                ptr1.next = ptr22;
+                ptr1 = ptr22.next;
+                ptr22 = midPre.next;
+            }
+        }
+
+
         //Doubly linkedlist contains 0 and 1 only, sort it in O(n), in-space
         // e.g.  0 <-> 1 <-> 1 <-> 0 <-> 1 <-> 0  
         //return 0 <-> 0 <-> 0 <-> 1 <-> 1 <-> 1
@@ -62,6 +111,39 @@ namespace Interview
             return head;
         }
 
+
+        //21 Merge Two Sorted Lists
+        public ListNode MergeTwoLists(ListNode l1, ListNode l2)
+        {
+            if (l1 == null)
+                return l2;
+            if (l2 == null)
+                return l1;
+            var preHead = new ListNode(-1);
+            
+            var cur = preHead;
+
+            while (l1 != null && l2 != null)
+            {
+                if (l1.val < l2.val)
+                {
+                    cur.next = l1;
+                    l1 = l1.next;
+                }
+                else
+                {
+                    cur.next = l2;
+                    l2 = l2.next;
+                }
+                cur = cur.next;
+            }
+            if (l1 != null)
+                cur.next = l1;
+            if (l2 != null)
+                cur.next = l2;
+
+            return preHead.next;
+        }
         //Sort 2 Sorted LinkedList
         public ListNode SortTwo(ListNode n1, ListNode n2)
         {
@@ -106,8 +188,37 @@ namespace Interview
             }
             return ret.next;
         }
-       
-        
+
+
+        //23. Merge k Sorted Lists
+        //Merge k sorted linked lists and return it as one sorted list.Analyze and describe its complexity.
+        //Example: Input:
+        //[
+        //  1->4->5,
+        //  1->3->4,
+        //  2->6
+        //]        Output: 1->1->2->3->4->4->5->6
+        public ListNode MergeKLists(ListNode[] lists)
+        {
+            if (lists == null || lists.Length == 0)
+                return null;
+            int st = 0;
+            int end = lists.Length-1;
+
+            while (end > 0)
+            {
+                st = 0;
+                while(st < end)
+                {
+                    lists[st] = MergeTwoLists(lists[st], lists[end]);
+                    st++;
+                    end--;
+                }
+            }
+            return lists[0];
+        }
+
+
         //328. Odd Even Linked List
         //Given a singly linked list, group all odd nodes together followed by the even nodes. 
         //Please note here we are talking about the node number and not the value in the nodes.
@@ -190,6 +301,23 @@ namespace Interview
             }
 
             return ret.next;
+        }
+
+        //space complex O(1);
+        public ListNode ReverseList2(ListNode head)
+        {
+            if (head == null)
+                return null;
+            var new_h = head;
+
+            while(head!= null && head.next!=null)
+            {
+                var cur = head.next;
+                head.next = head.next.next;
+                cur.next = new_h;
+                new_h = cur;
+            }
+            return new_h;
         }
 
         //24. Swap Nodes in Pairs

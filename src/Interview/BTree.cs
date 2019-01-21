@@ -20,6 +20,109 @@ namespace Interview
     }
     public class BTree
     {
+        //124. Binary Tree Maximum Path Sum
+        //Given a non-empty binary tree, find the maximum path sum.
+        //For this problem, a path is defined as any sequence of nodes from some starting node to 
+        //any node in the tree along the parent-child connections. The path must contain at least one 
+        //node and does not need to go through the root.
+        //Example 2:   Input: [-10,9,20,null,null,15,7]
+        //         -10
+        //          / \
+        //         9  20
+        //           /  \
+        //          15   7      Output: 42
+        public int MaxPathSum(TreeNode root)
+        {
+            var ret = new int[] { int.MinValue };
+            MaxPathSumDfs(root, ret);
+            return ret[0];
+        }
+        int MaxPathSumDfs(TreeNode node, int[] ret)
+        {
+            if (node == null)
+                return 0;
+
+            int left = MaxPathSumDfs(node.left, ret);
+            int right = MaxPathSumDfs(node.right, ret);
+
+            left = left > 0 ? left : 0;
+            right = right > 0 ? right : 0;
+
+            ret[0] = Math.Max(ret[0], left + right + node.val);
+            return Math.Max(left, right) + node.val;
+
+        }
+
+
+
+        //199. Binary Tree Right Side View
+        //Example: Input: [1,2,3,null,5,null,4]  Output: [1, 3, 4]
+        //Explanation:
+        //           1            <---
+        //         /   \
+        //         2     3         <---
+        //          \     \
+        //           5     4       <---
+        public IList<int> RightSideView(TreeNode root)
+        {
+            var ret = new List<int>();
+            if (root == null)
+                return ret;
+            DFSRightSideView(0, root, ret);
+            return ret;
+        }
+        void DFSRightSideView(int depth, TreeNode root, List<int> ret)
+        {
+            if (root == null)
+                return;
+            if (ret.Count == depth)
+            {
+                ret.Add(root.val);                
+            }
+            DFSRightSideView(depth + 1, root.right, ret);
+            DFSRightSideView(depth + 1, root.left, ret);
+        }
+
+
+        //543. Diameter of Binary Tree(Recur)
+        public int DiameterOfBinaryTree(TreeNode root)
+        {
+            if (root == null)
+                return 0;
+
+            int res = MaxDepth(root.left) + MaxDepth(root.right);
+            return Math.Max(res, Math.Max(DiameterOfBinaryTree(root.left), DiameterOfBinaryTree(root.right)));
+
+        }
+
+
+        //404. Sum of Left Leaves
+        //       3
+        //      / \
+        //     9  20
+        //       /  \
+        //      15   7
+        //There are two left leaves in the binary tree, with values 9 and 15 respectively.Return 24.
+        public int SumOfLeftLeaves(TreeNode root)
+        {
+            if (root == null)
+                return 0;
+
+            return SumOfLeftLeavesHelper(root, false);            
+        }
+
+        int SumOfLeftLeavesHelper(TreeNode node, bool left)
+        {
+            if (node == null)
+                return 0;
+            int sum = 0;
+            
+            if (left && node.left == null && node.right == null)
+                sum += node.val;
+
+            return sum += SumOfLeftLeavesHelper(node.left, true) + SumOfLeftLeavesHelper(node.right, false);
+        }
+
         //110. Balanced Binary Tree
         //Given a binary tree, determine if it is height-balanced.
         //For this problem, a height-balanced binary tree is defined as:
@@ -131,6 +234,39 @@ namespace Interview
             }
             return null;
         }
+
+        public TreeNode inorderSuccessorBTree2(TreeNode root, TreeNode p)
+        {
+            if (root == null || p == null)
+                return null;
+            var st = new Stack<TreeNode>();
+            saveLeftSubTree(root, st);
+
+            while(st.Count>0)
+            {
+                var curNode = st.Pop();
+                if (curNode!=null && curNode == p)
+                {
+                    if (st.Count > 0)
+                        return st.Pop();
+                    else
+                        return null;
+                }
+                else
+                {
+                    saveLeftSubTree(curNode.right, st);
+                }
+            }
+            return null;
+        }
+        void saveLeftSubTree(TreeNode node, Stack<TreeNode> st)
+        {
+            if (node == null)
+                return;
+            st.Push(node);
+            saveLeftSubTree(node.left, st);
+        }
+
         TreeNode findMostLeftChildHelper(TreeNode node)
         {
             if (node == null)
@@ -569,6 +705,19 @@ namespace Interview
             return 1 + Math.Max(MaxDepth(root.left), MaxDepth(root.right));
         }
 
+        public int MaxDepthWithHashTable(TreeNode root, Dictionary<TreeNode,int> map)
+        {
+            if (root == null)
+                return 0;
+
+            if (map.ContainsKey(root))
+                return map[root];
+            
+            int dep=  1 + Math.Max(MaxDepthWithHashTable(root.left,map), MaxDepthWithHashTable(root.right,map));
+            map.Add(root, dep);
+            return dep;
+        }
+
         //366. Find Leaves of Binary Tree
         //Given a binary tree, collect a tree's nodes as if you were doing this: Collect and remove all leaves, repeat until the tree is empty.
         // Example:  Given binary tree 
@@ -668,6 +817,23 @@ namespace Interview
         }
 
 
+        //701. Insert into a Binary Search Tree
+        //Given the root node of a binary search tree(BST) and a value to be inserted into the tree, 
+        //insert the value into the BST.Return the root node of the BST after the insertion.It is 
+        //guaranteed that the new value does not exist in the original BST.
+        //Note that there may exist multiple valid ways for the insertion, as long as the tree remains 
+        //a BST after insertion.You can return any of them.
+        TreeNode insertIntoBST(TreeNode root, int val) {
+            if (root == null)
+                return new TreeNode(val);
+
+            if (val > root.val)
+                root.right = insertIntoBST(root.right, val);
+            else
+                root.left = insertIntoBST(root.left, val);
+
+            return root;
+        }
 
         //102. Binary Tree Level Order Traversal
         public IList<IList<int>> LevelOrder(TreeNode root)
@@ -738,7 +904,19 @@ namespace Interview
         //235. Lowest Common Ancestor of a Binary Search Tree
         //Given a binary search tree (BST), find the lowest common ancestor (LCA) of two given nodes in the BST.
         //According to the definition of LCA on Wikipedia: “The lowest common ancestor is defined between two 
-        //nodes v and w as the lowest node in T that has both v and w as descendants(where we allow a node to be a descendant of itself).”
+        //nodes v and w as the lowest node in T that has both v and w as descendants(where we allow a node to be 
+        //a descendant of itself).”
+        public TreeNode LowestCommonAncestorBST(TreeNode root, TreeNode p, TreeNode q)
+        {
+            if (root == null)
+                return null;
+            if (root.val > p.val && root.val > q.val)
+                return LowestCommonAncestorBST(root.left, p, q);
+            else if (root.val < p.val && root.val < q.val)
+                return LowestCommonAncestorBST(root.right, p, q);
+            else
+                return root;
+        }
         public TreeNode LowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q)
         {
             if (root == null)
@@ -762,6 +940,7 @@ namespace Interview
             return isChild(root.left, n) || isChild(root.right, n);
         }
 
+        //236. Lowest Common Ancestor of a Binary Tree
         public TreeNode LowestCommonAncestor2(TreeNode root, TreeNode p, TreeNode q)
         {
             if (root == null || root == p || root == q)
@@ -793,6 +972,40 @@ namespace Interview
                 return false;
 
             return helper(root.left, min, root.val) && helper(root.right, root.val, max);
+        }
+
+        //in-order is sorted in BST
+        public bool isValidBST2(TreeNode root)
+        {
+            if (root == null)
+                return true;
+
+            var st = new Stack<TreeNode>();
+
+            putLeftNodeToStack(root,st);
+            int prev = int.MinValue;
+
+            while (st.Count > 0)
+            {
+                var curN = st.Pop();
+                if (curN.val < prev)
+                    return false;
+
+                prev = curN.val;
+                if (curN.right != null)
+                    putLeftNodeToStack(curN.right, st);
+
+            }
+            return true;
+        }
+
+        void putLeftNodeToStack(TreeNode r, Stack<TreeNode> st)
+        {
+            while (r != null)
+            {
+                st.Push(r);
+                r = r.left;
+            }
         }
 
         //270. Closest Binary Search Tree Value

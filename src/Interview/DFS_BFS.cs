@@ -13,6 +13,682 @@ namespace Interview
     }
     public class DFS_BFS
     {
+        //953. Verifying an Alien Dictionary
+        //In an alien language, surprisingly they also use english lowercase letters, but possibly in a different order. The order of the alphabet is some permutation of lowercase letters.
+        //Given a sequence of words written in the alien language, and the order of the alphabet, return true if and only if the given words are sorted lexicographicaly in this alien language.
+        //Example 1: Input: words = ["hello","leetcode"], order = "hlabcdefgijkmnopqrstuvwxyz"
+        //Output: true
+        //Explanation: As 'h' comes before 'l' in this language, then the sequence is sorted.
+        //Example 2:
+        //Input: words = ["word","world","row"], order = "worldabcefghijkmnpqstuvxyz"
+        //Output: false
+        //Explanation: As 'd' comes after 'l' in this language, then words[0] > words[1], hence the sequence is unsorted.
+        //Input: words = ["apple","app"], order = "abcdefghijklmnopqrstuvwxyz"
+        //Output: false
+        public bool IsAlienSorted2(string[] words, string order)
+        {
+            if (words == null || words.Length == 0)
+                return true;
+            
+            for (int i = 0; i < words.Length - 1; ++i)
+            {
+                if (!inorder(words[i], words[i + 1], order))
+                    return false;             
+            }
+            return true;
+        }
+        public bool inorder(String w1, String w2, string order)
+        {
+            for (int i = 0; i < w1.Length ; i++)
+            {
+                if (i >= w2.Length)
+                    return false;
+                if (order.IndexOf(w1[i]) < order.IndexOf(w2[i]))
+                    return true;
+                else if (order.IndexOf(w1[i]) > order.IndexOf(w2[i]))
+                    return false;                             
+            }
+            return true;
+            //return w1.Length <= w2.Length;
+        }
+        
+
+        //636. Exclusive Time of Functions
+        //Given the running logs of n functions that are executed in a nonpreemptive single threaded CPU, find the exclusive time of these functions.
+        //Each function has a unique id, start from 0 to n-1. A function may be called recursively or by another function.
+        //A log is a string has this format : function_id:start_or_end:timestamp. For example, "0:start:0" means function 0 starts from the very beginning of time 0. "0:end:0" means function 0 ends to the very end of time 0.
+        //Exclusive time of a function is defined as the time spent within this function, the time spent by calling other functions should not be considered as this function's exclusive time. You should return the exclusive time of each function sorted by their function id.
+        //Functions could be called recursively, and will always end.
+        //0start0 1start2 0end5 1end6 impossible 
+        //0start0 1start2 1end5 0end6
+        public int[] ExclusiveTime(int n, IList<string> logs)
+        {
+            if (logs == null)
+                return new int[] { };
+            var ret = new int[n];
+
+            var st = new Stack<int>();
+            int pre = 0;
+            for(int i=0; i< logs.Count; i++)
+            {
+                int id =int.Parse( logs[i].Split(':')[0]);
+                string stOrEnd = logs[i].Split(':')[1];
+                int time = int.Parse(logs[i].Split(':')[2]);
+
+                if (stOrEnd.Equals("start"))
+                {
+                    if (st.Count > 0)
+                    {
+                        ret[st.Peek()] += time - pre; 
+                    }
+                    pre = time;
+                    st.Push(id);                    
+                }
+                else
+                {
+                    if (st.Count > 0)
+                    {
+                        ret[st.Peek()] += time - pre + 1;
+                        pre = time+1;   //be aware +1
+                        st.Pop();
+                    }
+                }
+
+            }
+            return ret;
+        }
+
+
+        //886. Possible Bipartition
+        public bool PossibleBipartition(int N, int[][] dislikes)
+        {
+            if (N == 0 || dislikes == null)
+                return false;
+            var visited = new int[N+1];
+            int color = 1;
+            for(int i=1; i<= N; i++)
+            {
+                if (visited[i] == 0 && !PossibleBipartitionDFS(color,dislikes,visited, i))
+                    return false;
+            }
+
+            return true;
+        }
+        bool PossibleBipartitionDFS(int color, int[][] graph, int[] visited, int i)
+        {
+            visited[i] = color;
+            
+                for(int j =0; j< graph[i].Length; j++)
+                {
+                    if (visited[graph[i][j]] ==color)
+                        return false;
+
+                    if (visited[graph[i][j]] == 0 && !PossibleBipartitionDFS(-color, graph, visited, visited[graph[i][j]]))
+                        return false;
+                }
+            
+            return true;
+        }
+
+
+        //785. Is Graph Bipartite?
+        //Given an undirected graph, return true if and only if it is bipartite.
+        //Recall that a graph is bipartite if we can split it's set of nodes into two independent subsets A and B such that every edge in the graph has one node in A and another node in B.
+        //The graph is given in the following form: graph[i] is a list of indexes j for which the edge between nodes i and j exists.Each node is an integer between 0 and graph.length - 1.  There are no self edges or parallel edges: graph[i] does not contain i, and it doesn't contain any element twice.
+        //e.g. Input: [[1,3], [0,2], [1,3], [0,2]]
+        //Output: true
+        //hint: every node's neighber has to hold different color (only 2 colors bipartite) 
+        // Time: O(V+E)  numbers of node and connections 
+        //space: O(V+E)
+        public bool IsBipartite(int[][] graph)
+        {
+            if (graph == null)
+                return false;
+
+            // 0 means not visited yet, 1 means visited as 1 party color, -1 means visited as another party color
+            var visited = new int[graph.Length];
+
+            for (int i = 0; i < visited.Length; i++)
+            {
+                if (visited[i] == 0 && !BipartiteDFSHelper(visited, graph, i, 1))
+                    return false;
+            }
+            return true;
+        }
+        bool BipartiteDFSHelper(int[] visited, int[][] graph, int key, int color)
+        {
+            visited[key] = color;
+            for (int i = 0; i < graph[key].Length; i++)// traversal neighbors and check 
+            {
+                if (visited[graph[key][i]] == color) //if neighbor has the same color, false
+                    return false;
+                if (visited[graph[key][i]] == 0 && !BipartiteDFSHelper(visited, graph, graph[key][i], -color))
+                    return false;
+            }
+            return true;
+        }
+
+        public bool IsBipartiteBFS(int[][] graph)
+        {
+            if (graph == null)
+                return false;
+
+            // 0 means not visited yet, 1 means visited as 1 party color, -1 means visited as another party color
+            var visited = new int[graph.Length];
+            var q = new Queue<int>();
+
+
+            for (int i =0; i< graph.Length; i++)
+            {
+                if(visited[i]!=0)
+                    continue;
+                q.Enqueue(i);
+                visited[i] = 1;
+                while (q.Count > 0)
+                {
+                    var node = q.Dequeue();
+                    int curColor = visited[node];
+
+                    for (int j = 0; j < graph[node].Length; j++)
+                    {
+                        if (visited[graph[node][j]] == curColor)
+                            return false;
+                        if (visited[graph[node][j]] == 0)
+                        {
+                            q.Enqueue(graph[node][j]);
+                            visited[graph[node][j]] = -curColor;
+                        }
+                    }
+                }                
+            }
+            return true;
+        }
+        
+        //269. Alien Dictionary (topological sort)
+        //There is a new alien language which uses the latin alphabet. However, the order among letters 
+        //are unknown to you. You receive a list of non-empty words from the dictionary, where words 
+        //are sorted lexicographically by the rules of this new language. Derive the order of letters 
+        //in this language.
+        //Example 1:  
+        //Input:[
+        //      "wrt",
+        //      "wrf",
+        //      "er",
+        //      "ett",
+        //      "rftt"
+        //      ]    Output: "wertf"
+        //e.g.2 Input:
+        //[
+        //  "z",
+        //  "x",
+        //  "z"
+        //]   Output: ""   cycle not allowed
+        //Note:
+        //You may assume all letters are in lowercase.
+        //You may assume that if a is a prefix of b, then a must appear before b in the given dictionary.
+        //If the order is invalid, return an empty string.
+        //There may be multiple valid order of letters, return any one of them is fine.
+        public string alienOrder(string[] words)
+        {
+            if (words == null)
+                return null;
+
+            var map = genAlienMap(words);
+            var allSet = new HashSet<char>();
+            for (int i = 0; i < words.Length; i++)
+            {
+                foreach (var c in words[i])
+                    allSet.Add(c);
+            }
+
+            var visited = new Dictionary<char, int>();
+            // if value == 1 means this is in visiting process from a char
+            // if value == 2 means this char is visited already
+
+            var ret = new StringBuilder();
+            foreach (var c in allSet)
+            {
+                if (FindOrder(c, ret, map, visited)) //if cycle happened
+                {
+                    return "";
+                }
+            }
+            return allSet.Count == ret.Length ? ret.ToString() : "";
+
+        }
+
+        //return true if found cycle
+        bool FindOrder(char c, StringBuilder ret, Dictionary<char, HashSet<char>> map, Dictionary<char, int> visited)
+        {
+            if (visited.ContainsKey(c))
+            {
+                if (visited[c] == 1)
+                    return true;
+
+                return false;
+            }
+            visited.Add(c, 1);
+
+            foreach (var cc in map[c])
+            {
+                if (FindOrder(cc, ret, map, visited))
+                    return true;
+            }
+
+            visited[c] = 2;
+            ret.Append(c);
+            return false;
+        }
+
+        Dictionary<char, HashSet<char>> genAlienMap(string[] words)
+        {
+            if (words == null)
+                return null;
+            var map = new Dictionary<char, HashSet<char>>();
+            for (int i = 0; i < words.Length - 1; i++)
+            {
+                int idx = 0;
+                while (idx < Math.Min(words[i].Length, words[i + 1].Length))
+                {
+                    if (words[i][idx] != words[i + 1][idx])
+                    {
+                        if (map.ContainsKey(words[i][idx]))
+                            map[words[i][idx]].Add(words[i + 1][idx]);
+                        else
+                            map.Add(words[i][idx], new HashSet<char> { words[i + 1][idx] });
+
+                        break;
+                    }
+                    idx++;
+                }
+            }
+            return map;
+        }
+
+
+        //10. Regular Expression Matching
+        //Given an input string (s) and a pattern (p), implement regular expression matching with support for '.' and '*'.
+        //'.' Matches any single character.'*' Matches zero or more of the preceding element.
+        //The matching should cover the entire input string (not partial).
+        //Note: s could be empty and contains only lowercase letters a-z.
+        //p could be empty and contains only lowercase letters a-z, and characters like.or*.
+        //Example 1: Input: s = "aa"  p = "a" Output: false
+        //Explanation: "a" does not match the entire string "aa".
+        //Example 2: Input: s = "aa"  p = "a*"  Output: true
+        //Explanation: '*' means zero or more of the precedeng element, 'a'. Therefore, by repeating 'a' 
+        //once, it becomes "aa".
+        //Example 3: Input:s = "ab" p = ".*" Output: true
+        //Explanation: ".*" means "zero or more (*) of any character (.)".
+        //Example 4: Input: s = "aab" p = "c*a*b" Output: true
+        //Explanation: c can be repeated 0 times, a can be repeated 1 time.Therefore it matches "aab".
+        public bool IsMatch(string s, string p)
+        {
+            if (s == null || p == null)
+                return false;
+            if (s == p)
+                return true;
+            return isMatch(s, p, 0, 0);
+        }
+        bool isMatch(String s, String p, int i, int j)
+        {
+            if (j == p.Length)
+            {
+                return s.Length == i;
+            }
+            bool isFirstMatch = i < s.Length && (s[i] == p[j] || p[j] == '.');
+
+            //next char is *, then if first char not match, the * is 0, go check next in j and i remain the same
+            if (j + 1 < p.Length && p[j + 1] == '*') 
+            {
+                return isMatch(s, p, i, j + 2) || (isFirstMatch && isMatch(s, p, i + 1, j));
+            }
+            else
+            {
+                return isFirstMatch && isMatch(s, p, i + 1, j + 1);
+            }
+        }
+
+
+        //680. Valid Palindrome II
+        //Given a non-empty string s, you may delete at most one character. Judge whether you can make it a palindrome.
+        // Example 1:Input: "aba"   Output: True
+        //Example 2:   Input: "abca"  Output: True
+        //Explanation: You could delete the character 'c'.
+        public bool ValidPalindrome(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+                return false;
+
+            return ValidPalindromeHelper(s, true);
+        }
+        bool ValidPalindromeHelper(string s, bool firstTime)
+        {
+            int st = 0;
+            int end = s.Length - 1;
+
+            while (st < end)
+            {
+                if (s[st] != s[end] && !firstTime)
+                {
+                    return false;
+                }
+                else if (s[st] != s[end] && firstTime)
+                {
+                    return ValidPalindromeHelper(s.Remove(st, 1), false) || ValidPalindromeHelper(s.Remove(end, 1), false);
+                }
+                else
+                {
+                    st++;
+                    end--;
+                }
+            }
+            return true;
+        }
+
+
+        //426. Convert Binary Search Tree to Sorted Doubly Linked List
+        public class Node
+        {
+            public int val;
+            public Node left;
+            public Node right;
+
+            public Node() { }
+            public Node(int _val, Node _left, Node _right)
+            {
+                val = _val;
+                left = _left;
+                right = _right;
+            }
+        }
+        public Node treeToDoublyList(Node root)
+        {
+            Node head = null;
+            Node prev = null;
+            var st = new Stack<Node>();
+            while (root != null || st.Count > 0)
+            {
+                if (root != null) //push sub-left tree nodes
+                {
+                    st.Push(root);
+                    root = root.left;
+                }
+                else
+                {
+                    var curNode = st.Pop();
+                    if (prev == null)
+                    {
+                        head = root;
+                    }
+                    else
+                    {
+                        prev.right = root;  //connect double links
+                        root.left = prev;
+                    }
+                    prev = root;
+                    root = root.right;
+                }
+            }
+            prev.right = head;
+            head.left = prev;
+            return head;
+        }
+
+
+        //621. Task Scheduler
+        //Given a char array representing tasks CPU need to do. It contains capital letters A to Z where 
+        //different letters represent different tasks.Tasks could be done without original order. 
+        //Each task could be done in one interval. For each interval, CPU could finish one task or just be idle.
+        //However, there is a non-negative cooling interval n that means between two same tasks, there must 
+        //be at least n intervals that CPU are doing different tasks or just be idle.
+        //You need to return the least number of intervals the CPU will take to finish all the given tasks.
+        //Example:    Input: tasks = ["A","A","A","B","B","B"], n = 2
+        //Output: 8   Explanation: A -> B -> idle -> A -> B -> idle -> A -> B.
+        //ref:https://zxi.mytechroad.com/blog/greedy/leetcode-621-task-scheduler/
+        public int LeastInterval(char[] tasks, int n)
+        {
+            if (n == 0)
+                return 0;
+
+            if (tasks == null || tasks.Length == 0)
+                return 0;
+
+            int[] vector = new int[26];
+            for (int i = 0; i < tasks.Length; i++)
+            {
+                vector[tasks[i] - 'A']++;
+            }
+
+            //find max count char 
+            int maxCount = vector.Max();
+            int ret = (maxCount - 1) * (n + 1);
+
+            //find how many char has max count
+            int p = 0;
+            p = vector.Where(i => i == maxCount).Count();
+
+            return tasks.Length > ret + p ? tasks.Length : ret + p;
+        }
+
+
+        //282. Expression Add Operators
+        //Given a string that contains only digits 0-9 and a target value, return all possibilities to add binary operators(not unary) +, -, or* between the digits so they evaluate to the target value.
+        //Example 1:
+        //Input: num = "123", target = 6
+        //Output: ["1+2+3", "1*2*3"]
+        //ref:https://zxi.mytechroad.com/blog/searching/leetcode-282-expression-add-operators/
+        public IList<string> AddOperators(string num, int target)
+        {
+            if (string.IsNullOrEmpty(num))
+                return null;
+
+            var ret = new List<string>();
+
+            //time complex O( 4^(n-1)) = O(4^n)  (n= length of num, 4 possible operator (including none) put between numbers (n-1) between space 
+
+
+            operatorDFS("", 0, 0, 0, num, target, ret);
+            return ret;
+        }
+
+        void operatorDFS(string expr, int position, int prev, int curSum, string num, int target, List<string> ret)
+        {
+            if (position == num.Length && curSum == target)
+            {
+                ret.Add(expr);
+                return;
+            }
+
+            for (int i = 1; position + i < num.Length; i++)
+            {
+                int n = int.Parse(num.Substring(position, i));
+
+                operatorDFS(expr + '+', position + i, n, curSum + n, num, target, ret);
+                operatorDFS(expr + '-', position + i, -n, curSum - n, num, target, ret);
+                operatorDFS(expr + '*', position + i, prev * n, curSum + prev * n - prev, num, target, ret);
+            }
+
+        }
+
+
+        //301. Remove Invalid Parentheses
+        //Remove the minimum number of invalid parentheses in order to make the input string valid.Return all possible results.
+        //Note: The input string may contain letters other than the parentheses (and ).
+        //Example 1: Input: "()())()"  Output: ["()()()", "(())()"]
+        //Example 2: Input: "(a)())()" Output: ["(a)()()", "(a())()"]
+        public IList<string> RemoveInvalidParentheses(string s)
+        {
+            int removeLeft = 0;
+            int removeRight = 0;
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                removeLeft += s[i] == '(' ? 1 : 0;
+                if (removeLeft == 0)
+                    removeRight += s[i] == ')' ? 1 : 0;
+                else
+                    removeLeft -= s[i] == ')' ? 1 : 0;
+            }
+
+            var ret = new List<string>();
+            dfsFindValidParentheses(s, 0, removeLeft, removeRight, ret);
+            return ret;
+        }
+        bool isValidParenthses(string s)
+        {
+            int count = 0;
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (s[i] == '(')
+                    count++;
+                if (s[i] == ')')
+                    count--;
+                if (count < 0)
+                    return false;
+            }
+            return count == 0;
+        }
+        void dfsFindValidParentheses(string s, int startIdx, int left, int right, List<string> ret)
+        {
+            if (left == 0 && right == 0)
+            {
+                if (isValidParenthses(s))
+                {
+                    ret.Add(s);
+                    return;
+                }
+            }
+
+            for (int i = startIdx; i < s.Length; i++)
+            {   //just remove the first one if have repeated ?  not sure
+                if (i != startIdx && s[i] == s[i - 1])
+                    continue;
+
+                if (s[i] == '(' || s[i] == ')')
+                {
+                    string cur = s;
+                    var curStr = s.Remove(i, 1);
+                    if (left > 0 && s[i] == '(')
+                        dfsFindValidParentheses(curStr, i, left - 1, right, ret);
+                    else if (right > 0 && s[i] == ')')
+                        dfsFindValidParentheses(curStr, i, left, right - 1, ret);
+                }
+            }
+
+        }
+
+
+        //79. Word Search
+        //Given a 2D board and a word, find if the word exists in the grid.
+        //The word can be constructed from letters of sequentially adjacent cell, where "adjacent" cells are 
+        //those horizontally or vertically neighboring.The same letter cell may not be used more than once.
+        //Example:board =
+        //[
+        //  ['A','B','C','E'],
+        //  ['S','F','C','S'],
+        //  ['A','D','E','E']
+        //]
+        //Given word = "ABCCED", return true.
+        //Given word = "SEE", return true.
+        //Given word = "ABCB", return false.
+        public bool Exist(char[,] board, string word)
+        {
+            if (board == null || string.IsNullOrEmpty(word))
+                return false;
+            int row = board.GetLength(0);
+            int col = board.GetLength(1);
+            var visited = new bool[row, col];
+
+            for (int i = 0; i < row; i++)
+            {
+                for (int j = 0; j < col; j++)
+                {
+                    if (existHelper(board, word, visited, 0, i, j))
+                        return true;
+                }
+            }
+            return false;
+        }
+        bool existHelper(char[,] board, string word, bool[,] visited, int wordIdx, int i, int j)
+        {
+            if (word.Length == wordIdx)
+                return true;
+
+            if (i >= board.GetLength(0) || j >= board.GetLength(1) || i < 0 || j < 0)
+                return false;
+
+            if (visited[i, j] || board[i, j] != word[wordIdx])
+                return false;
+
+            visited[i, j] = true;
+            if (existHelper(board, word, visited, wordIdx + 1, i + 1, j) ||
+            existHelper(board, word, visited, wordIdx + 1, i, j + 1) ||
+            existHelper(board, word, visited, wordIdx + 1, i - 1, j) ||
+            existHelper(board, word, visited, wordIdx + 1, i, j - 1))
+                return true;
+
+            visited[i, j] = false;
+            return false;
+        }
+
+
+        //212. Word Search II
+        //Given a 2D board and a list of words from the dictionary, find all words in the board.
+        //Each word must be constructed from letters of sequentially adjacent cell, where "adjacent" 
+        //cells are those horizontally or vertically neighboring.The same letter cell may not be used 
+        //more than once in a word.
+        //Input:  words = ["oath","pea","eat","rain"]
+        //and board =[        
+        //  ['o', 'a', 'a', 'n'],        
+        //  ['e', 't', 'a', 'e'],        
+        //  ['i', 'h', 'k', 'r'],        
+        //  ['i', 'f', 'l', 'v']
+        //  ]
+        //        Output: ["eat","oath"]
+        public IList<string> FindWords(char[,] board, string[] words)
+        {
+            var ret = new List<string>();
+            int row = board.GetLength(0);
+            int col = board.GetLength(1);
+
+            for (int k = 0; k < words.Length; k++)
+            {
+                var visited = new bool[row, col];
+
+                for (int i = 0; i < row; i++)
+                {
+                    for (int j = 0; j < col; j++)
+                    {
+                        if (findWordsHelper(board, words[k], visited, i, j, 0))
+                            ret.Add(words[k]);
+
+                    }
+                }
+            }
+
+            return ret;
+        }
+        bool findWordsHelper(char[,] board, string word, bool[,] visited, int i, int j, int count)
+        {
+            if (word.Length == count)
+                return true;
+            if (i < 0 || j < 0 || i >= board.GetLength(0) || j >= board.GetLength(1))
+                return false;
+
+            if (visited[i, j] || word[count] != board[i, j])
+                return false;
+
+            visited[i, j] = true;
+            if (findWordsHelper(board, word, visited, i + 1, j, count + 1) ||
+                findWordsHelper(board, word, visited, i, j + 1, count + 1) ||
+                findWordsHelper(board, word, visited, i - 1, j, count + 1) ||
+                findWordsHelper(board, word, visited, i, j - 1, count + 1))
+                return true;
+            visited[i, j] = false;
+            return false;
+        }
+
+
         //419. Battleships in a Board
         //Given an 2D board, count how many battleships are in it. The battleships are represented with 'X's, 
         //empty slots are represented with '.'s. You may assume the following rules:
@@ -61,7 +737,51 @@ namespace Interview
             Console.WriteLine(pt2.x + "," + pt2.y);
         }
 
-        //NVIDIA Shortest path in a Binary Maze
+        //amazon OA Shortest path in a Binary Maze , to point 9 
+        public int PathBinaryMaze2(int[,] mat, Point source, Point dest)
+        {
+            if (mat == null || mat.GetLength(0) == 0 || mat.GetLength(1) == 0)
+                return -1;
+
+            var q = new Queue<Point>();
+
+            q.Enqueue(source);
+            var visited = new bool[mat.GetLength(0), mat.GetLength(1)];
+            var adjx = new int[] { 1, 0, -1, 0 };
+            var adjy = new int[] { 0, -1, 0, 1 };
+
+            while (q.Count != 0)
+            {
+                var curP = q.Dequeue();
+                if (mat[curP.x, curP.y] == mat[dest.x, dest.y])
+                    return curP.dist;
+
+                for (int i = 0; i < adjx.Length; i++)
+                {
+                    var adjRow = curP.x + adjx[i];
+                    int adjCol = curP.y + adjy[i];
+
+                    if (isValidP(adjRow, adjCol, mat) && !visited[adjRow, adjCol] && mat[adjRow, adjCol] == 1)
+                    {
+                        var adjP = new Point();
+                        adjP.x = adjRow;
+                        adjP.y = adjCol;
+                        adjP.dist = curP.dist + 1;
+                        visited[adjRow, adjCol] = true;
+                        q.Enqueue(adjP);
+                    }
+                }
+            }
+            return -1;
+        }
+        bool isValidP(int x, int y, int[,] mx)
+        {
+            if (x < 0 || y < 0 || x >= mx.GetLength(0) || y >= mx.GetLength(1))
+                return false;
+            return true;
+        }
+
+        //Amazon OA, NVIDIA Shortest path in a Binary Maze
         //Given a MxN matrix where each element can either be 0 or 1. We need to find the shortest 
         //path between a given source cell to a destination cell.
         //The path can only be created out of a cell if its value is 1.
@@ -115,7 +835,6 @@ namespace Interview
             return false;
         }
 
-
         //139. Word Break
         //Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, determine if s can be segmented into a space-separated sequence of one or more dictionary words. You may assume the dictionary does not contain duplicate words.
         //For example, given s = "leetcode", dict = ["leet", "code"].
@@ -127,21 +846,86 @@ namespace Interview
             if (s.Length == 0)
                 return true;
 
-            for (int i = 0; i < s.Length; i++)
+            for (int i = 0; i <= s.Length; i++)
             {
                 string front = s.Substring(0, i);
 
                 if (wordDict.Contains(front))
                 {
-                    if (WordBreak(s.Substring(i + 1), wordDict))
+                    if (WordBreak(s.Substring(i), wordDict))
                         return true;
 
-                    wordDict.Remove(front);
                 }
             }
             return false;
         }
 
+        public bool WordBreakHelper(string s, HashSet<string> wordDict, Dictionary<string, bool> map)
+        {
+            if (map.ContainsKey(s))
+                return map[s];
+
+            if (wordDict.Contains(s))
+            {
+                map.Add(s, true);
+                return true;
+            }
+
+            for (int i = 1; i < s.Length; i++)
+            {
+                string left = s.Substring(0, i);
+                string right = s.Substring(i);
+
+                if (WordBreakHelper(left, wordDict, map) && wordDict.Contains(right))
+                {
+                    map.Add(s, true);
+                    return true;
+                }
+
+            }
+            map.Add(s, false);
+            return false;
+        }
+
+        //Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, add spaces in s to construct a sentence where each word is a valid dictionary word. Return all such possible sentences.
+        //Note: The same word in the dictionary may be reused multiple times in the segmentation.
+        //You may assume the dictionary does not contain duplicate words.
+        //Example 1: Input: s = "catsanddog"  wordDict = ["cat", "cats", "and", "sand", "dog"]
+        //Output: [  "cats and dog",   "cat sand dog" ]
+        public IList<string> WordBreakII(string s, HashSet<string> wordDict)
+        {
+            var ret = new List<string>();
+            //WordBreakIIHelper(s, wordDict, new Dictionary<string, bool>(), "", ret);
+
+            return ret;
+        }
+
+        public IList<string> WordBreakIIHelper(string s, HashSet<string> wordDict, Dictionary<string, List<string>> map, List<string> cur, List<string> ret)
+        {
+            //if (!string.IsNullOrEmpty(cur) && s == "")
+            //    ret.Add(cur);
+
+            if (map.ContainsKey(s))
+                return map[s];
+
+            if (wordDict.Contains(s))
+                cur.Add(s);
+
+            for (int i = 1; i < s.Length; i++)
+            {
+                string left = s.Substring(0, i);
+                string right = s.Substring(i);
+                if (!wordDict.Contains(right))
+                    continue;
+
+                List<string> left_ans = new List<string>(WordBreakIIHelper(left, wordDict, map, cur, ret));
+                left_ans.Add(right);
+
+                //cur = left_ans.Concat(cur);                
+            }
+            map.Add(s, cur);
+            return map[s];
+        }
 
         //200. Number of Islands
         //Given a 2d grid map of '1's (land) and '0's (water), count the number of islands. 
@@ -185,15 +969,15 @@ namespace Interview
             if (numCourses == 0 || prerequisites == null || prerequisites.GetLength(0) == 0)
                 return true;
 
-            var  visitedList = new int[numCourses];
+            var visitedList = new int[numCourses];
 
             List<int>[] map = new List<int>[numCourses];
             for (int i = 0; i < numCourses; i++)
                 map[i] = new List<int>();
-            
+
             for (int i = 0; i < prerequisites.GetLength(0); i++)
                 map[prerequisites[i, 0]].Add(prerequisites[i, 1]);
-            
+
             for (int i = 0; i < numCourses; i++)
             {
                 if (isCircle(map, i, visitedList))
@@ -203,7 +987,7 @@ namespace Interview
         }
         bool isCircle(List<int>[] map, int key, int[] visitedList)
         {
-            if (visitedList[key]==1)  //visiting in dfs stack
+            if (visitedList[key] == 1)  //visiting in dfs stack
                 return true;
             if (visitedList[key] == 2) // already visited, out of dfs stack
                 return false;
@@ -248,7 +1032,7 @@ namespace Interview
                 graph[prerequisites[i, 0]].Add(prerequisites[i, 1]);
 
             var visit = new int[numCourses];
-            
+
             for (int i = 0; i < numCourses; i++)
             {
                 if (IsCourseCycle(graph, ret, visit, i))
@@ -258,10 +1042,10 @@ namespace Interview
         }
         bool IsCourseCycle(List<int>[] graph, List<int> ret, int[] visit, int idx)
         {
-            if (visit[idx]==1)  //if visiting node 
+            if (visit[idx] == 1)  //if visiting node 
                 return true;
 
-            if (visit[idx]==2)  //if visited node 
+            if (visit[idx] == 2)  //if visited node 
                 return false;
 
             visit[idx] = 1;
@@ -276,10 +1060,6 @@ namespace Interview
             ret.Add(idx);
             return false;
         }
-
-
-
-
 
 
         //339. Nested List Weight Sum
