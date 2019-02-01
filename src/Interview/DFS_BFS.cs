@@ -13,6 +13,42 @@ namespace Interview
     }
     public class DFS_BFS
     {
+        //133. Clone Graph
+        //Given the head of a graph, return a deep copy (clone) of the graph. Each node in the graph contains a 
+        //label (int) and a list (List[UndirectedGraphNode]) of its neighbors. There is an edge between the given 
+        //node and each of the nodes in its neighbors.
+        public UndirectedGraphNode CloneGraph(UndirectedGraphNode node) {
+            if (node == null)
+                return null;
+
+            Dictionary<UndirectedGraphNode, UndirectedGraphNode> dic = new Dictionary<UndirectedGraphNode, UndirectedGraphNode>();
+            dic.Add(node, new UndirectedGraphNode(node.label));
+            Queue<UndirectedGraphNode> qu = new Queue<UndirectedGraphNode>();
+            qu.Enqueue(node);
+
+            while (qu.Count != 0)
+            {
+                UndirectedGraphNode n = qu.Dequeue();
+               
+                foreach (var nei in n.neighbors)
+                {
+                    if (!dic.ContainsKey(nei))
+                    {
+                        qu.Enqueue(nei);
+                        dic.Add(nei, new UndirectedGraphNode(nei.label));
+                    }
+                    dic[n].neighbors.Add(dic[nei]);
+                }
+            }
+            return dic[node];
+        }
+
+        public class UndirectedGraphNode {
+            public int label;
+            public IList<UndirectedGraphNode> neighbors;
+            public UndirectedGraphNode(int x) { label = x; neighbors = new List<UndirectedGraphNode>(); }
+        };
+
         //953. Verifying an Alien Dictionary
         //In an alien language, surprisingly they also use english lowercase letters, but possibly in a different order. The order of the alphabet is some permutation of lowercase letters.
         //Given a sequence of words written in the alien language, and the order of the alphabet, return true if and only if the given words are sorted lexicographicaly in this alien language.
@@ -303,6 +339,61 @@ namespace Interview
                 }
             }
             return map;
+        }
+
+
+        //44. Wildcard Matching
+        //Given an input string (s) and a pattern (p), implement wildcard pattern matching with support for '?' and '*'.
+        // '?' Matches any single character.
+        // '*' Matches any sequence of characters (including the empty sequence).
+        // The matching should cover the entire input string (not partial).
+        // Note:
+        // s could be empty and contains only lowercase letters a-z.
+        // p could be empty and contains only lowercase letters a-z, and characters like ? or *.
+        //Input:
+        // s = "aa"
+        // p = "*"
+        // Output: true
+        // Explanation: '*' matches any sequence.
+        // Example 3:
+        // Input:
+        // s = "cb"
+        // p = "?a"
+        // Output: false
+        // Explanation: '?' matches 'c', but the second letter is 'a', which does not match 'b'.
+        // Example 4:
+        // Input:
+        // s = "adceb"
+        // p = "*a*b"
+        // Output: true
+        // Explanation: The first '*' matches the empty sequence, while the second '*' matches the substring "dce".
+        public bool IsMatch(string s, string p) {
+            if(string.IsNullOrEmpty(s)|| string.IsNullOrEmpty(p))
+                return false;
+            if(s==p)
+                return true;
+            return isMatchHelper(s,p, 0,0);
+        
+        }
+        bool isMatchHelper(string s, string p, int si, int pi){
+            if(pi==p.Length)
+                return si==s.Length;            
+            if(si==s.Length)
+                return pi==p.Length;
+            
+            if(s[si]==p[pi] || p[pi]=='?'){
+                return isMatchHelper(s,p, si+1,pi+1);
+            }    
+            else if(p[pi]=='*'){
+                if(pi+1 < p.Length && s[si]!=p[pi+1])
+                    return isMatchHelper(s,p,si+1,pi);
+                else if(pi+1 < p.Length && s[si]==p[pi+1])    
+                    return isMatchHelper(s,p,si+1,pi+2);    
+                else
+                    return true;                    
+            }
+            else
+                return false;
         }
 
 
