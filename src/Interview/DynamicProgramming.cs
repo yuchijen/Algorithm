@@ -8,43 +8,43 @@ namespace Interview
     public class DynamicProgramming
     {
         //416. Partition Equal Subset Sum
-        //Given a non-empty array containing only positive integers, find if the array can be partitioned into two subsets such that the sum of elements in both subsets is equal.        
-        // Note: Each of the array element will not exceed 100.
-        // The array size will not exceed 200.
-        // Example 1: Input: [1, 5, 11, 5]
-        // Output: true
-        // Explanation: The array can be partitioned as [1, 5, 5] and [11].
-        // Example 2: Input: [1, 2, 3, 5]
-        // Output: false
-        bool CanPartition(int[] nums) {
-            if(nums==null)
-                return false;   
+        //Given a non-empty array containing only positive integers, find if the array can be partitioned into two subsets such that the sum of elements in both subsets is equal.
+        //Note:Each of the array element will not exceed 100.
+        //The array size will not exceed 200. Example 1:
+        //Input: [1, 5, 11, 5]
+        //Output: true
+        //Explanation: The array can be partitioned as [1, 5, 5] and[11].
+        //hint: https://www.geeksforgeeks.org/partition-problem-dp-18/
+        public bool CanPartition(int[] nums)
+        {
+            if (nums == null)
+                return false;
             int sum = nums.Sum();
 
-            if(sum%2!=0)
-                return false; 
+            if (sum % 2 != 0)
+                return false;
 
-            var dp = new bool[sum/2 +1,nums.Length+1];   // i is all possible sub-sum to sum/2, j is 0 to j-1 sub-elements 
+            var dp = new bool[sum / 2 + 1, nums.Length + 1];   // i is all possible sub-sum to sum/2, j is 0 to j-1 sub-elements 
 
             //initialize top row = true
-            for(int j=0; j<= nums.Length; j++){
-                dp[0,j]=true;
-            }
+            for (int j = 0; j <= nums.Length; j++)
+                dp[0, j] = true;
             //initialize first column = false (empty subset column)            
-            for(int i = 0; i<=sum/2;i++){
-                dp[i,0]=false;
-            }
-
-            for(int i=1; i<= sum/2; i++){
-                for(int j=1; j<=nums.Length; j++){
-                    dp[i,j]=dp[i,j-1];
-                    if(i >= nums[j-1]) 
-                        dp[i,j]= dp[i,j] || dp[ i-nums[j-1], j-1 ];
+            for (int i = 0; i <= sum / 2; i++)
+                dp[i, 0] = false;
+        
+            for (int i = 1; i <= sum / 2; i++)
+            {
+                for (int j = 1; j <= nums.Length; j++)
+                {
+                    dp[i, j] = dp[i, j - 1];
+                    if (i >= nums[j - 1])
+                        dp[i, j] = dp[i, j] || dp[i - nums[j - 1], j - 1];
                 }
             }
-            return dp[sum/2,nums.Length];
-
+            return dp[sum / 2, nums.Length];
         }
+
 
         //5.Longest Palindromic Substring
         //Given a string S, find the longest palindromic substring in S. You may assume that the 

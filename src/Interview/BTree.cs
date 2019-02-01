@@ -20,7 +20,7 @@ namespace Interview
     }
     public class BTree
     {
-        //124. Binary Tree Maximum Path Sum
+        //124. Binary Tree Maximum Path Sum  (FB)
         //Given a non-empty binary tree, find the maximum path sum.
         //For this problem, a path is defined as any sequence of nodes from some starting node to 
         //any node in the tree along the parent-child connections. The path must contain at least one 
@@ -37,6 +37,7 @@ namespace Interview
             MaxPathSumDfs(root, ret);
             return ret[0];
         }
+        //any path(node) value is current node value + left value + right value
         int MaxPathSumDfs(TreeNode node, int[] ret)
         {
             if (node == null)
@@ -55,14 +56,16 @@ namespace Interview
 
 
 
-        //199. Binary Tree Right Side View
-        //Example: Input: [1,2,3,null,5,null,4]  Output: [1, 3, 4]
+        //199. Binary Tree Right Side View    (FB)
+        //Example: Input: [1,2,3,null,5,null,4]  Output: [1, 3, 4,9]
         //Explanation:
         //           1            <---
         //         /   \
         //         2     3         <---
-        //          \     \
-        //           5     4       <---
+        //          \   / \
+        //          5  7   4       <---
+        //            / \
+        //           8   9         <---
         public IList<int> RightSideView(TreeNode root)
         {
             var ret = new List<int>();
@@ -398,6 +401,41 @@ namespace Interview
             return ret;
         }
 
+        public List<List<int>> verticalOrder2(TreeNode root)
+        {
+            var ret = new List<List<int>>();
+
+            if (root == null)
+                return ret;
+
+            var map = new Dictionary<int, List<int>>();
+
+            var bound = new int[2] { int.MaxValue, int.MinValue };
+            verticalOrder2Helper(root, 0, map, bound);
+
+            for(int j = bound[0]; j <= bound[1]; j++)
+            {
+                ret.Add(map[j]);
+            }
+            return ret;
+        }
+        void verticalOrder2Helper(TreeNode node, int col, Dictionary<int,List<int>> map, int[] bound)
+        {
+            if (node == null)
+                return;
+            
+            bound[0] = Math.Min(col, bound[0]);
+            bound[1] = Math.Max(col, bound[1]);
+
+            if (map.ContainsKey(col))
+                map[col].Add(node.val);
+            else
+                map.Add(col, new List<int>() { node.val });
+
+            verticalOrder2Helper(node.left, col - 1, map, bound);
+            verticalOrder2Helper(node.right, col + 1, map, bound);
+
+        }
 
         //257. Binary Tree Paths
         //Given a binary tree, return all root-to-leaf paths.

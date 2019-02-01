@@ -8,6 +8,56 @@ namespace Interview
 {
     public class HashTable
     {
+        //825. Friends Of Appropriate Ages
+        //Some people will make friend requests. The list of their ages is given and ages[i] is the age of the ith person. 
+        //Person A will NOT friend request person B(B != A) if any of the following conditions are true:
+        //age[B] <= 0.5 * age[A] + 7
+        //age[B] > age[A]
+        //age[B] > 100 && age[A] < 100
+        //Otherwise, A will friend request B.
+        //Note that if A requests B, B does not necessarily request A.Also, people will not friend request themselves.
+        //How many total friend requests are made?
+        //Example 1:  Input: [16,16]
+        //Output: 2   Explanation: 2 people friend request each other.
+        public int NumFriendRequests(int[] ages)
+        {
+            if (ages == null || ages.Length <= 1)
+                return 0;
+
+            int ret = 0;
+            // map key is age, value is its friend's request
+            var map = new Dictionary<int, int>();
+            Array.Sort(ages);
+            for (int i = 0; i < ages.Length; i++)
+            {
+                if (map.ContainsKey(ages[i]))
+                {
+                    ret += map[ages[i]];
+                    continue;
+                }
+                int curSum = 0;
+                for (int j = i; j < ages.Length; j++)
+                {
+                    if (i != j && isValidAge(ages[j], ages[i]))
+                        curSum++;
+                }
+                map.Add(ages[i], curSum);
+                ret += curSum;
+            }
+            return ret;
+        }
+        bool isValidAge(int a, int b)
+        {
+            if (b <= 0.5 * a + 7)
+                return false;
+            if (a < b)
+                return false;
+            if (a < 100 && b > 100)
+                return false;
+            return true;
+        }
+
+
         //438. Find All Anagrams in a String
         //Given a string s and a non-empty string p, find all the start indices of p's anagrams in s.
         //Strings consists of lowercase English letters only and the length of both strings s and p will not be larger than 20,100.
@@ -325,8 +375,57 @@ namespace Interview
         //Example: Given nums1 = [1, 2, 2, 1], nums2 = [2, 2], return [2, 2].
         //Note:Each element in the result should appear as many times as it shows in both arrays.
         //The result can be in any order.
+        //Follow up:
+        //What if the given array is already sorted? How would you optimize your algorithm?
+        //What if nums1's size is small compared to nums2's size? Which algorithm is better?
+        //What if elements of nums2 are stored on disk, and the memory is limited such that you cannot load all elements into the memory at once?
+        public int[] Intersect(int[] nums1, int[] nums2)
+        {
+            var map = new Dictionary<int,int>();
 
+            for (int i=0; i < nums1.Length; i++)
+            {
+                if (!map.ContainsKey(nums1[i]))
+                    map.Add(nums1[i], 1);
+                else
+                    map[nums1[i]]++;
+            }
 
+            var ret = new List<int>();
+
+            for (int i = 0; i < nums2.Length; i++)
+            {
+                if (map.ContainsKey(nums2[i])&& map[nums2[i]]>0)
+                {
+                    ret.Add(nums2[i]);
+                    map[nums2[i]]--;
+                }
+            }
+            return ret.ToArray();            
+        }
+        //follow up: use sort and 2 pointer
+        public int[] Intersect2(int[] nums1, int[] nums2)
+        {
+            Array.Sort(nums1);
+            Array.Sort(nums2);
+            int i = 0;
+            int j = 0;
+            var ret = new List<int>();
+            while (i < nums1.Length &&  j < nums2.Length)
+            {
+                if (nums1[i] == nums2[j])
+                {
+                    ret.Add(nums1[i]);
+                    i++;
+                    j++;
+                }
+                else if (nums1[i] > nums2[j])
+                    j++;
+                else
+                    i++;
+            }
+            return ret.ToArray();
+        }
 
 
     }

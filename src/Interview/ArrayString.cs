@@ -6,10 +6,8 @@ using System.Text.RegularExpressions;
 
 namespace Interview
 {
-
     public class ArrayString
-    {
-        
+    {     
         //31. Next Permutation
         //Implement next permutation, which rearranges numbers into the lexicographically next greater permutation of numbers.
         //If such arrangement is not possible, it must rearrange it as the lowest possible order(ie, sorted in ascending order).
@@ -120,19 +118,14 @@ namespace Interview
         //Output: 2
         public int StrStr(string haystack, string needle)
         {
-            if (string.IsNullOrEmpty(haystack) || string.IsNullOrEmpty(needle) || needle.Length > haystack.Length)
+            if (haystack==null || needle==null || needle.Length > haystack.Length)
                 return -1;
-
+            if (haystack.Equals(needle))
+                return 0;
             for (int i = 0; i <= haystack.Length - needle.Length; i++)
             {
-                int cnt = 0;
-                for (int j = 0; j < needle.Length; j++)
-                {
-                    if (needle[j] == haystack[i + j])
-                        cnt++;
-                }
-                if (cnt == needle.Length)
-                    return i;
+                if (needle == haystack.Substring(i, needle.Length))
+                    return i;                
             }
             return -1;
         }
@@ -703,6 +696,45 @@ namespace Interview
         }
 
 
+        //56. Merge Intervals
+        //Given a collection of intervals, merge all overlapping intervals.
+        //For example,  Given[1, 3],[2, 6],[8, 10],[15, 18],  return [1,6],[8,10],[15,18].
+        public IList<Interval> Merge(IList<Interval> intervals)
+        {
+            List<Interval> ret = new List<Interval>();
+            if (intervals == null || intervals.Count == 0)
+                return ret;
+
+            intervals = intervals.OrderBy(x => x.start).ToList();
+
+            int curEnd = intervals[0].end;
+            int curStart = intervals[0].start;
+
+            for (int i = 1; i < intervals.Count; i++)
+            {
+                if (intervals[i].start <= curEnd)
+                {
+                    curEnd = Math.Max(curEnd, intervals[i].end);
+                }
+                else
+                {
+                    ret.Add(new Interval(curStart, curEnd));
+                    curEnd = intervals[i].end;
+                    curStart = intervals[i].start;
+                }
+            }
+            ret.Add(new Interval(curStart, curEnd));
+            return ret;
+        }
+        public class Interval
+        {
+            public int start;
+            public int end;
+            public Interval() { start = 0; end = 0; }
+            public Interval(int s, int e) { start = s; end = e; }
+        }
+
+
         //22. Generate Parentheses
         //Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
         //        For example, given n = 3, a solution set is:
@@ -1258,43 +1290,6 @@ namespace Interview
             return ret;
         }
 
-        //56. Merge Intervals
-        //Given a collection of intervals, merge all overlapping intervals.
-        //For example,  Given[1, 3],[2, 6],[8, 10],[15, 18],  return [1,6],[8,10],[15,18].
-        public IList<Interval> Merge(IList<Interval> intervals)
-        {
-            List<Interval> ret = new List<Interval>();
-            if (intervals == null || intervals.Count == 0)
-                return ret;
-
-            intervals = intervals.OrderBy(x => x.start).ToList();
-
-            int curEnd = intervals[0].end;
-            int curStart = intervals[0].start;
-
-            for (int i = 1; i < intervals.Count; i++)
-            {
-                if (intervals[i].start <= curEnd)
-                {
-                    curEnd = Math.Max(curEnd, intervals[i].end);
-                }
-                else
-                {
-                    ret.Add(new Interval(curStart, curEnd));
-                    curEnd = intervals[i].end;
-                    curStart = intervals[i].start;
-                }
-            }
-            ret.Add(new Interval(curStart, curEnd));
-            return ret;
-        }
-        public class Interval
-        {
-            public int start;
-            public int end;
-            public Interval() { start = 0; end = 0; }
-            public Interval(int s, int e) { start = s; end = e; }
-        }
 
         //205. Isomorphic Strings
         //Given two strings s and t, determine if they are isomorphic.
