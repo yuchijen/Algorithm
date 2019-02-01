@@ -60,6 +60,8 @@ namespace Interview
             arr[i] = arr[j];
             arr[j] = temp;
         }
+
+
         //378. Kth Smallest Element in a Sorted Matrix
         //Given a n x n matrix where each of the rows and columns are sorted in ascending order, find the kth smallest element in the matrix.
         //Note that it is the kth smallest element in the sorted order, not the kth distinct element.
@@ -124,6 +126,47 @@ namespace Interview
         // [10, 13, 14, 17, 24],
         // [18, 21, 23, 26, 30]
         //]     Given target = 5, return true.
+        //O(M+N) ??
+        public bool SearchMatrix2D(int[,] matrix, int target)
+        {
+            int n = matrix.GetLength(0);
+            int m = matrix.GetLength(1);
+            if (n == 0 || m == 0)
+                return false;
+
+            int row = 0;
+            int col = m - 1;
+
+            while (row < n && col >= 0)
+            {
+                if (target > matrix[row, col])
+                    row++;
+                else if (target < matrix[row, col])
+                    col--;
+                else
+                    return true;
+            }
+            return false;
+
+        }
+
+        bool bSearch(int[,] matrix, int row, int target, int st, int end)
+        {
+            while (st <= end)
+            {
+                int pivol = (st + end) / 2;
+
+                if (target > matrix[row, pivol])
+                    st = pivol + 1;
+                else if (target < matrix[row, pivol])
+                    end = pivol - 1;
+                else
+                    return true;
+            }
+            return false;
+        }
+
+        //another solution
         public bool SearchMatrix2(int[,] matrix, int target)
         {
             if (matrix == null || matrix.GetLength(0) == 0 || matrix.GetLength(1) == 0)
@@ -162,47 +205,7 @@ namespace Interview
             }
             return false;
         }
-        public bool SearchMatrix(int[,] matrix, int target)
-        {
-            int n = matrix.GetLength(0);
-            int m = matrix.GetLength(1);
-            if (n == 0 || m == 0)
-                return false;
-
-            int row = 0;
-            int col = m - 1;
-
-            while (row < n && col >= 0)
-            {
-                if (target > matrix[row, col])
-                    row++;
-                else if (target < matrix[row, col])
-                    col--;
-                else
-                    return true;
-            }
-            return false;
-        }
-
-
-        bool bSearch(int[,] matrix, int row, int target, int st, int end)
-        {
-            while (st <= end)
-            {
-                int pivol = (st + end) / 2;
-
-                if (target > matrix[row, pivol])
-                    st = pivol + 1;
-                else if (target < matrix[row, pivol])
-                    end = pivol - 1;
-                else
-                    return true;
-            }
-            return false;
-        }
-
-
-
+        
 
         //4. Median of Two Sorted Arrays
         //There are two sorted arrays nums1 and nums2 of size m and n respectively.
@@ -311,7 +314,7 @@ namespace Interview
                     return mid;
                 if (nums[mid] < nums[end]) //right side sorted
                 {
-                    if (nums[mid] < target && target < nums[end])
+                    if (nums[mid] < target && target <= nums[end])
                         st = mid + 1;  //go right
                     else
                         end = mid - 1;

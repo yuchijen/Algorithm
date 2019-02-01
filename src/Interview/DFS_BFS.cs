@@ -13,6 +13,71 @@ namespace Interview
     }
     public class DFS_BFS
     {
+        //416. Partition Equal Subset Sum
+        //Given a non-empty array containing only positive integers, find if the array can be partitioned into two subsets such that the sum of elements in both subsets is equal.
+        //Note: Each of the array element will not exceed 100.
+        //The array size will not exceed 200.
+        //Example 1:Input: [1, 5, 11, 5]
+        //Output: true
+        //Explanation: The array can be partitioned as [1, 5, 5] and[11].
+        public bool CanPartition(int[] nums)
+        {
+            int sum = nums.Sum();
+            if (sum % 2 != 0)
+                return false;
+
+            return CanPartitionDPS(nums, nums.Length, sum / 2);
+            
+        }
+        bool CanPartitionDPS(int[] nums, int n, int target)
+        {
+            if (target == 0)
+                return true;
+            if (n ==0 && target != 0)
+                return false;
+
+            return CanPartitionDPS(nums, n-1, target - nums[n-1]) || CanPartitionDPS(nums, n-1, target);
+        }
+
+        public class UndirectedGraphNode
+        {
+            public int label;
+            public IList<UndirectedGraphNode> neighbors;
+            public UndirectedGraphNode(int x) { label = x; neighbors = new List<UndirectedGraphNode>(); }
+        }
+        
+        //133. Clone Graph
+        //Given the head of a graph, return a deep copy(clone) of the graph.Each node in the graph 
+        //contains a label(int) and a list(List[UndirectedGraphNode]) of its neighbors.There is an 
+        //edge between the given node and each of the nodes in its neighbors.
+        public UndirectedGraphNode CloneGraph(UndirectedGraphNode node)
+        {
+            if (node == null)
+                return null;
+
+            Dictionary<UndirectedGraphNode, UndirectedGraphNode> dic = new Dictionary<UndirectedGraphNode, UndirectedGraphNode>();
+            dic.Add(node, new UndirectedGraphNode(node.label));
+            Queue<UndirectedGraphNode> qu = new Queue<UndirectedGraphNode>();
+            qu.Enqueue(node);
+
+            while (qu.Count != 0)
+            {
+                UndirectedGraphNode curNode = qu.Dequeue();
+
+                foreach (var nei in curNode.neighbors)
+                {
+                    if (!dic.ContainsKey(nei))
+                    {
+                        qu.Enqueue(nei);
+                        dic.Add(nei, new UndirectedGraphNode(nei.label));
+                    }
+                    dic[curNode].neighbors.Add(dic[nei]);
+                }
+            }
+            return dic[node];
+        }
+
+
         //953. Verifying an Alien Dictionary
         //In an alien language, surprisingly they also use english lowercase letters, but possibly in a different order. The order of the alphabet is some permutation of lowercase letters.
         //Given a sequence of words written in the alien language, and the order of the alphabet, return true if and only if the given words are sorted lexicographicaly in this alien language.
