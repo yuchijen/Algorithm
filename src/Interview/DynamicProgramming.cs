@@ -15,6 +15,7 @@ namespace Interview
         //Output: true
         //Explanation: The array can be partitioned as [1, 5, 5] and[11].
         //hint: https://www.geeksforgeeks.org/partition-problem-dp-18/
+        //space: O(sum*N) , time: O(sum*N)
         public bool CanPartition(int[] nums)
         {
             if (nums == null)

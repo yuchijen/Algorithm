@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Interview
 {
+    
     public class Point
     {
         public int x { get; set; }
@@ -21,6 +22,7 @@ namespace Interview
         //Example 1:Input: [1, 5, 11, 5]
         //Output: true
         //Explanation: The array can be partitioned as [1, 5, 5] and[11].
+        //DFS approach : time : O(2^n)
         public bool CanPartition(int[] nums)
         {
             int sum = nums.Sum();
@@ -378,7 +380,7 @@ namespace Interview
         }
 
 
-        //44. Wildcard Matching
+        //44. Wildcard Matching  (DFS not passed yet)
         //Given an input string (s) and a pattern (p), implement wildcard pattern matching with support for '?' and '*'.
         // '?' Matches any single character.
         // '*' Matches any sequence of characters (including the empty sequence).
@@ -403,6 +405,11 @@ namespace Interview
         // p = "*a*b"
         // Output: true
         // Explanation: The first '*' matches the empty sequence, while the second '*' matches the substring "dce".
+        // isMatch("aa","a") → false
+        // isMatch("aa", "a*") → true
+        // isMatch("ab", "?*") → true
+        // isMatch("aab", "c*a*b") → false
+        // isMatch("aaaa","***a") -> true
         public bool IsMatch(string s, string p) {
             if(string.IsNullOrEmpty(s)|| string.IsNullOrEmpty(p))
                 return false;
@@ -415,16 +422,18 @@ namespace Interview
             if(pi==p.Length)
                 return si==s.Length;            
             if(si==s.Length)
-                return pi==p.Length;
+              return  pi==p.Length || (pi==p.Length-1 && p[pi]=='*') ;
             
             if(s[si]==p[pi] || p[pi]=='?'){
                 return isMatchHelper(s,p, si+1,pi+1);
             }    
             else if(p[pi]=='*'){
-                if(pi+1 < p.Length && s[si]!=p[pi+1])
+                if(pi+1 < p.Length && p[pi+1]=='*')
+                    return isMatchHelper(s,p, si+1, pi+1);                    
+                else if(pi+1 < p.Length && s[si]!=p[pi+1])
                     return isMatchHelper(s,p,si+1,pi);
                 else if(pi+1 < p.Length && s[si]==p[pi+1])    
-                    return isMatchHelper(s,p,si+1,pi+2);    
+                    return isMatchHelper(s,p, si+1,pi+2) || isMatchHelper(s,p,si+1,pi);    
                 else
                     return true;                    
             }
@@ -528,6 +537,7 @@ namespace Interview
                 right = _right;
             }
         }
+
         public Node treeToDoublyList(Node root)
         {
             Node head = null;
@@ -545,15 +555,15 @@ namespace Interview
                     var curNode = st.Pop();
                     if (prev == null)
                     {
-                        head = root;
+                        head = curNode;
                     }
                     else
                     {
-                        prev.right = root;  //connect double links
-                        root.left = prev;
+                        prev.right = curNode;  //connect double links
+                        curNode.left = prev;
                     }
-                    prev = root;
-                    root = root.right;
+                    prev = curNode;
+                    curNode = curNode.right;
                 }
             }
             prev.right = head;

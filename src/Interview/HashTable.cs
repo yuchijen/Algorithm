@@ -8,6 +8,54 @@ namespace Interview
 {
     public class HashTable
     {
+        //340. Find the longest substring with k unique characters in a given string (Not Tested yet)
+        //Given a string you need to print longest possible substring that has exactly M unique characters. If there are more than one substring of longest possible length, then print any one of them.
+        //Examples:
+        //"aabbcc", k = 1
+        //Max substring can be any one from {"aa" , "bb" , "cc"}.
+        //"aabbcc", k = 2
+        //Max substring can be any one from {"aabb" , "bbcc"}.
+        //For example, Given s = “eceba” and k = 2,
+        //T is "ece" which its length is 3.
+        //"aabbcc", k = 3
+        //There are substrings with exactly 3 unique characters
+        //{"aabbcc" , "abbcc" , "aabbc" , "abbc" }
+        //Max is "aabbcc" with length 6.
+        //"aaabbb", k = 3
+        //There are only two unique characters, thus show error message. 
+        public int lengthOfLongestSubstringKDistinct(string s, int k) { 
+            
+                if(string.IsNullOrEmpty(s) || k <=0)
+                    return 0;
+
+                var map = new Dictionary<char,int>();
+                int tailIdx = -1;
+                var ret =0 ;
+                for(int i=0; i<s.Length; i++){
+                    if(tailIdx<0)
+                        tailIdx = i;
+                    if(!map.ContainsKey(s[i]))
+                        map.Add(s[i],1);
+                    else
+                        map[s[i]]++;
+                    
+                    while(tailIdx< s.Length && map.Count >k){
+                        if(map.ContainsKey(s[tailIdx]))
+                        {
+                            if(map[s[tailIdx]]>0)
+                                map[s[tailIdx]]--;
+                            else
+                                map.Remove(s[tailIdx]);
+                        }
+                        tailIdx++;
+                    }
+
+                    ret = Math.Max(ret,map.Values.Sum());                    
+                }                
+                return map.Count <k ? -1: ret ;
+        }
+
+
         //825. Friends Of Appropriate Ages
         //Some people will make friend requests. The list of their ages is given and ages[i] is the age of the ith person. 
         //Person A will NOT friend request person B(B != A) if any of the following conditions are true:
