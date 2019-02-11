@@ -7,6 +7,77 @@ namespace Interview
 {
     public class DynamicProgramming
     {
+        //44. Wildcard Matching
+        //Given an input string (s) and a pattern (p), implement wildcard pattern matching with support for '?' and '*'.
+        //'?' Matches any single character.
+        //'*' Matches any sequence of characters (including the empty sequence).
+        //The matching should cover the entire input string (not partial).
+        //Note:s could be empty and contains only lowercase letters a-z.
+        //p could be empty and contains only lowercase letters a-z, and characters like? or *.
+        //Example 1:
+        //Input:
+        //s = "aa"
+        //p = "a"
+        //Output: false
+        //Explanation: "a" does not match the entire string "aa".
+        //Example 2:
+        //Input:
+        //s = "aa"
+        //p = "*"
+        //Output: true
+        //Explanation: '*' matches any sequence.
+        //Time O(NxM) space O(NxM) 
+        public bool IsMatch(string s, string p)
+        {
+            if (s == null || p == null)
+                return false;
+          
+            // empty pattern can only match with 
+            // empty string 
+            if (p.Length == 0)
+                return (s.Length == 0);
+
+            // lookup table for storing results of 
+            // subproblems i, j presents dp[i-1, j-1]  
+            bool[,] lookup = new bool[s.Length + 1, p.Length + 1];
+
+            // empty pattern can match with empty string 
+            lookup[0, 0] = true;
+
+            // Only '*' can match with empty string 
+            for (int j = 1; j <= p.Length; j++)
+                if (p[j - 1] == '*')
+                    lookup[0, j] = lookup[0, j - 1];
+
+            // fill the table in bottom-up fashion 
+            for (int i = 1; i <= s.Length; i++)
+            {
+                for (int j = 1; j <= p.Length; j++)
+                {
+                    // Two cases if we see a '*' 
+                    // a) We ignore '*'' character and move. 
+                    //    to next  character in the pattern, 
+                    //     i.e., '*' indicates an empty sequence.
+                    //     e.g. dp[i,j-1] => s[i-1]==p[j-2], e.g. "C" match "C*", i=2, j=2 
+                    // b) '*' character matches with ith 
+                    //     character in input 
+                    //     e.g. dp[i-1,j] => s[i-2]==p[j-1], e.g. "AC" match "*", i = 2, j = 1 
+                    if (p[j - 1] == '*')
+                        lookup[i, j] = lookup[i, j - 1] || lookup[i - 1, j];
+                    // Current characters are considered as 
+                    // matching in two cases 
+                    // (a) current character of pattern is '?' 
+                    // (b) characters actually match 
+                    else if (p[j - 1] == '?' || s[i - 1] == p[j - 1])
+                        lookup[i, j] = lookup[i - 1, j - 1];
+                    // If characters don't match 
+                    else lookup[i, j] = false;
+                }
+            }
+            return lookup[s.Length, p.Length];
+        }
+        
+        
         //416. Partition Equal Subset Sum
         //Given a non-empty array containing only positive integers, find if the array can be partitioned into two subsets such that the sum of elements in both subsets is equal.
         //Note:Each of the array element will not exceed 100.

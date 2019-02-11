@@ -9,6 +9,15 @@ namespace Interview
     {
         //50. Pow(x, n)
         //Implement pow(x, n). in log(n)
+        //Example 1:Input: 2.00000, 10
+        //Output: 1024.00000
+        //Example 2:Input: 2.10000, 3
+        //Output: 9.26100
+        //Example 3: Input: 2.00000, -2
+        //Output: 0.25000
+        //Explanation: 2^-2 = 1/2^2 = 1/4 = 0.25
+        //Note: -100.0 < x< 100.0
+        //n is a 32-bit signed integer, within the range[−2^31, 2^31 − 1]
         public double MyPow(double x, int n)
         {
             if (n == 0)
@@ -31,8 +40,8 @@ namespace Interview
         {
             string[] digitStr1 = new string[] { "Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine" };
             string[] digitStrTeen = new string[] { "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen" };
-            string[] digitStr2 = new string[] { "zero", "Ten", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety" };
-
+            string[] digitStr2 = new string[] { "zero", "Ten", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety","Hundred" };
+            string[] digiStr3 = new string[] { "","Thousand", "Million", "Billion" };
             if (num <= 0)
                 return "Zero";
 
@@ -60,18 +69,14 @@ namespace Interview
                             curRet = " " + digitStr2[curSetStr[i] - '0'] + curRet;
                     }
                     else if (curSetStr.Length - i == 3)
-                        curRet = " " + digitStr1[curSetStr[i] - '0'] + " Hundred" + curRet;
+                        curRet = " " + digitStr1[curSetStr[i] - '0'] + " "+ digitStr2[10] + curRet;
                 }
 
                 if (level == 0)
                     ret = curRet;
-                else if (level == 1 && !string.IsNullOrWhiteSpace(curRet))
-                    ret = curRet + " Thousand" + ret;
-                else if (level == 2 && !string.IsNullOrWhiteSpace(curRet))
-                    ret = curRet + " Million" + ret;
-                else if (level == 3)
-                    ret = curRet + " Billion" + ret;
-
+                else if (!string.IsNullOrWhiteSpace(curRet))
+                    ret = curRet +" "+ digiStr3[level] + ret;
+                
                 num /= 1000;
                 level += 1;
             }

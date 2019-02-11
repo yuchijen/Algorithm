@@ -654,6 +654,8 @@ namespace Interview
         //Note: The input string may contain letters other than the parentheses (and ).
         //Example 1: Input: "()())()"  Output: ["()()()", "(())()"]
         //Example 2: Input: "(a)())()" Output: ["(a)()()", "(a())()"]
+        //time: O(n!) worst case, or O(2^(l+r))
+        //space: O((l+r)^2) or O(n^2)
         public IList<string> RemoveInvalidParentheses(string s)
         {
             int removeLeft = 0;
@@ -704,7 +706,6 @@ namespace Interview
 
                 if (s[i] == '(' || s[i] == ')')
                 {
-                    string cur = s;
                     var curStr = s.Remove(i, 1);
                     if (left > 0 && s[i] == '(')
                         dfsFindValidParentheses(curStr, i, left - 1, right, ret);
