@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Interview
 {
+    
     public class Point
     {
         public int x { get; set; }
@@ -13,6 +14,7 @@ namespace Interview
     }
     public class DFS_BFS
     {
+
         //416. Partition Equal Subset Sum
         //Given a non-empty array containing only positive integers, find if the array can be partitioned into two subsets such that the sum of elements in both subsets is equal.
         //Note: Each of the array element will not exceed 100.
@@ -20,6 +22,7 @@ namespace Interview
         //Example 1:Input: [1, 5, 11, 5]
         //Output: true
         //Explanation: The array can be partitioned as [1, 5, 5] and[11].
+        //DFS approach : time : O(2^n)
         public bool CanPartition(int[] nums)
         {
             int sum = nums.Sum();
@@ -62,20 +65,26 @@ namespace Interview
 
             while (qu.Count != 0)
             {
-                UndirectedGraphNode curNode = qu.Dequeue();
+                UndirectedGraphNode n = qu.Dequeue();
 
-                foreach (var nei in curNode.neighbors)
+                foreach (var nei in n.neighbors)
                 {
                     if (!dic.ContainsKey(nei))
                     {
                         qu.Enqueue(nei);
-                        dic.Add(nei, new UndirectedGraphNode(nei.label));
+                        dic.Add(nei, new UndirectedGraphNode(nei.label));                  
                     }
-                    dic[curNode].neighbors.Add(dic[nei]);
+                    dic[n].neighbors.Add(dic[nei]);
                 }
             }
             return dic[node];
         }
+
+        public class UndirectedGraphNode {
+            public int label;
+            public IList<UndirectedGraphNode> neighbors;
+            public UndirectedGraphNode(int x) { label = x; neighbors = new List<UndirectedGraphNode>(); }
+        };
 
 
         //953. Verifying an Alien Dictionary
@@ -371,6 +380,68 @@ namespace Interview
         }
 
 
+        //44. Wildcard Matching  (DFS not passed yet)
+        //Given an input string (s) and a pattern (p), implement wildcard pattern matching with support for '?' and '*'.
+        // '?' Matches any single character.
+        // '*' Matches any sequence of characters (including the empty sequence).
+        // The matching should cover the entire input string (not partial).
+        // Note:
+        // s could be empty and contains only lowercase letters a-z.
+        // p could be empty and contains only lowercase letters a-z, and characters like ? or *.
+        //Input:
+        // s = "aa"
+        // p = "*"
+        // Output: true
+        // Explanation: '*' matches any sequence.
+        // Example 3:
+        // Input:
+        // s = "cb"
+        // p = "?a"
+        // Output: false
+        // Explanation: '?' matches 'c', but the second letter is 'a', which does not match 'b'.
+        // Example 4:
+        // Input:
+        // s = "adceb"
+        // p = "*a*b"
+        // Output: true
+        // Explanation: The first '*' matches the empty sequence, while the second '*' matches the substring "dce".
+        // isMatch("aa","a") → false
+        // isMatch("aa", "a*") → true
+        // isMatch("ab", "?*") → true
+        // isMatch("aab", "c*a*b") → false
+        // isMatch("aaaa","***a") -> true
+        public bool IsMatch(string s, string p) {
+            if(string.IsNullOrEmpty(s)|| string.IsNullOrEmpty(p))
+                return false;
+            if(s==p)
+                return true;
+            return isMatchHelper(s,p, 0,0);
+        
+        }
+        bool isMatchHelper(string s, string p, int si, int pi){
+            if(pi==p.Length)
+                return si==s.Length;            
+            if(si==s.Length)
+              return  pi==p.Length || (pi==p.Length-1 && p[pi]=='*') ;
+            
+            if(s[si]==p[pi] || p[pi]=='?'){
+                return isMatchHelper(s,p, si+1,pi+1);
+            }    
+            else if(p[pi]=='*'){
+                if(pi+1 < p.Length && p[pi+1]=='*')
+                    return isMatchHelper(s,p, si+1, pi+1);                    
+                else if(pi+1 < p.Length && s[si]!=p[pi+1])
+                    return isMatchHelper(s,p,si+1,pi);
+                else if(pi+1 < p.Length && s[si]==p[pi+1])    
+                    return isMatchHelper(s,p, si+1,pi+2) || isMatchHelper(s,p,si+1,pi);    
+                else
+                    return true;                    
+            }
+            else
+                return false;
+        }
+
+
         //10. Regular Expression Matching
         //Given an input string (s) and a pattern (p), implement regular expression matching with support for '.' and '*'.
         //'.' Matches any single character.'*' Matches zero or more of the preceding element.
@@ -466,6 +537,7 @@ namespace Interview
                 right = _right;
             }
         }
+
         public Node treeToDoublyList(Node root)
         {
             Node head = null;

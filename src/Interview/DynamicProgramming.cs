@@ -7,8 +7,6 @@ namespace Interview
 {
     public class DynamicProgramming
     {
-        
-
         //44. Wildcard Matching
         //Given an input string (s) and a pattern (p), implement wildcard pattern matching with support for '?' and '*'.
         //'?' Matches any single character.
@@ -79,7 +77,7 @@ namespace Interview
             return lookup[s.Length, p.Length];
         }
         
-
+        
         //416. Partition Equal Subset Sum
         //Given a non-empty array containing only positive integers, find if the array can be partitioned into two subsets such that the sum of elements in both subsets is equal.
         //Note:Each of the array element will not exceed 100.
@@ -88,6 +86,7 @@ namespace Interview
         //Output: true
         //Explanation: The array can be partitioned as [1, 5, 5] and[11].
         //hint: https://www.geeksforgeeks.org/partition-problem-dp-18/
+        //space: O(sum*N) , time: O(sum*N)
         public bool CanPartition(int[] nums)
         {
             if (nums == null)
