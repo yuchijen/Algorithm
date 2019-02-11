@@ -7,7 +7,57 @@ using System.Text.RegularExpressions;
 namespace Interview
 {
     public class ArrayString
-    {     
+    {
+        //189. Rotate Array
+        //Given an array, rotate the array to the right by k steps, where k is non-negative.
+        //Example 1:Input: [1,2,3,4,5,6,7]        and k = 3
+        //Output: [5,6,7,1,2,3,4]
+        //Explanation:
+        //rotate 1 steps to the right: [7,1,2,3,4,5,6]
+        //rotate 2 steps to the right: [6,7,1,2,3,4,5]
+        //rotate 3 steps to the right: [5,6,7,1,2,3,4]
+        //Example 2: Input: [-1,-100,3,99]    and k = 2
+        //Output: [3,99,-1,-100]
+        //Explanation: rotate 1 steps to the right: [99,-1,-100,3]
+        //rotate 2 steps to the right: [3,99,-1,-100]
+        //Note:Try to come up as many solutions as you can, there are at least 3 different ways to solve this problem.
+        //Could you do it in-place with O(1) extra space?
+        public void Rotate(int[] nums, int k)
+        {
+            if (nums == null)
+                return;
+            var ret = new int[nums.Length];
+
+            Array.Copy(nums, ret, nums.Length);
+
+            for (int i = 0; i < nums.Length; i++)
+            {
+                nums[(i + k) % nums.Length] = ret[i];
+            }
+
+        }
+        //space: O(1)
+        public void Rotate2(int[] nums, int k)
+        {
+            if (nums == null || nums.Length == 0 || (k %= nums.Length) == 0)
+                return;
+            reverseParial(nums, 0, nums.Length- k - 1);
+            reverseParial(nums, nums.Length - k, nums.Length-1);
+            reverseParial(nums, 0, nums.Length - 1);
+        }
+
+        void reverseParial(int[] nums, int st, int end)
+        {
+            while (st < end)
+            {
+                var temp = nums[st];
+                nums[st] = nums[end];
+                nums[end] = temp;
+                st++;
+                end--;
+            }
+        }
+
         //31. Next Permutation
         //Implement next permutation, which rearranges numbers into the lexicographically next greater permutation of numbers.
         //If such arrangement is not possible, it must rearrange it as the lowest possible order(ie, sorted in ascending order).
@@ -1078,9 +1128,7 @@ namespace Interview
                 return "";
             if (s.Length == 1)
                 return s;
-            if (s.Length == 2 && s[0] == s[1])
-                return s;
-
+            
             for (int i = 0; i < s.Length - 1; i++)
             {
                 maxCheck(s, i, i);
@@ -1101,6 +1149,7 @@ namespace Interview
                 maxLen = ed - st - 1;
             }
         }
+
 
         //(amazon) Find the longest unbroken series of increasing numbers in a list of random numbers 
         //i.e. if given[15, 2, 38, 71, 2, 524, 98], return [2, 38, 71] (longest increasing sub array)

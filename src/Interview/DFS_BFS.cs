@@ -483,15 +483,15 @@ namespace Interview
                     var curNode = st.Pop();
                     if (prev == null)
                     {
-                        head = root;
+                        head = curNode;
                     }
                     else
                     {
-                        prev.right = root;  //connect double links
-                        root.left = prev;
+                        prev.right = curNode;  //connect double links
+                        curNode.left = prev;
                     }
-                    prev = root;
-                    root = root.right;
+                    prev = curNode;
+                    curNode = curNode.right;
                 }
             }
             prev.right = head;
@@ -581,6 +581,8 @@ namespace Interview
         //Note: The input string may contain letters other than the parentheses (and ).
         //Example 1: Input: "()())()"  Output: ["()()()", "(())()"]
         //Example 2: Input: "(a)())()" Output: ["(a)()()", "(a())()"]
+        //time: O(n!) worst case, or O(2^(l+r))
+        //space: O((l+r)^2) or O(n^2)
         public IList<string> RemoveInvalidParentheses(string s)
         {
             int removeLeft = 0;
@@ -631,7 +633,6 @@ namespace Interview
 
                 if (s[i] == '(' || s[i] == ')')
                 {
-                    string cur = s;
                     var curStr = s.Remove(i, 1);
                     if (left > 0 && s[i] == '(')
                         dfsFindValidParentheses(curStr, i, left - 1, right, ret);
