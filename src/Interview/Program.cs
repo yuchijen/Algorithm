@@ -97,7 +97,10 @@ namespace Interview
             //var tt = new Thailand();
             //tt.Execute(10, 10);
 
-            var dfs = new DFS_BFS();
+            //var dfs = new DFS_BFS();
+
+            //var chlist = new char[6] { 'A', 'A', 'A', 'B', 'B', 'B' };
+            //Console.WriteLine("tasks:" + dfs.LeastInterval(chlist, 0));
 
             Console.WriteLine("word break");
             Console.WriteLine(dfs.WordBreak("leetcode", new List<string> { "leet", "code" }));

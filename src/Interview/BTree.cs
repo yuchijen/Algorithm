@@ -20,7 +20,7 @@ namespace Interview
     }
     public class BTree
     {
-        //124. Binary Tree Maximum Path Sum  (FB)
+        //124. Binary Tree Maximum Path Sum (or Minimun) (FB)
         //Given a non-empty binary tree, find the maximum path sum.
         //For this problem, a path is defined as any sequence of nodes from some starting node to 
         //any node in the tree along the parent-child connections. The path must contain at least one 
@@ -53,8 +53,25 @@ namespace Interview
             return Math.Max(left, right) + node.val;
 
         }
+        public int MinPathSum(TreeNode root)
+        {
+            var ret = new int[] { int.MaxValue };
+            MinPathSumDfs(root, ret);
+            return ret[0];
+        }
+        int MinPathSumDfs(TreeNode node, int[] ret)
+        {
+            if (node == null)
+                return 0;
 
+            int left = MinPathSumDfs(node.left, ret);
+            int right = MinPathSumDfs(node.right, ret);
 
+            int curMin = Math.Min(node.val, node.val + left + right);
+            ret[0] = Math.Min(ret[0], curMin);
+            return node.val < Math.Min(left, right) + node.val ? node.val : Math.Min(left, right) + node.val;
+
+        }
 
         //199. Binary Tree Right Side View    (FB)
         //Example: Input: [1,2,3,null,5,null,4]  Output: [1, 3, 4,9]

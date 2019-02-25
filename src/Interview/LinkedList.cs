@@ -32,6 +32,55 @@ namespace Interview
 
     public class LinkedList
     {
+        //FB phone screen: reverse partial linkedlist between 2 duplicated values) input only contains 1 duplicate pair
+        //e.g.  1,10,4,7,8,10,5 =>  1,10,8,7,4,10,5   (reverse elements between 2 10s)
+        public ListNode PartialReverse(ListNode head)
+        {
+            if (head == null)
+                return null;
+           
+            var ptrs = findStEndPtr(head);
+            ListNode stPtr = ptrs[0];
+            ListNode endPtr = ptrs[1];
+
+            //start reserse 
+            var stack = new Stack<int>();
+            var midStPtr = stPtr.next;
+            while (midStPtr !=endPtr)
+            {
+                stack.Push(midStPtr.val);
+                midStPtr = midStPtr.next;
+            }
+
+            midStPtr = stPtr.next;
+            while (stack.Count > 0)
+            {
+                midStPtr.val = stack.Pop();
+                midStPtr = midStPtr.next;
+            }
+
+            return head;
+        }
+
+        ListNode[] findStEndPtr(ListNode head)
+        {
+            var ptr = head;
+            var ret = new ListNode[2];
+            var map = new Dictionary<int, ListNode>();
+            while (ptr != null)
+            {
+                if (map.ContainsKey(ptr.val))
+                {
+                    ret[0] = map[ptr.val];
+                    ret[1] = ptr;
+                }
+                else
+                    map.Add(ptr.val, ptr);
+
+                ptr = ptr.next;
+            }
+            return ret;
+        }
 
         //143. Reorder List
         //Given a singly linked list L: L0→L1→…→Ln-1→Ln, reorder it to: L0→Ln→L1→Ln-1→L2→Ln-2→…

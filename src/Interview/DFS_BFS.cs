@@ -79,13 +79,7 @@ namespace Interview
             }
             return dic[node];
         }
-
-        public class UndirectedGraphNode {
-            public int label;
-            public IList<UndirectedGraphNode> neighbors;
-            public UndirectedGraphNode(int x) { label = x; neighbors = new List<UndirectedGraphNode>(); }
-        };
-
+        
 
         //953. Verifying an Alien Dictionary
         //In an alien language, surprisingly they also use english lowercase letters, but possibly in a different order. The order of the alphabet is some permutation of lowercase letters.
@@ -236,6 +230,7 @@ namespace Interview
             {
                 if (visited[graph[key][i]] == color) //if neighbor has the same color, false
                     return false;
+                //if not visited, put into DFS with another color 
                 if (visited[graph[key][i]] == 0 && !BipartiteDFSHelper(visited, graph, graph[key][i], -color))
                     return false;
             }
@@ -277,7 +272,7 @@ namespace Interview
             }
             return true;
         }
-        
+
         //269. Alien Dictionary (topological sort)
         //There is a new alien language which uses the latin alphabet. However, the order among letters 
         //are unknown to you. You receive a list of non-empty words from the dictionary, where words 
@@ -302,6 +297,7 @@ namespace Interview
         //You may assume that if a is a prefix of b, then a must appear before b in the given dictionary.
         //If the order is invalid, return an empty string.
         //There may be multiple valid order of letters, return any one of them is fine.
+        //space O(V+E), time: DFS which is O(V+E)
         public string alienOrder(string[] words)
         {
             if (words == null)
@@ -457,7 +453,7 @@ namespace Interview
         //Explanation: ".*" means "zero or more (*) of any character (.)".
         //Example 4: Input: s = "aab" p = "c*a*b" Output: true
         //Explanation: c can be repeated 0 times, a can be repeated 1 time.Therefore it matches "aab".
-        public bool IsMatch(string s, string p)
+        public bool IsMatch2(string s, string p)
         {
             if (s == null || p == null)
                 return false;
@@ -542,17 +538,18 @@ namespace Interview
         {
             Node head = null;
             Node prev = null;
+            Node curNode = root;
             var st = new Stack<Node>();
-            while (root != null || st.Count > 0)
+            while (curNode != null || st.Count > 0)
             {
-                if (root != null) //push sub-left tree nodes
+                if (curNode != null) //push sub-left tree nodes
                 {
                     st.Push(root);
-                    root = root.left;
+                    curNode = curNode.left;
                 }
                 else
                 {
-                    var curNode = st.Pop();
+                    curNode = st.Pop();
                     if (prev == null)
                     {
                         head = curNode;
@@ -581,30 +578,28 @@ namespace Interview
         //You need to return the least number of intervals the CPU will take to finish all the given tasks.
         //Example:    Input: tasks = ["A","A","A","B","B","B"], n = 2
         //Output: 8   Explanation: A -> B -> idle -> A -> B -> idle -> A -> B.
+        //http://www.cnblogs.com/grandyang/p/7098764.html
         //ref:https://zxi.mytechroad.com/blog/greedy/leetcode-621-task-scheduler/
         public int LeastInterval(char[] tasks, int n)
         {
-            if (n == 0)
-                return 0;
-
             if (tasks == null || tasks.Length == 0)
                 return 0;
 
             int[] vector = new int[26];
             for (int i = 0; i < tasks.Length; i++)
-            {
                 vector[tasks[i] - 'A']++;
-            }
+            
+            Array.Sort(vector);
 
             //find max count char 
-            int maxCount = vector.Max();
+            int maxCount = vector[25];
             int ret = (maxCount - 1) * (n + 1);
 
             //find how many char has max count
             int p = 0;
             p = vector.Where(i => i == maxCount).Count();
 
-            return tasks.Length > ret + p ? tasks.Length : ret + p;
+            return Math.Max(tasks.Length , ret + p);
         }
 
 
@@ -699,7 +694,7 @@ namespace Interview
             }
 
             for (int i = startIdx; i < s.Length; i++)
-            {   //just remove the first one if have repeated ?  not sure
+            {   //just remove the first one if have repeated 
                 if (i != startIdx && s[i] == s[i - 1])
                     continue;
 
@@ -714,7 +709,50 @@ namespace Interview
             }
 
         }
+        //follow up : just return 1 possible result
+        //正着删一次close,反着删一次close
+        public string RemoveInvalidParentheses2(string s) {
+            if (string.IsNullOrEmpty(s))
+                return null;
 
+            string temp = "";
+            int left = 0;
+            for(int i=0; i<s.Length; i++)
+            {
+                if (s[i] == '(')
+                {
+                    left++;
+                    temp += s[i];
+                }   
+                else if (s[i]==')')
+                {
+                    if (left > 0)
+                    {
+                        left--;
+                        temp += s[i];
+                    }
+                }
+            }
+            int right = 0;
+            string ret = "";
+            for(int j =temp.Length-1; j >=0; j--)
+            {
+                if (temp[j] == ')')
+                {
+                    right++;
+                    ret = temp[j] + temp;
+                }
+                else if (temp[j] == '(')
+                {
+                    if (right > 0)
+                    {
+                        right--;
+                        ret = temp[j] + temp;
+                    }
+                }
+            }
+            return ret;
+        }
 
         //79. Word Search
         //Given a 2D board and a word, find if the word exists in the grid.

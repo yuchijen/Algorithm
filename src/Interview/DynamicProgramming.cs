@@ -102,7 +102,7 @@ namespace Interview
             for (int j = 0; j <= nums.Length; j++)
                 dp[0, j] = true;
             //initialize first column = false (empty subset column)            
-            for (int i = 0; i <= sum / 2; i++)
+            for (int i = 1; i <= sum / 2; i++)
                 dp[i, 0] = false;
         
             for (int i = 1; i <= sum / 2; i++)
@@ -225,11 +225,11 @@ namespace Interview
             int curSum = nums[0];
             int curMax = nums[0];
 
-            int[] dp = new int[nums.Length];
+            int[] dp = new int[nums.Length+1];
 
-            for(int i =1; i<nums.Length; i++)
+            for(int i =1; i<=nums.Length; i++)
             {
-                dp[i] = dp[i - 1] + nums[i] < nums[i] ? nums[i] : dp[i - 1] + nums[i];
+                dp[i] = dp[i - 1] + nums[i-1] < nums[i - 1] ? nums[i - 1] : dp[i - 1] + nums[i - 1];
                 curMax=Math.Max(curMax, dp[i]);
             }
             return curMax;

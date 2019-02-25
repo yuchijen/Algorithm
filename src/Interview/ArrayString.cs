@@ -8,6 +8,65 @@ namespace Interview
 {
     public class ArrayString
     {
+
+        //986. Interval List Intersections
+        //Given two lists of closed intervals, each list of intervals is pairwise disjoint and in sorted order.
+        //Return the intersection of these two interval lists.
+        //Input: A = [[0,2],[5,10],[13,23],[24,25]], B = [[1,5],[8,12],[15,24],[25,26]]
+        //Output: [[1,2],[5,5],[8,10],[15,23],[24,24],[25,25]]
+        //Reminder: The inputs and the desired output are lists of Interval objects, and not arrays or lists.        
+        public Interval[] IntervalIntersection(Interval[] A, Interval[] B)
+        {
+            //O(n^2) or O(nxm) 
+            if (A == null || B == null)
+                return null;
+            var ret = new List<Interval>();
+
+            for(int i=0; i< A.Length; i++)
+            {
+                for(int j =0; j<B.Length; j++)
+                {
+                    if (A[i].end < B[j].start)
+                        break;
+                    else if (A[i].start > B[j].end)
+                        continue;
+                    else
+                        ret.Add(new Interval(Math.Max(A[i].start, B[j].start), Math.Min(A[i].end, B[j].end)));                    
+                }
+            }
+            return ret.ToArray();
+        }
+
+        //O(n+m)
+        // j++    case 1                case 2   
+        //    |---------|             |----|
+        //      |----|             |----|         
+        public Interval[] IntervalIntersection2(Interval[] A, Interval[] B)
+        {
+            if (A == null || B == null)
+                return null;
+            var ret = new List<Interval>();
+
+            int i = 0, j = 0;
+
+            while (i < A.Length && j < B.Length){
+                if (A[i].end < B[j].start)
+                    i++;
+                else if (A[i].start > B[j].end)
+                    j++;
+                else
+                {
+                    ret.Add(new Interval(Math.Max(A[i].start, B[j].start), Math.Min(A[i].end, B[j].end)));
+                    if (A[i].end > B[j].end)
+                        j++;
+                    else
+                        i++;
+                }
+            }
+            return ret.ToArray();
+        }
+
+
         //189. Rotate Array
         //Given an array, rotate the array to the right by k steps, where k is non-negative.
         //Example 1:Input: [1,2,3,4,5,6,7]        and k = 3
@@ -2095,6 +2154,11 @@ namespace Interview
             }
         }
 
+        //follow up , Merge K sorted arrays
+        //https://www.geeksforgeeks.org/merge-k-sorted-arrays-set-2-different-sized-arrays/
+        //use priority queue
+
+
         //3. Longest Substring Without Repeating Characters
         //Examples:  Given "abcabcbb", the answer is "abc", which the length is 3.
         //Given "bbbbb", the answer is "b", with the length of 1.
@@ -2251,6 +2315,7 @@ namespace Interview
             }
             return curmax;
         }
+        
 
         //leetcode 201705 121. Best Time to Buy and Sell Stock
         //Say you have an array for which the ith element is the price of a given stock on day i.
@@ -2337,29 +2402,6 @@ namespace Interview
             }
         }
         
-
-        //leetcode 1. Two Sum
-        //Given an array of integers, return indices of the two numbers such that they add up to a specific target.
-        //You may assume that each input would have exactly one solution, and you may not use the same element twice.
-        //Example: Given nums = [2, 7, 11, 15], target = 9,  Because nums[0] + nums[1] = 2 + 7 = 9,return [0, 1].       
-        public int[] TwoSum(int[] nums, int target)
-        {
-            List<int> ret = new List<int>();
-            Dictionary<int, int> map = new Dictionary<int, int>();
-
-            for (int i = 0; i < nums.Length; i++)
-            {
-                if (map.ContainsKey(target - nums[i]))
-                {
-                    ret.Add(map[target - nums[i]]);
-                    ret.Add(i);
-                    return ret.ToArray();
-                }
-                if (!map.ContainsKey(nums[i]))
-                    map.Add(nums[i], i);
-            }
-            return ret.ToArray();
-        }
 
         //amazon OA 背景是无人机送货，无人机有最大里程，然后给了两个list，分别是出发和返回的里程数，数据类型是List<List<Integer>>，
         //list里面只有id和里程两个值，要求找出所有出发和返回里程数之和最接近无人机最大里程的pair。比如，最大里程M = 10000，

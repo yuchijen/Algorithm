@@ -392,6 +392,30 @@ namespace Interview
         }
 
 
+        //leetcode 1. Two Sum
+        //Given an array of integers, return indices of the two numbers such that they add up to a specific target.
+        //You may assume that each input would have exactly one solution, and you may not use the same element twice.
+        //Example: Given nums = [2, 7, 11, 15], target = 9,  Because nums[0] + nums[1] = 2 + 7 = 9,return [0, 1].       
+        public int[] TwoSum(int[] nums, int target)
+        {
+            List<int> ret = new List<int>();
+            Dictionary<int, int> map = new Dictionary<int, int>();
+
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (map.ContainsKey(target - nums[i]))
+                {
+                    ret.Add(map[target - nums[i]]);
+                    ret.Add(i);
+                    return ret.ToArray();
+                }
+                if (!map.ContainsKey(nums[i]))
+                    map.Add(nums[i], i);
+            }
+            return ret.ToArray();
+        }
+
+
         //409. Longest Palindrome
         //Given a string which consists of lowercase or uppercase letters, find the length of the longest palindromes 
         //that can be built with those letters.
