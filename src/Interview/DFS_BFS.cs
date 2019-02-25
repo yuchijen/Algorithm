@@ -42,6 +42,7 @@ namespace Interview
             return CanPartitionDPS(nums, n-1, target - nums[n-1]) || CanPartitionDPS(nums, n-1, target);
         }
 
+        
         public class UndirectedGraphNode
         {
             public int label;
@@ -65,16 +66,16 @@ namespace Interview
 
             while (qu.Count != 0)
             {
-                UndirectedGraphNode n = qu.Dequeue();
+                var curNode = qu.Dequeue();
 
-                foreach (var nei in n.neighbors)
+                foreach (var nei in curNode.neighbors)
                 {
                     if (!dic.ContainsKey(nei))
                     {
                         qu.Enqueue(nei);
                         dic.Add(nei, new UndirectedGraphNode(nei.label));                  
                     }
-                    dic[n].neighbors.Add(dic[nei]);
+                    dic[curNode].neighbors.Add(dic[nei]);
                 }
             }
             return dic[node];

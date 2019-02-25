@@ -66,7 +66,52 @@ namespace Interview
             return ret.ToArray();
         }
 
+        
+        //487. Max Consecutive Ones II
+        //Find the max length of consecutive ones with one flip (0 => 1)
+        //e.g. 11101001 ->  max = 5, if flip first 0 to 1
+        int findMaxConsecutiveOnes(int[] nums){
+            int ret=0, leftCnt=0, rightCnt = 0;
 
+            for(int i=0; i<nums.Length; i++){
+                if(nums[i]==1)
+                    rightCnt++;
+                if(nums[i]==0){
+                    ret = Math.Max(ret, leftCnt+rightCnt);
+                    leftCnt = rightCnt;
+                    rightCnt=0;
+                }
+            }
+            if(rightCnt!=0)
+                ret = Math.Max(ret, leftCnt+rightCnt);                
+            
+            return ret+1;  //plus flip 0 
+        }
+        // Follow up:
+        // What if K (>=0) flips is allowed? 
+        // 1. Then, we are interested in where the last K 0s are.
+        // 2. By using a queue to track the positions of previous 0s. If the size of queue is more than K, we need immediately remove the front of queue, let's say p, then l = p + 1.
+        // 3. In the code, I treat l as the previous slot of the window to get rid of +1 or -1.
+        // 4. Note that the queue technique can deal with input stream, if it is not a fixed vector.
+        // 5. But a long or long long or other big_integer is needed to track the ans, since it may be very large without MOD 1e9+7.
+        int findMaxConsecutiveOnes(int[] nums, int K) {
+            int l = -1, n = nums.Length;
+            var que = new Queue<int>() ;
+    
+            int ans = 0;
+            for (int i = 0; i < n; i++) {
+                if (nums[i] == 0) {
+                    que.Enqueue(i);
+                }
+                if (que.Count > K) {                   
+                    l =que.Dequeue();
+                }
+                ans = Math.Max(ans, i - l);
+            }
+            return ans;
+        }
+
+    
         //189. Rotate Array
         //Given an array, rotate the array to the right by k steps, where k is non-negative.
         //Example 1:Input: [1,2,3,4,5,6,7]        and k = 3
@@ -116,6 +161,7 @@ namespace Interview
                 end--;
             }
         }
+
 
         //31. Next Permutation
         //Implement next permutation, which rearranges numbers into the lexicographically next greater permutation of numbers.
