@@ -8,6 +8,52 @@ namespace Interview
 {
     public class ArrayString
     {
+        //239. Sliding Window Maximum
+        //Given an array nums, there is a sliding window of size k which is moving from the very 
+        //left of the array to the very right. You can only see the k numbers in the window. Each time 
+        //the sliding window moves right by one position. Return the max sliding window.
+        //Input: nums = [1,3,-1,-3,5,3,6,7], and k = 3
+        //Output: [3,3,5,5,6,7]
+        //Explanation: 
+        //Window position                Max
+        //---------------               -----
+        //[1  3  -1] -3  5  3  6  7       3
+        // 1 [3  -1  -3] 5  3  6  7       3
+        // 1  3 [-1  -3  5] 3  6  7       5
+        // 1  3  -1 [-3  5  3] 6  7       5
+        // 1  3  -1  -3 [5  3  6] 7       6
+        // 1  3  -1  -3  5 [3  6  7]      7
+        public int[] MaxSlidingWindow(int[] nums, int k)
+        {
+            if (nums == null || nums.Length == 0)
+                return nums;
+
+            var ret = new List<int>();
+            var kList = new List<int>();
+            for(int i=0; i<k; i++)
+            {
+                kList.Add(nums[i]);
+            }
+            kList.Sort();
+            ret.Add(kList.Last());
+
+            for (int stIdx = 1; stIdx <= nums.Length - k; stIdx++)
+            {
+                kList.Remove(nums[stIdx - 1]);
+                if (nums[stIdx + k - 1] > ret.Last()) //if this cur new item greater than previous max, add it
+                {
+                    ret.Add(nums[stIdx + k - 1]);                    
+                    kList.Add(nums[stIdx + k - 1]);
+                    //kList.Sort();
+                    continue;
+                }
+                //else find max in cur k range
+                kList.Add(nums[stIdx + k - 1]);
+                kList.Sort();
+                ret.Add(kList.Last());
+            }
+            return ret.ToArray() ;
+        }
 
         //986. Interval List Intersections
         //Given two lists of closed intervals, each list of intervals is pairwise disjoint and in sorted order.
@@ -251,8 +297,33 @@ namespace Interview
         //Input: num = "10", k = 2
         //Output: "0"
         //Explanation: Remove all the digits from the number and it is left with nothing which is 0.
-        //string removeKdigits(string num, int k)
+        string removeKdigits(string num, int k)
+        {
+            if (string.IsNullOrEmpty(num) || k == num.Length)
+                return "0";
 
+            string ret = "";
+            int len = k;
+            for(int i=0; i< num.Length; i++)
+            {
+                while(ret.Length>0 && k>0 && (num[i]-ret.Last()) < 0)
+                {
+                    ret=ret.Remove(ret.Length - 1);
+                    k--;
+                }
+                ret += num[i];
+
+            }
+            if (k > 0)
+                ret = ret.Substring(0, num.Length - len);
+
+            while (ret.Length >0 && ret[0] == '0')
+            {
+                ret = ret.Remove(0, 1);
+            }
+            return ret.Length > 0 ? ret : "0";
+
+        }
         //678. Valid Parenthesis String
         //Given a string containing only three types of characters: '(', ')' and '*', write a function to check whether this string is valid.We define the validity of a string by these rules:
         //Any left parenthesis '(' must have a corresponding right parenthesis ')'.
@@ -2203,6 +2274,7 @@ namespace Interview
         //follow up , Merge K sorted arrays
         //https://www.geeksforgeeks.org/merge-k-sorted-arrays-set-2-different-sized-arrays/
         //use priority queue
+        // O(nlog(m))  n is total numbers m is how many rows  
 
 
         //3. Longest Substring Without Repeating Characters
@@ -2580,6 +2652,46 @@ namespace Interview
                 curList.Remove(curList.Last());
             }
         }
+
+
+        //259. 3sum smaller
+        //Given an array of n integers nums and a target, find the number of index triplets i, j, k with 0 <= i<j<k<n that satisfy the condition nums[i] + nums[j] + nums[k] < target.
+        //For example, given nums = [-2, 0, 1, 3], and target = 2.        
+        //Return 2. Because there are two triplets which sums are less than 2:
+        //[-2, 0, 1]
+        //[-2, 0, 3]
+        //Follow up:
+        //Could you solve it in O(n^2) runtime?
+        int threeSumSmaller(int[] nums, int target) {
+            if (nums == null || nums.Length == 0)
+                return 0;
+            Array.Sort(nums);
+            int ret = 0;
+            for(int i =0; i< nums.Length; i++)
+            {
+                int j = i + 1;
+                int k = nums.Length - 1;
+
+                if (i > 0 && nums[i] == nums[i - 1])
+                    continue;
+                while (j < k)
+                {
+                    if (nums[i] + nums[j] + nums[k] < target){
+                        ret++;
+                        j++;                        
+                        while (nums[j] == nums[j - 1])
+                            j++;                        
+                    }
+                    else {
+                        k--;
+                        while (nums[k] == nums[k + 1])
+                            k--;
+                    }                        
+                }
+            }
+            return ret;
+        }
+
 
         //268. Missing Number
         //Given an array containing n distinct numbers taken from 0, 1, 2, ..., n, find the one that is missing from the array.

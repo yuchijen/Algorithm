@@ -235,13 +235,13 @@ namespace Interview
 
             int isWin(char t, int i, int j)
             {
-                if (checkVerticle(t,i,j) || checkHarizonal(t, i, j) || checkDiag(t, i, j))
+                if (checkVerticle(t,j) || checkHarizonal(t, i) || checkDiag(t))
                     return t == 'X' ? 1 : 2;
 
                 return 0;
             }
 
-            bool checkVerticle(char t, int i, int j)
+            bool checkVerticle(char t, int j)
             {
                 for (int k = 0; k < len; k++)
                 {
@@ -250,7 +250,7 @@ namespace Interview
                 }
                 return true;
             }
-            bool checkHarizonal(char t, int i, int j)
+            bool checkHarizonal(char t, int i)
             {
                 for (int k = 0; k < len; k++)
                 {
@@ -259,7 +259,7 @@ namespace Interview
                 }
                 return true;
             }
-            bool checkDiag(char t, int i, int j)
+            bool checkDiag(char t)
             {
                 for (int k = 0; k < len; k++)
                 {

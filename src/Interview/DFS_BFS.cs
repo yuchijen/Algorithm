@@ -15,6 +15,37 @@ namespace Interview
     public class DFS_BFS
     {
 
+        //647. Palindromic Substrings
+        //Given a string, your task is to count how many palindromic substrings in this string.
+        //The substrings with different start indexes or end indexes are counted as different substrings even they consist of same characters.
+        //Example 1: Input: "abc"  Output: 3
+        //Explanation: Three palindromic strings: "a", "b", "c".        
+        //Example 2: Input: "aaa"
+        //Output: 6
+        //Explanation: Six palindromic strings: "a", "a", "a", "aa", "aa", "aaa".
+        public int CountSubstrings(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+                return 0;
+
+            var ret = new int[1] { 0 };
+            for (int i = 0; i < s.Length; i++)
+            {
+                helper(i, i, ret, s);
+                helper(i, i + 1, ret, s);
+            }
+            return ret[0];            
+        }
+        void helper(int i, int j, int[] ret, string s)
+        {
+            while (i >= 0 && j < s.Length && s[i] == s[j])
+            {
+                ret[0] += 1;
+                i--;
+                j++;
+            }
+        }
+
         //416. Partition Equal Subset Sum
         //Given a non-empty array containing only positive integers, find if the array can be partitioned into two subsets such that the sum of elements in both subsets is equal.
         //Note: Each of the array element will not exceed 100.
@@ -545,7 +576,7 @@ namespace Interview
             {
                 if (curNode != null) //push sub-left tree nodes
                 {
-                    st.Push(root);
+                    st.Push(curNode);
                     curNode = curNode.left;
                 }
                 else
@@ -688,10 +719,9 @@ namespace Interview
             if (left == 0 && right == 0)
             {
                 if (isValidParenthses(s))
-                {
-                    ret.Add(s);
-                    return;
-                }
+                    ret.Add(s);                  
+                
+                return;
             }
 
             for (int i = startIdx; i < s.Length; i++)
@@ -753,6 +783,33 @@ namespace Interview
                 }
             }
             return ret;
+        }
+
+
+        //921. Minimum Add to Make Parentheses Valid
+        //Given a string S of '(' and ')' parentheses, we add the minimum number of parentheses ( '(' or ')', and in any positions ) so that the resulting parentheses string is valid.
+        //Formally, a parentheses string is valid if and only if:
+        //It is the empty string, or It can be written as AB(A concatenated with B), where A and B are valid strings, or
+        //It can be written as (A), where A is a valid string.
+        //Given a parentheses string, return the minimum number of parentheses we must add to make the resulting string valid.
+        public int MinAddToMakeValid(string S)
+        {
+            if (string.IsNullOrEmpty(S))
+                return 0;
+
+            int stackR = 0; 
+            int StackL = 0; 
+
+            for(int i=0; i< S.Length; i++)
+            {
+                if (S[i] == '(')
+                    StackL += 1; 
+                else if(S[i]==')' && StackL > 0)
+                    StackL--;
+                else if(S[i]==')')
+                    stackR++;                
+            }
+            return stackR + StackL;
         }
 
         //79. Word Search

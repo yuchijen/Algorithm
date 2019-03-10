@@ -7,6 +7,44 @@ namespace Interview
 {
     public class DynamicProgramming
     {
+        //583. Delete Operation for Two Strings
+        //Given two words word1 and word2, find the minimum number of steps required to make word1 and word2 the same, where in each step you can delete one character in either string.
+        //Example 1: Input: "sea", "eat"  Output: 2
+        //Explanation: You need one step to make "sea" to "ea" and another step to make "eat" to "ea".
+        //hint :  length word1 + length word2 - (most common string length) x2 
+        //其中dp[i][j]表示word1的前i个字符和word2的前j个字符组成的两个单词的最长公共子序列的长度。
+        //下面来看递推式dp[i][j]怎么求，首先来考虑dp[i][j]和dp[i-1][j-1]之间的关系，我们可以发现，
+        //如果当前的两个字符相等，那么dp[i][j] = dp[i-1][j-1] + 1，这不难理解吧，因为最长相同子序列又多了一个相同的字符，
+        //所以长度加1。由于我们dp数组的大小定义的是(n1+1) x (n2+1)，所以我们比较的是word1[i-1]和word2[j-1]。
+        //那么我们想如果这两个字符不相等呢，难道我们直接将dp[i-1][j-1]赋值给dp[i][j]吗，当然不是，我们还要错位相比，
+        //比如就拿题目中的例子来说，"sea"和"eat"，当我们比较第一个字符，发现's'和'e'不相等，下一步就要错位比较，
+        //比较sea中第一个's'和eat中的'a'，sea中的'e'跟eat中的第一个'e'相比，这样我们的dp[i][j]就要取dp[i-1][j]跟dp[i][j-1]中的较大值了，最后我们求出了最大共同子序列的长度，就能直接算出最小步数了
+        public int MinDistance(string word1, string word2)
+        {
+            if (string.IsNullOrEmpty(word1))
+                return word2.Length;
+            if (string.IsNullOrEmpty(word2))
+                return word1.Length;
+
+            int l1 = word1.Length;
+            int l2 = word2.Length;
+            //dp i to j means  longest common length of before i in word1 and before j in word2
+            var dp = new int[l1 + 1, l2 + 1];
+
+            for(int i=1; i <= l1; i++)
+            {
+                for(int j=1; j <= l2; j++)
+                {
+                    if (word1[i-1] == word2[j-1])
+                        dp[i, j] = dp[i - 1, j - 1] + 1;
+                    else
+                        dp[i, j] = Math.Max(dp[i - 1, j], dp[i, j - 1]);
+                }
+            }
+            return l1 + l2 - 2 * dp[l1, l2];
+        }
+
+
         //44. Wildcard Matching
         //Given an input string (s) and a pattern (p), implement wildcard pattern matching with support for '?' and '*'.
         //'?' Matches any single character.
