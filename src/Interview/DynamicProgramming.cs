@@ -7,6 +7,35 @@ namespace Interview
 {
     public class DynamicProgramming
     {
+
+        //647. Palindromic Substrings 
+        //Given a string, your task is to count how many palindromic substrings in this string.
+        //The substrings with different start indexes or end indexes are counted as different substrings even they consist of same characters.
+        //Example 1: Input: "abc"  Output: 3
+        //Explanation: Three palindromic strings: "a", "b", "c".        
+        //Example 2: Input: "aaa"
+        //Output: 6
+        //Explanation: Six palindromic strings: "a", "a", "a", "aa", "aa", "aaa".
+        public int CountSubstrings(string s)
+        {
+            var dp = new bool[s.Length, s.Length];
+            //init dp with i==j :true , i to j means from index i to index j in string is Palindrom
+            int ret = 0;
+            
+            for (int j = 0; j < s.Length; j++)
+            {
+                for (int i =0; i <= j; i++)
+                {
+                    if (s[i] == s[j] && (j - i <= 2 || dp[i + 1, j - 1]))
+                    {
+                        dp[i, j] = true;
+                        ret++;
+                    }
+                }
+            }
+            return ret;
+        }
+
         //583. Delete Operation for Two Strings
         //Given two words word1 and word2, find the minimum number of steps required to make word1 and word2 the same, where in each step you can delete one character in either string.
         //Example 1: Input: "sea", "eat"  Output: 2

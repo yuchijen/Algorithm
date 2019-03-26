@@ -2463,20 +2463,28 @@ namespace Interview
         //However, you may not engage in multiple transactions at the same time(ie, you must sell the stock before you buy again).
         public int MaxProfit2(int[] prices)
         {
+            //better one
             int ret = 0;
-            int curMax = 0;
-
-            for (int i = 0; i < prices.Length; i++)
+            for (int i = 1; i < prices.Length; i++)
             {
-                while (i + 1 < prices.Length && prices[i + 1] > prices[i])
-                {
-                    curMax += prices[i + 1] - prices[i];
-                    i++;
-                }
-                ret += curMax;
-                curMax = 0;
+                ret += prices[i] > prices[i - 1] ? prices[i] - prices[i - 1] : 0;
             }
             return ret;
+
+            //int ret = 0;
+            //int curMax = 0;
+
+            //for (int i = 0; i < prices.Length; i++)
+            //{
+            //    while (i + 1 < prices.Length && prices[i + 1] > prices[i])
+            //    {
+            //        curMax += prices[i + 1] - prices[i];
+            //        i++;
+            //    }
+            //    ret += curMax;
+            //    curMax = 0;
+            //}
+            //return ret;
         }
 
         //amazon OA k nearest point，背景是一个城市有N个牛排馆，牛排馆的坐标都是存在allocations的list里面
