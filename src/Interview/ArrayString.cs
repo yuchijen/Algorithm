@@ -2487,6 +2487,49 @@ namespace Interview
             //return ret;
         }
 
+        //123. Best Time to Buy and Sell Stock III
+        //Design an algorithm to find the maximum profit. You may complete at most two transactions.
+        //Note: You may not engage in multiple transactions at the same time (i.e., you must sell the stock before you buy again).
+        //Example 1: Input: [3,3,5,0,0,3,1,4]
+        //Output: 6
+        //Explanation: Buy on day 4 (price = 0) and sell on day 6 (price = 3), profit = 3-0 = 3.
+        //Then buy on day 7 (price = 1) and sell on day 8 (price = 4), profit = 4-1 = 3.
+        //O(n)空间复杂度的动态规划：由于最多进行两次交易，所以第一次交易和第二次交易的分割点就比较关键。
+        //我们定义left_max[i]表示在[0, i]区间内完成一笔交易所能获得的最利润，而right_max[i]则表示在[i, prices.size() - 1]区间内完成
+        //一笔交易所能获得的最大利润。显然，left_max和right_max都可以通过线性扫描，采用贪心策略正确计算出来，最后线性扫描，
+        //取得最佳分割点即可。不过，最后别忘了将交易两次的获利和只交易一次的最大获利相比较，并取最大值（left_max[prices.size() - 1]或者right_max[0]）。        
+        //原文：https://blog.csdn.net/magicbean2/article/details/71045903 
+        //space : O(n)
+        public int MaxProfit3(int[] prices){
+            if(prices.Length <= 1)
+                return 0;
+            var left_max = new int[prices.Length];
+            var right_max = new int[prices.Length];
+            int lowest_price = prices[0];
+            for(int i = 1; i < prices.Length; ++i)
+            {
+                if(prices[i] < lowest_price)
+                    lowest_price = prices[i];
+                left_max[i] = Math.Max(left_max[i - 1], prices[i] - lowest_price);
+            }
+            int highest_price = prices[prices.Length - 1];
+            for(int i = prices.Length - 2; i >= 0; --i)
+            {
+                if(prices[i] > highest_price)
+                    highest_price = prices[i];
+                right_max[i] = Math.Max(right_max[i + 1], highest_price - prices[i]);
+            }
+            int max_profit = 0;
+            for(int i = 0; i < prices.Length - 1; ++i)
+            {
+                int sum_price = left_max[i] + right_max[i];
+                if(max_profit < sum_price)
+                    max_profit = sum_price;
+            }
+            return Math.Max(max_profit, right_max[0]);
+        }
+
+
         //amazon OA k nearest point，背景是一个城市有N个牛排馆，牛排馆的坐标都是存在allocations的list里面
         //(类型是List<List<Integer>>)，然后要求返回k个最近的牛排馆给用户，用户位置在坐标(0, 0)
         public List<List<int>> ClosestXdestinations(int numDestinations, int[,] allLocations, int numDeliveries)

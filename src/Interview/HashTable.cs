@@ -8,6 +8,7 @@ namespace Interview
 {
     public class HashTable
     {
+        
         //340. Find the longest substring with k unique characters in a given string (Not Tested yet)
         //Given a string you need to print longest possible substring that has exactly M unique characters. 
         //If there are more than one substring of longest possible length, then print any one of them.
@@ -26,34 +27,29 @@ namespace Interview
         //There are only two unique characters, thus show error message. 
         public int lengthOfLongestSubstringKDistinct(string s, int k) { 
             
-                if(string.IsNullOrEmpty(s) || k <=0)
-                    return 0;
+            var map = new Dictionary<char, int>();
+            int tailIdx=0;
+            int ret =0;
+            
+            for(int i=0; i<s.Length; i++){
+                if(map.ContainsKey(s[i])){
+                    map[s[i]]+=1;
+                    ret = Math.Max(ret, map.Sum(kv=>(kv.Value)));
+                }    
+                else{
+                    map.Add(s[i],1);
+                    while(map.Count > k && tailIdx < i){
+                        if(map[s[tailIdx]] >1)
+                            map[s[tailIdx]]-=1;
+                        else
+                            map.Remove(s[tailIdx]);
 
-                var map = new Dictionary<char,int>();
-                int tailIdx = -1;
-                var ret =0 ;
-                for(int i=0; i<s.Length; i++){
-                    if(tailIdx<0)
-                        tailIdx = i;
-                    if(!map.ContainsKey(s[i]))
-                        map.Add(s[i],1);
-                    else
-                        map[s[i]]++;
-                    
-                    while(tailIdx< s.Length && map.Count >k){
-                        if(map.ContainsKey(s[tailIdx]))
-                        {
-                            if(map[s[tailIdx]]>0)
-                                map[s[tailIdx]]--;
-                            else
-                                map.Remove(s[tailIdx]);
-                        }
                         tailIdx++;
                     }
-
-                    ret = Math.Max(ret,map.Values.Sum());                    
-                }                
-                return map.Count <k ? -1: ret ;
+                }
+                ret = Math.Max(ret, map.Sum(kv=>(kv.Value)));
+            }
+            return ret;        
         }
 
 
