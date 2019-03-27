@@ -1093,7 +1093,15 @@ namespace Interview
             }
             return false;
         }
-
+        public bool WordBreakBetter(string s, IList<string> wordDict){
+            
+            var map = new Dictionary<string,bool>();
+            var hs = new HashSet<string>(wordDict);
+            if(s==null || wordDict==null)
+                return false;
+            return WordBreakHelper(s,hs,map);
+        }
+        
         public bool WordBreakHelper(string s, HashSet<string> wordDict, Dictionary<string, bool> map)
         {
             if (map.ContainsKey(s))
@@ -1105,7 +1113,7 @@ namespace Interview
                 return true;
             }
 
-            for (int i = 1; i < s.Length; i++)
+            for (int i = 0; i < s.Length; i++)
             {
                 string left = s.Substring(0, i);
                 string right = s.Substring(i);
@@ -1115,7 +1123,6 @@ namespace Interview
                     map.Add(s, true);
                     return true;
                 }
-
             }
             map.Add(s, false);
             return false;
