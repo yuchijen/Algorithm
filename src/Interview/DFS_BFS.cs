@@ -33,7 +33,37 @@ namespace Interview
         //return its length 5.
         public int LadderLength(string beginWord, string endWord, IList<string> wordList)
         {
+            var hs = new HashSet<string>(wordList);
 
+            var q = new Queue<string>();
+
+            if(beginWord==endWord)
+                return 0;
+
+            int ret =0;
+            
+            q.Enqueue(beginWord);
+
+            while(q.Count>0){
+                var curStr = q.Dequeue();
+                if(curStr==endWord)
+                  break;
+                for(int i=0; i< curStr.Length; i++){
+                    char c = curStr[i];
+                    for(int j=0; j<26; j++) {
+                        if(c=='a'+j) 
+                            continue;
+                        curStr[i] = 'a'+j;
+                        if(hs.Contains(curStr)){
+                            ret+=1;
+                            q.Enqueue(curStr);
+                            hs.Remove(curStr);
+                        }                        
+                    }
+                    curStr[i] = c;
+                }
+            }
+          return ret;
         }
         
 
@@ -1158,12 +1188,12 @@ namespace Interview
         public IList<string> WordBreakII(string s, HashSet<string> wordDict)
         {
             var ret = new List<string>();
-            //WordBreakIIHelper(s, wordDict, new Dictionary<string, bool>(), "", ret);
+            var map = new Dictionary<string, List<string>>();
+            return WordBreakIIHelper(s, wordDict, map);
 
-            return ret;
         }
 
-        public IList<string> WordBreakIIHelper(string s, HashSet<string> wordDict, Dictionary<string, List<string>> map, List<string> cur, List<string> ret)
+        public IList<string> WordBreakIIHelper(string s, HashSet<string> wordDict, Dictionary<string, List<string>> map)
         {
             //if (!string.IsNullOrEmpty(cur) && s == "")
             //    ret.Add(cur);
