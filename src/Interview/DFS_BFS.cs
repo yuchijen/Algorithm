@@ -34,36 +34,37 @@ namespace Interview
         public int LadderLength(string beginWord, string endWord, IList<string> wordList)
         {
             var hs = new HashSet<string>(wordList);
-
             var q = new Queue<string>();
-
             if(beginWord==endWord)
                 return 0;
 
-            int ret =0;
-            
+            int ret =0;            
             q.Enqueue(beginWord);
 
             while(q.Count>0){
-                var curStr = q.Dequeue();
-                if(curStr==endWord)
-                  break;
+                ret+=1;
+                var str = q.Dequeue();
+                
+                char[] curStr = str.ToCharArray();
                 for(int i=0; i< curStr.Length; i++){
                     char c = curStr[i];
-                    for(int j=0; j<26; j++) {
-                        if(c=='a'+j) 
+                    for(char j ='a'; j<='z';j++){
+                        if(j==c)
                             continue;
-                        curStr[i] = 'a'+j;
-                        if(hs.Contains(curStr)){
-                            ret+=1;
-                            q.Enqueue(curStr);
-                            hs.Remove(curStr);
-                        }                        
-                    }
+                        curStr[i] = j;
+                        string newStr = new string(curStr);
+                        if(newStr==endWord)
+                            return ret+1; 
+                            
+                        if(hs.Contains(newStr)){
+                            q.Enqueue(newStr);
+                            hs.Remove(newStr);
+                        }    
+                    }                    
                     curStr[i] = c;
                 }
             }
-          return ret;
+            return 0;
         }
         
 
