@@ -701,6 +701,9 @@ namespace Interview
         //find out max and second max value in array
         public int[] FindMaxAndSecondMax(int[] nums)
         {
+            if (nums == null || nums.Length < 2)
+                return null;
+
             var ret = new List<int>();
             int max = int.MinValue;
             int smax = int.MinValue;
@@ -717,6 +720,8 @@ namespace Interview
                     smax = nums[i];
                 }
             }
+            if (smax == int.MinValue)
+                throw new Exception("no second largest element");
             ret.Add(max);
             ret.Add(smax);
             return ret.ToArray();

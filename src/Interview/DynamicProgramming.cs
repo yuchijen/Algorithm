@@ -7,6 +7,52 @@ namespace Interview
 {
     public class DynamicProgramming
     {
+        //198. House Robber
+        //You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security system connected and it will automatically contact the police if two adjacent houses were broken into on the same night.
+        //Given a list of non-negative integers representing the amount of money of each house, determine the maximum amount of money you can rob tonight without alerting the police.
+        //Example 1: Input: [1,2,3,1]
+        //Output: 4
+        //Explanation: Rob house 1 (money = 1) and then rob house 3 (money = 3).
+        //Total amount you can rob = 1 + 3 = 4.
+        public int Rob(int[] nums)
+        {
+            if (nums == null || nums.Length == 0)
+                return 0;
+            if (nums.Length == 1)
+                return nums[0];
+
+            //dp i is cur max value if rob this house or not  
+            var dp = new int[nums.Length+1];
+            dp[0] = 0;
+            dp[1] = nums[0];
+            dp[2] = Math.Max(dp[1],nums[1]+dp[0]);
+                
+            for(int i=3; i< dp.Length; i++)
+            {
+                dp[i] = Math.Max(dp[i - 1], nums[i - 1] + dp[i - 2]);
+            }
+            return dp[nums.Length];
+        }
+
+        //213. House Robber II
+        //All houses at this place are arranged in a circle. That means the first house is 
+        //the neighbor of the last one.
+        //hint: remove 1st or remove last then compare 2 conditions
+        public int Rob2(int[] nums)
+        {
+            if (nums == null || nums.Length == 0)
+                return 0;
+            if (nums.Length == 1)
+                return nums[0];
+
+            var arr1 = new int[nums.Length - 1];
+            var arr2 = new int[nums.Length - 1];
+
+            Array.Copy(nums,0, arr1,0, nums.Length - 1);
+            Array.Copy(nums,1, arr2,0, nums.Length - 1);
+           
+            return Math.Max(Rob(arr1), Rob(arr2));
+        }
 
         //647. Palindromic Substrings 
         //Given a string, your task is to count how many palindromic substrings in this string.

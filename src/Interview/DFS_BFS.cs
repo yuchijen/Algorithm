@@ -31,11 +31,94 @@ namespace Interview
         //Output: 5
         //Explanation: As one shortest transformation is "hit" -> "hot" -> "dot" -> "dog" -> "cog",
         //return its length 5.
+        public int LadderLengthBFS(string beginWord, string endWord, IList<string> wordList)
+        {
+            var hs = new HashSet<string>(wordList);
+            if (!hs.Contains(endWord))
+                return 0;
+            var q = new Queue<string>();
+            if (beginWord == endWord)
+                return 0;
+
+            int ret = 0;
+            q.Enqueue(beginWord);
+
+            while (q.Count > 0)
+            {
+                ret += 1;
+                //each leyer (possible candidates in hashset on last layer search)
+                for (int l = q.Count; l>0; l--)
+                {
+                    var str = q.Dequeue();
+                    char[] curStr = str.ToCharArray();                    
+                    for (int i = 0; i < curStr.Length; i++)
+                    {
+                        char c = curStr[i];
+                        for (char j = 'a'; j <= 'z'; j++)
+                        {
+                            if (j == c)
+                                continue;
+                            curStr[i] = j;
+                            string newStr = new string(curStr);
+                            if (newStr == endWord)
+                                return ret+1;
+                            if (hs.Contains(newStr))
+                            {
+                                q.Enqueue(newStr);
+                                hs.Remove(newStr);
+                            }
+                        }
+                        curStr[i] = c;
+                    }
+                }                
+            }
+            return 0;
+        }
+
         public int LadderLength(string beginWord, string endWord, IList<string> wordList)
         {
+            if (string.IsNullOrEmpty(beginWord) || string.IsNullOrEmpty(endWord) || wordList == null || wordList.Count == 0)
+                return 0;
+
+            var chars = new char[] { 'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z' };
+
+            var hs = new HashSet<string>(wordList);
+            var map = new Dictionary<string, bool>();
+            foreach(var str in hs)
+                map.Add(str, false);
+
+            return DFSLadderHelper(beginWord, endWord,0, chars, hs, map);
 
         }
-        
+
+        int DFSLadderHelper(string st, string end,int ret, char[] chs, HashSet<string> hs, Dictionary<string, bool> visited)
+        {
+            if (st == end)
+                return ret;
+
+            if (!visited.ContainsKey(st))
+                return 0;
+
+            if (visited[st])
+                return 0;
+
+            visited[st] = true;
+            
+            for (int i=0; i< st.Length-1; i++)
+            {
+                foreach(var c in chs)
+                {
+                    string possiStr = st.Substring(0, i) + c + st.Substring(i + 1);
+                    if(st!=possiStr && hs.Contains(possiStr))
+                    {
+                        return DFSLadderHelper(possiStr, end, ret + 1, chs, hs, visited);
+                    }
+                }
+            }
+            visited[st] = false;
+
+            return ret;
+        }
 
         //647. Palindromic Substrings
         //Given a string, your task is to count how many palindromic substrings in this string.
@@ -865,6 +948,8 @@ namespace Interview
             }
             return false;
         }
+
+        
         bool existHelper(char[,] board, string word, bool[,] visited, int wordIdx, int i, int j)
         {
             if (word.Length == wordIdx)
@@ -887,6 +972,7 @@ namespace Interview
             return false;
         }
 
+        
 
         //212. Word Search II
         //Given a 2D board and a list of words from the dictionary, find all words in the board.
@@ -901,6 +987,26 @@ namespace Interview
         //  ['i', 'f', 'l', 'v']
         //  ]
         //        Output: ["eat","oath"]
+        public IList<string> FindWords2(char[,] board, string[] words)
+        {
+            var ret = new HashSet<string>();
+            int row = board.GetLength(0);
+            int col = board.GetLength(1);
+            bool[,] visited = new bool[row, col];
+            foreach (var word in words)
+            {
+                visited = new bool[row, col];
+                for (int i = 0; i < row; i++)
+                {
+                    for (int j = 0; j < col; j++)
+                    {
+                        if (existHelper(board, word, visited, 0, i, j))
+                            ret.Add(word);
+                    }
+                }
+            }
+            return ret.ToList();
+        }
         public IList<string> FindWords(char[,] board, string[] words)
         {
             var ret = new List<string>();
@@ -1140,7 +1246,7 @@ namespace Interview
                 string left = s.Substring(0, i);
                 string right = s.Substring(i);
 
-                if (WordBreakHelper(left, wordDict, map) && wordDict.Contains(right))
+                if (wordDict.Contains(left) && WordBreakHelper(right, wordDict, map) )
                 {
                     map.Add(s, true);
                     return true;
@@ -1150,15 +1256,20 @@ namespace Interview
             return false;
         }
 
+
+        //140. Word Break II
         //Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, add spaces in s to construct a sentence where each word is a valid dictionary word. Return all such possible sentences.
         //Note: The same word in the dictionary may be reused multiple times in the segmentation.
         //You may assume the dictionary does not contain duplicate words.
         //Example 1: Input: s = "catsanddog"  wordDict = ["cat", "cats", "and", "sand", "dog"]
         //Output: [  "cats and dog",   "cat sand dog" ]
-        public IList<string> WordBreakII(string s, HashSet<string> wordDict)
+        public IList<string> WordBreakII(string s, IList<string> wordDict)
         {
             var ret = new List<string>();
-            //WordBreakIIHelper(s, wordDict, new Dictionary<string, bool>(), "", ret);
+            var hs = new HashSet<string>(wordDict);
+            var map = new Dictionary<string, List<string>>();
+            
+            WordBreakIIHelper(s, hs, map,new List<string>(), ret);
 
             return ret;
         }
@@ -1172,9 +1283,11 @@ namespace Interview
                 return map[s];
 
             if (wordDict.Contains(s))
-                cur.Add(s);
-
-            for (int i = 1; i < s.Length; i++)
+            {   
+                if(map.ContainsKey(s))
+                    cur.Add(s);
+            }
+            for (int i = 0; i < s.Length; i++)
             {
                 string left = s.Substring(0, i);
                 string right = s.Substring(i);
