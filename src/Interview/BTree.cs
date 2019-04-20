@@ -113,6 +113,18 @@ namespace Interview
 
         }
 
+        //100. Same Tree
+        public bool IsSameTree(TreeNode p, TreeNode q) 
+        {
+            if(q==null || p==null)
+                return p==q;
+        
+            if(p.val!=q.val)
+                return false;
+        
+            return IsSameTree(p.left,q.left)&&IsSameTree(p.right,q.right);
+        }
+
         //199. Binary Tree Right Side View    (FB)
         //Example: Input: [1,2,3,null,5,null,4]  Output: [1, 3, 4,9]
         //Explanation:
@@ -1076,6 +1088,15 @@ namespace Interview
                 return true;
 
             var st = new Stack<TreeNode>();
+
+            while(root!=null || st.Count>0){
+
+                if(root!=null){
+                    st.Push(root)
+                    root= root.left;
+                }
+
+            }
 
             putLeftNodeToStack(root,st);
             int prev = int.MinValue;

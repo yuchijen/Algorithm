@@ -88,7 +88,6 @@ namespace Interview
                 map.Add(str, false);
 
             return DFSLadderHelper(beginWord, endWord,0, chars, hs, map);
-
         }
 
         int DFSLadderHelper(string st, string end,int ret, char[] chs, HashSet<string> hs, Dictionary<string, bool> visited)
@@ -1269,39 +1268,38 @@ namespace Interview
             var hs = new HashSet<string>(wordDict);
             var map = new Dictionary<string, List<string>>();
             
-            WordBreakIIHelper(s, hs, map,new List<string>(), ret);
+            return WordBreakIIHelper(s, hs, map,new List<string>(), ret);
 
-            return ret;
         }
 
-        public IList<string> WordBreakIIHelper(string s, HashSet<string> wordDict, Dictionary<string, List<string>> map, List<string> cur, List<string> ret)
-        {
-            //if (!string.IsNullOrEmpty(cur) && s == "")
-            //    ret.Add(cur);
+        //public IList<string> WordBreakIIHelper(string s, HashSet<string> wordDict, Dictionary<string, List<string>> map, List<string ret)
+        //{
+        //    //if (!string.IsNullOrEmpty(cur) && s == "")
+        //    //    ret.Add(cur);
 
-            if (map.ContainsKey(s))
-                return map[s];
+        //    if (map.ContainsKey(s))
+        //        return map[s];
 
-            if (wordDict.Contains(s))
-            {   
-                if(map.ContainsKey(s))
-                    cur.Add(s);
-            }
-            for (int i = 0; i < s.Length; i++)
-            {
-                string left = s.Substring(0, i);
-                string right = s.Substring(i);
-                if (!wordDict.Contains(right))
-                    continue;
+        //    if (wordDict.Contains(s))
+        //    {   
+        //        if(map.ContainsKey(s))
+        //            cur.Add(s);
+        //    }
+        //    for (int i = 0; i < s.Length; i++)
+        //    {
+        //        string left = s.Substring(0, i);
+        //        string right = s.Substring(i);
+        //        if (!wordDict.Contains(right))
+        //            continue;
 
-                List<string> left_ans = new List<string>(WordBreakIIHelper(left, wordDict, map, cur, ret));
-                left_ans.Add(right);
+        //        List<string> left_ans = new List<string>(WordBreakIIHelper(left, wordDict, map, cur, ret));
+        //        left_ans.Add(right);
 
-                //cur = left_ans.Concat(cur);                
-            }
-            map.Add(s, cur);
-            return map[s];
-        }
+        //        //cur = left_ans.Concat(cur);                
+        //    }
+        //    map.Add(s, cur);
+        //    return map[s];
+        //}
 
         //200. Number of Islands
         //Given a 2d grid map of '1's (land) and '0's (water), count the number of islands. 
