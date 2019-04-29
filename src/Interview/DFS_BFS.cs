@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Interview
 {
-    
+
     public class Point
     {
         public int x { get; set; }
@@ -14,6 +14,101 @@ namespace Interview
     }
     public class DFS_BFS
     {
+        //zume given 2 node in graph, find any common ancestor 
+        public bool findCA(List<int[]> input, int n1, int n2)
+        {
+            if (input == null || input.Count == 0)
+                return false;
+
+            var total = new HashSet<int>();
+            var map = new Dictionary<int, List<int>>();
+            var visited = new Dictionary<int, int>();
+
+            foreach (var tu in input)
+            {
+                total.Add(tu[0]);
+                total.Add(tu[1]);
+
+                if (map.ContainsKey(tu[1]))
+                    map[tu[1]].Add(tu[0]);
+                else
+                    map.Add(tu[1], new List<int>() { tu[0] });
+            }
+            
+            //trace back to root from n1 and n2 
+            var path1 = new List<int>();
+            var path2 = new List<int>();
+
+            pathHelper(map, visited, n1, path1);
+            visited = new Dictionary<int, int>();
+            pathHelper(map, visited, n2, path2);
+
+            return path1.Any(p1 => (path2.Contains(p1)));
+            //foreach(var x in path1)
+            //{
+            //    if (path2.Contains(x))
+            //        return true;
+            //}
+            //return false;
+        }
+        void pathHelper(Dictionary<int, List<int>> map, Dictionary<int, int> visited, int n, List<int> path)
+        {
+            path.Add(n);
+            if (map.ContainsKey(n))
+            {
+                if (visited.ContainsKey(n))
+                {
+                    //if (visited[n] == 1)
+                        return;                
+                }
+                visited.Add(n, 1);
+
+                foreach (var parent in map[n])
+                {
+                    pathHelper(map,visited, parent, path);                        
+                }                
+            }
+        }
+
+        //zume  find the nodes have 0 parent or 1 parent 
+        // space: O(n) time: O(n+v)
+        public List<List<int>> findZeroOrOneParent(List<int[]> input)
+        {
+            if (input == null || input.Count == 0)
+                return null;
+            var total = new HashSet<int>();
+            var map = new Dictionary<int, List<int>>();
+            foreach (var tu in input)
+            {
+                total.Add(tu[0]);
+                total.Add(tu[1]);
+
+                if (map.ContainsKey(tu[1]))
+                    map[tu[1]].Add(tu[0]);
+                else
+                    map.Add(tu[1], new List<int>() { tu[0] });
+            }
+            var ret = new List<List<int>>();
+            var retZeroP = new List<int>();
+            var retOneP = new List<int>();
+
+            foreach (int node in total)
+            {
+                if (!map.ContainsKey(node))
+                    retZeroP.Add(node);
+            }
+
+            foreach (var kv in map)
+            {
+                if (kv.Value.Count == 1)
+                    retOneP.Add(kv.Key);
+            }
+            ret.Add(retZeroP);
+            ret.Add(retOneP);
+            return ret;
+        }
+        
+
         //127. Word Ladder
         //Given two words(beginWord and endWord), and a dictionary's word list, find the length of shortest transformation sequence from beginWord to endWord, such that:
         //Only one letter can be changed at a time.
@@ -47,10 +142,10 @@ namespace Interview
             {
                 ret += 1;
                 //each leyer (possible candidates in hashset on last layer search)
-                for (int l = q.Count; l>0; l--)
+                for (int l = q.Count; l > 0; l--)
                 {
                     var str = q.Dequeue();
-                    char[] curStr = str.ToCharArray();                    
+                    char[] curStr = str.ToCharArray();
                     for (int i = 0; i < curStr.Length; i++)
                     {
                         char c = curStr[i];
@@ -61,7 +156,7 @@ namespace Interview
                             curStr[i] = j;
                             string newStr = new string(curStr);
                             if (newStr == endWord)
-                                return ret+1;
+                                return ret + 1;
                             if (hs.Contains(newStr))
                             {
                                 q.Enqueue(newStr);
@@ -70,7 +165,7 @@ namespace Interview
                         }
                         curStr[i] = c;
                     }
-                }                
+                }
             }
             return 0;
         }
@@ -80,17 +175,17 @@ namespace Interview
             if (string.IsNullOrEmpty(beginWord) || string.IsNullOrEmpty(endWord) || wordList == null || wordList.Count == 0)
                 return 0;
 
-            var chars = new char[] { 'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z' };
+            var chars = new char[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
             var hs = new HashSet<string>(wordList);
             var map = new Dictionary<string, bool>();
-            foreach(var str in hs)
+            foreach (var str in hs)
                 map.Add(str, false);
 
-            return DFSLadderHelper(beginWord, endWord,0, chars, hs, map);
+            return DFSLadderHelper(beginWord, endWord, 0, chars, hs, map);
         }
 
-        int DFSLadderHelper(string st, string end,int ret, char[] chs, HashSet<string> hs, Dictionary<string, bool> visited)
+        int DFSLadderHelper(string st, string end, int ret, char[] chs, HashSet<string> hs, Dictionary<string, bool> visited)
         {
             if (st == end)
                 return ret;
@@ -102,13 +197,13 @@ namespace Interview
                 return 0;
 
             visited[st] = true;
-            
-            for (int i=0; i< st.Length-1; i++)
+
+            for (int i = 0; i < st.Length - 1; i++)
             {
-                foreach(var c in chs)
+                foreach (var c in chs)
                 {
                     string possiStr = st.Substring(0, i) + c + st.Substring(i + 1);
-                    if(st!=possiStr && hs.Contains(possiStr))
+                    if (st != possiStr && hs.Contains(possiStr))
                     {
                         return DFSLadderHelper(possiStr, end, ret + 1, chs, hs, visited);
                     }
@@ -138,7 +233,7 @@ namespace Interview
                 helper(i, i, ret, s);
                 helper(i, i + 1, ret, s);
             }
-            return ret[0];            
+            return ret[0];
         }
         void helper(int i, int j, int[] ret, string s)
         {
@@ -165,26 +260,26 @@ namespace Interview
                 return false;
 
             return CanPartitionDPS(nums, nums.Length, sum / 2);
-            
+
         }
         bool CanPartitionDPS(int[] nums, int n, int target)
         {
             if (target == 0)
                 return true;
-            if (n ==0 && target != 0)
+            if (n == 0 && target != 0)
                 return false;
 
-            return CanPartitionDPS(nums, n-1, target - nums[n-1]) || CanPartitionDPS(nums, n-1, target);
+            return CanPartitionDPS(nums, n - 1, target - nums[n - 1]) || CanPartitionDPS(nums, n - 1, target);
         }
 
-        
+
         public class UndirectedGraphNode
         {
             public int label;
             public IList<UndirectedGraphNode> neighbors;
             public UndirectedGraphNode(int x) { label = x; neighbors = new List<UndirectedGraphNode>(); }
         }
-        
+
         //133. Clone Graph
         //Given the head of a graph, return a deep copy(clone) of the graph.Each node in the graph 
         //contains a label(int) and a list(List[UndirectedGraphNode]) of its neighbors.There is an 
@@ -208,14 +303,14 @@ namespace Interview
                     if (!dic.ContainsKey(nei))
                     {
                         qu.Enqueue(nei);
-                        dic.Add(nei, new UndirectedGraphNode(nei.label));                  
+                        dic.Add(nei, new UndirectedGraphNode(nei.label));
                     }
                     dic[curNode].neighbors.Add(dic[nei]);
                 }
             }
             return dic[node];
         }
-        
+
 
         //953. Verifying an Alien Dictionary
         //In an alien language, surprisingly they also use english lowercase letters, but possibly in a different order. The order of the alphabet is some permutation of lowercase letters.
@@ -233,29 +328,29 @@ namespace Interview
         {
             if (words == null || words.Length == 0)
                 return true;
-            
+
             for (int i = 0; i < words.Length - 1; ++i)
             {
                 if (!inorder(words[i], words[i + 1], order))
-                    return false;             
+                    return false;
             }
             return true;
         }
         public bool inorder(String w1, String w2, string order)
         {
-            for (int i = 0; i < w1.Length ; i++)
+            for (int i = 0; i < w1.Length; i++)
             {
                 if (i >= w2.Length)
                     return false;
                 if (order.IndexOf(w1[i]) < order.IndexOf(w2[i]))
                     return true;
                 else if (order.IndexOf(w1[i]) > order.IndexOf(w2[i]))
-                    return false;                             
+                    return false;
             }
             return true;
             //return w1.Length <= w2.Length;
         }
-        
+
 
         //636. Exclusive Time of Functions
         //Given the running logs of n functions that are executed in a nonpreemptive single threaded CPU, find the exclusive time of these functions.
@@ -273,9 +368,9 @@ namespace Interview
 
             var st = new Stack<int>();
             int pre = 0;
-            for(int i=0; i< logs.Count; i++)
+            for (int i = 0; i < logs.Count; i++)
             {
-                int id =int.Parse( logs[i].Split(':')[0]);
+                int id = int.Parse(logs[i].Split(':')[0]);
                 string stOrEnd = logs[i].Split(':')[1];
                 int time = int.Parse(logs[i].Split(':')[2]);
 
@@ -283,17 +378,17 @@ namespace Interview
                 {
                     if (st.Count > 0)
                     {
-                        ret[st.Peek()] += time - pre; 
+                        ret[st.Peek()] += time - pre;
                     }
                     pre = time;
-                    st.Push(id);                    
+                    st.Push(id);
                 }
                 else
                 {
                     if (st.Count > 0)
                     {
                         ret[st.Peek()] += time - pre + 1;
-                        pre = time+1;   //be aware +1
+                        pre = time + 1;   //be aware +1
                         st.Pop();
                     }
                 }
@@ -308,11 +403,11 @@ namespace Interview
         {
             if (N == 0 || dislikes == null)
                 return false;
-            var visited = new int[N+1];
+            var visited = new int[N + 1];
             int color = 1;
-            for(int i=1; i<= N; i++)
+            for (int i = 1; i <= N; i++)
             {
-                if (visited[i] == 0 && !PossibleBipartitionDFS(color,dislikes,visited, i))
+                if (visited[i] == 0 && !PossibleBipartitionDFS(color, dislikes, visited, i))
                     return false;
             }
 
@@ -321,16 +416,16 @@ namespace Interview
         bool PossibleBipartitionDFS(int color, int[][] graph, int[] visited, int i)
         {
             visited[i] = color;
-            
-                for(int j =0; j< graph[i].Length; j++)
-                {
-                    if (visited[graph[i][j]] ==color)
-                        return false;
 
-                    if (visited[graph[i][j]] == 0 && !PossibleBipartitionDFS(-color, graph, visited, visited[graph[i][j]]))
-                        return false;
-                }
-            
+            for (int j = 0; j < graph[i].Length; j++)
+            {
+                if (visited[graph[i][j]] == color)
+                    return false;
+
+                if (visited[graph[i][j]] == 0 && !PossibleBipartitionDFS(-color, graph, visited, visited[graph[i][j]]))
+                    return false;
+            }
+
             return true;
         }
 
@@ -383,9 +478,9 @@ namespace Interview
             var q = new Queue<int>();
 
 
-            for (int i =0; i< graph.Length; i++)
+            for (int i = 0; i < graph.Length; i++)
             {
-                if(visited[i]!=0)
+                if (visited[i] != 0)
                     continue;
                 q.Enqueue(i);
                 visited[i] = 1;
@@ -404,7 +499,7 @@ namespace Interview
                             visited[graph[node][j]] = -curColor;
                         }
                     }
-                }                
+                }
             }
             return true;
         }
@@ -542,32 +637,36 @@ namespace Interview
         // isMatch("ab", "?*") → true
         // isMatch("aab", "c*a*b") → false
         // isMatch("aaaa","***a") -> true
-        public bool IsMatch(string s, string p) {
-            if(string.IsNullOrEmpty(s)|| string.IsNullOrEmpty(p))
+        public bool IsMatch(string s, string p)
+        {
+            if (string.IsNullOrEmpty(s) || string.IsNullOrEmpty(p))
                 return false;
-            if(s==p)
+            if (s == p)
                 return true;
-            return isMatchHelper(s,p, 0,0);
-        
+            return isMatchHelper(s, p, 0, 0);
+
         }
-        bool isMatchHelper(string s, string p, int si, int pi){
-            if(pi==p.Length)
-                return si==s.Length;            
-            if(si==s.Length)
-              return  pi==p.Length || (pi==p.Length-1 && p[pi]=='*') ;
-            
-            if(s[si]==p[pi] || p[pi]=='?'){
-                return isMatchHelper(s,p, si+1,pi+1);
-            }    
-            else if(p[pi]=='*'){
-                if(pi+1 < p.Length && p[pi+1]=='*')
-                    return isMatchHelper(s,p, si+1, pi+1);                    
-                else if(pi+1 < p.Length && s[si]!=p[pi+1])
-                    return isMatchHelper(s,p,si+1,pi);
-                else if(pi+1 < p.Length && s[si]==p[pi+1])    
-                    return isMatchHelper(s,p, si+1,pi+2) || isMatchHelper(s,p,si+1,pi);    
+        bool isMatchHelper(string s, string p, int si, int pi)
+        {
+            if (pi == p.Length)
+                return si == s.Length;
+            if (si == s.Length)
+                return pi == p.Length || (pi == p.Length - 1 && p[pi] == '*');
+
+            if (s[si] == p[pi] || p[pi] == '?')
+            {
+                return isMatchHelper(s, p, si + 1, pi + 1);
+            }
+            else if (p[pi] == '*')
+            {
+                if (pi + 1 < p.Length && p[pi + 1] == '*')
+                    return isMatchHelper(s, p, si + 1, pi + 1);
+                else if (pi + 1 < p.Length && s[si] != p[pi + 1])
+                    return isMatchHelper(s, p, si + 1, pi);
+                else if (pi + 1 < p.Length && s[si] == p[pi + 1])
+                    return isMatchHelper(s, p, si + 1, pi + 2) || isMatchHelper(s, p, si + 1, pi);
                 else
-                    return true;                    
+                    return true;
             }
             else
                 return false;
@@ -606,7 +705,7 @@ namespace Interview
             bool isFirstMatch = i < s.Length && (s[i] == p[j] || p[j] == '.');
 
             //next char is *, then if first char not match, the * is 0, go check next in j and i remain the same
-            if (j + 1 < p.Length && p[j + 1] == '*') 
+            if (j + 1 < p.Length && p[j + 1] == '*')
             {
                 return isMatch(s, p, i, j + 2) || (isFirstMatch && isMatch(s, p, i + 1, j));
             }
@@ -724,7 +823,7 @@ namespace Interview
             int[] vector = new int[26];
             for (int i = 0; i < tasks.Length; i++)
                 vector[tasks[i] - 'A']++;
-            
+
             Array.Sort(vector);
 
             //find max count char 
@@ -735,7 +834,7 @@ namespace Interview
             int p = 0;
             p = vector.Where(i => i == maxCount).Count();
 
-            return Math.Max(tasks.Length , ret + p);
+            return Math.Max(tasks.Length, ret + p);
         }
 
 
@@ -823,8 +922,8 @@ namespace Interview
             if (left == 0 && right == 0)
             {
                 if (isValidParenthses(s))
-                    ret.Add(s);                  
-                
+                    ret.Add(s);
+
                 return;
             }
 
@@ -846,20 +945,21 @@ namespace Interview
         }
         //follow up : just return 1 possible result
         //正着删一次close,反着删一次close
-        public string RemoveInvalidParentheses2(string s) {
+        public string RemoveInvalidParentheses2(string s)
+        {
             if (string.IsNullOrEmpty(s))
                 return null;
 
             string temp = "";
             int left = 0;
-            for(int i=0; i<s.Length; i++)
+            for (int i = 0; i < s.Length; i++)
             {
                 if (s[i] == '(')
                 {
                     left++;
                     temp += s[i];
-                }   
-                else if (s[i]==')')
+                }
+                else if (s[i] == ')')
                 {
                     if (left > 0)
                     {
@@ -870,7 +970,7 @@ namespace Interview
             }
             int right = 0;
             string ret = "";
-            for(int j =temp.Length-1; j >=0; j--)
+            for (int j = temp.Length - 1; j >= 0; j--)
             {
                 if (temp[j] == ')')
                 {
@@ -901,17 +1001,17 @@ namespace Interview
             if (string.IsNullOrEmpty(S))
                 return 0;
 
-            int stackR = 0; 
-            int StackL = 0; 
+            int stackR = 0;
+            int StackL = 0;
 
-            for(int i=0; i< S.Length; i++)
+            for (int i = 0; i < S.Length; i++)
             {
                 if (S[i] == '(')
-                    StackL += 1; 
-                else if(S[i]==')' && StackL > 0)
+                    StackL += 1;
+                else if (S[i] == ')' && StackL > 0)
                     StackL--;
-                else if(S[i]==')')
-                    stackR++;                
+                else if (S[i] == ')')
+                    stackR++;
             }
             return stackR + StackL;
         }
@@ -948,7 +1048,7 @@ namespace Interview
             return false;
         }
 
-        
+
         bool existHelper(char[,] board, string word, bool[,] visited, int wordIdx, int i, int j)
         {
             if (word.Length == wordIdx)
@@ -971,7 +1071,7 @@ namespace Interview
             return false;
         }
 
-        
+
 
         //212. Word Search II
         //Given a 2D board and a list of words from the dictionary, find all words in the board.
@@ -1220,15 +1320,16 @@ namespace Interview
             }
             return false;
         }
-        public bool WordBreakBetter(string s, IList<string> wordDict){
-            
-            var map = new Dictionary<string,bool>();
+        public bool WordBreakBetter(string s, IList<string> wordDict)
+        {
+
+            var map = new Dictionary<string, bool>();
             var hs = new HashSet<string>(wordDict);
-            if(s==null || wordDict==null)
+            if (s == null || wordDict == null)
                 return false;
-            return WordBreakHelper(s,hs,map);
+            return WordBreakHelper(s, hs, map);
         }
-        
+
         public bool WordBreakHelper(string s, HashSet<string> wordDict, Dictionary<string, bool> map)
         {
             if (map.ContainsKey(s))
@@ -1245,7 +1346,7 @@ namespace Interview
                 string left = s.Substring(0, i);
                 string right = s.Substring(i);
 
-                if (wordDict.Contains(left) && WordBreakHelper(right, wordDict, map) )
+                if (wordDict.Contains(left) && WordBreakHelper(right, wordDict, map))
                 {
                     map.Add(s, true);
                     return true;
@@ -1262,15 +1363,15 @@ namespace Interview
         //You may assume the dictionary does not contain duplicate words.
         //Example 1: Input: s = "catsanddog"  wordDict = ["cat", "cats", "and", "sand", "dog"]
         //Output: [  "cats and dog",   "cat sand dog" ]
-        public IList<string> WordBreakII(string s, IList<string> wordDict)
-        {
-            var ret = new List<string>();
-            var hs = new HashSet<string>(wordDict);
-            var map = new Dictionary<string, List<string>>();
-            
-            return WordBreakIIHelper(s, hs, map,new List<string>(), ret);
+        //public IList<string> WordBreakII(string s, IList<string> wordDict)
+        //{
+        //    var ret = new List<string>();
+        //    var hs = new HashSet<string>(wordDict);
+        //    var map = new Dictionary<string, List<string>>();
 
-        }
+        //    return WordBreakIIHelper(s, hs, map,new List<string>(), ret);
+
+        //}
 
         //public IList<string> WordBreakIIHelper(string s, HashSet<string> wordDict, Dictionary<string, List<string>> map, List<string ret)
         //{
@@ -1579,7 +1680,6 @@ namespace Interview
             }
             return ret;
         }
-
 
     }
 }

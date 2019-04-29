@@ -169,6 +169,25 @@ namespace Interview
             }
         }
 
+        void BTHelper(List<int> cur,int[] A, int K, List<List<int>> ret, int stIdx)
+        {
+            if(cur.Count>0 && cur.Sum()%K == 0)
+            {
+                ret.Add(new List<int>(cur));
+                //return;
+            }
+
+            for(int i= stIdx; i<A.Length; i++)
+            {
+                if (i > stIdx && A[i] == A[i - 1])
+                    continue;
+                cur.Add(A[i]);
+                BTHelper(cur, A, K, ret, i + 1);
+                cur.Remove(cur.Last());
+            }
+
+        }
+
         //40. Combination Sum II
         //All numbers (including target) will be positive integers.
         //The solution set must not contain duplicate combinations.

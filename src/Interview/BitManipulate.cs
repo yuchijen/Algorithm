@@ -8,6 +8,21 @@ namespace Interview
     public class BitManipulate
     {
 
+        //Find 4th bit of a given num. 秒杀
+        //Given num = 32(10000)  4th是0  **1st是最后一位**
+        public int FourthBit(int num)
+        {
+            if (((1 << 3) & num) >= 1)
+                return 1;
+
+            return 0;
+
+            //for (int i = 0; i < 3; i++)
+            //    num =num >> 1;
+
+            //return num % 2;
+        } 
+
         //add 2 numbers without + operator
         public int add(int x, int y)
         {

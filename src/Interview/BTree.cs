@@ -1092,7 +1092,7 @@ namespace Interview
             while(root!=null || st.Count>0){
 
                 if(root!=null){
-                    st.Push(root)
+                    st.Push(root);
                     root= root.left;
                 }
 
