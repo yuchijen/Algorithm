@@ -8,6 +8,31 @@ namespace Interview
 {
     public class ArrayString
     {
+        //443. String Compression
+        //Input: ["a","a","b","b","c","c","c"]
+        //Output: Return 6, and the first 6 characters of the input array should be: ["a","2","b","2","c","3"]
+        //Explanation:"aa" is replaced by "a2". "bb" is replaced by "b2". "ccc" is replaced by "c3".
+        //e.g.2 Input:["a"]
+        //Output:Return 1, and the first 1 characters of the input array should be: ["a"]
+        //Explanation:Nothing is replaced.
+        public int Compress(char[] chars)
+        {
+            int n = chars.Length, cur = 0;
+            for (int i = 0, j = 0; i < n; i = j)
+            {
+                while (j < n && chars[j] == chars[i])
+                    ++j;
+                chars[cur++] = chars[i];
+                if (j - i == 1)
+                    continue;
+                for (int c=0; c < (j - i).ToString().Length; c++) 
+                    chars[cur++] = (j - i).ToString()[c];
+            }
+            return cur;
+
+        }
+
+
         //expedia OA
         //974. Subarray Sums Divisible by K
         //Input: A = [4,5,0,-2,-3,1], K = 5

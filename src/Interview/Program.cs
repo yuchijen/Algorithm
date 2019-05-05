@@ -14,6 +14,8 @@ namespace Interview
             var asa = new ArrayString();
             var dp = new DynamicProgramming();
 
+            asa.Compress(new char[] { 'a', 'a', 'b', 'b', 'c', 'c', 'c' });
+
             //Console.WriteLine( dp.longestRepeatedSubstring("geeksforgeeks"));
 
             //var arr = new int[] { 1, 2, 3, 4, 1, 2, 2 };

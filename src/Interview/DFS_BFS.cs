@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Interview
 {
@@ -14,6 +15,7 @@ namespace Interview
     }
     public class DFS_BFS
     {
+        
         //zume given 2 node in graph, find any common ancestor 
         public bool findCA(List<int[]> input, int n1, int n2)
         {
@@ -42,27 +44,17 @@ namespace Interview
             pathHelper(map, visited, n1, path1);
             visited = new Dictionary<int, int>();
             pathHelper(map, visited, n2, path2);
-
-            return path1.Any(p1 => (path2.Contains(p1)));
-            //foreach(var x in path1)
-            //{
-            //    if (path2.Contains(x))
-            //        return true;
-            //}
-            //return false;
+            //see any node in path is the same
+            return path1.Any(p1 => (path2.Contains(p1)));            
         }
         void pathHelper(Dictionary<int, List<int>> map, Dictionary<int, int> visited, int n, List<int> path)
         {
             path.Add(n);
+            if (visited.ContainsKey(n))
+                return;
+            visited.Add(n, 1);
             if (map.ContainsKey(n))
-            {
-                if (visited.ContainsKey(n))
-                {
-                    //if (visited[n] == 1)
-                        return;                
-                }
-                visited.Add(n, 1);
-
+            {   
                 foreach (var parent in map[n])
                 {
                     pathHelper(map,visited, parent, path);                        
