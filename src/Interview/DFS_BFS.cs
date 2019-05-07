@@ -38,7 +38,7 @@ namespace Interview
             if(beginWord==endWord)
                 return 0;
 
-            int ret =0;            
+            int ret =-1;            
             q.Enqueue(beginWord);
 
             while(q.Count>0){
