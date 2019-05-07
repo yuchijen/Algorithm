@@ -9,6 +9,59 @@ namespace Interview
 {
     public class Dsign
     {
+        //(google) flip game: flip 2 cards , if the same get point, if not flip them back. 
+        // design shuffle method (uniformly )
+        // setup board method, play method, with lock the board,  int play(int i1, int j1, int i2, int j2)
+        // follow up : 1.if board is big and how to deal with lock and performance? 
+        //separete baord into small pieces, and lock small piece instead of lock whole
+		//2.what is 2 cards are in different piece and might have dead lock , wait for each other to release
+        //set timpout or retry schema to release resource.
+        public class FlipGame
+        {
+            List<int> dock;
+            int num;
+
+            int[,] board;
+            public FlipGame(int capLen)
+            {
+                if (capLen <= 0)
+                    throw new Exception("accept only positive num");
+
+                board = new int[capLen, capLen];
+                num = capLen * capLen;
+            }
+            
+            //return list of random number in num
+            public List<int> shuffle(int num)
+            {
+                var ret = new List<int>();
+                for (int i = 0; i < num; i++)
+                    ret.Add(i);
+
+                var rd = new Random();
+                
+                for (int i=0; i<num; i++)
+                {
+                    int rdNum = rd.Next(i, num);
+                    int temp = ret[i];
+                    ret[i] = ret[rdNum];
+                    ret[rdNum] = temp;                    
+                }
+
+                return ret;
+            }
+
+            int play(int i1, int j1, int i2, int j2)
+            {
+                if (board[i1, j1] != board[i2, j2])
+                    return 0;
+                board[i1, j1] = -1;
+                board[i2, j2] = -1;
+                return 2;
+            }
+        }
+        
+
         //211. Add and Search Word - Data structure design
         //Example:
         //addWord("bad")

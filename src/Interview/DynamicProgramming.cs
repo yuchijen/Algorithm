@@ -7,6 +7,105 @@ namespace Interview
 {
     public class DynamicProgramming
     {
+        //expeida OA
+        //Longest repeating and non-overlapping substring
+        //Input : str = "geeksforgeeks"
+        //Output : geeks
+        //Input : str = "aab"
+        //Output : a
+        //LCSRe(i, j) stores length of the matching and
+        //non-overlapping substrings endin with i'th and j'th characters.
+        //If str[i - 1] == str[j - 1] && (j-i) > LCSRe(i-1, j-1)
+        //LCSRe(i, j) = LCSRe(i-1, j-1) + 1, 
+        //Else
+        //LCSRe(i, j) = 0
+
+        //Where i varies from 1 to n and
+        //j varies from i+1 to n
+        public string longestRepeatedSubstring(string str)
+        {
+            var dp = new int[str.Length+1,str.Length+1];
+
+            dp[0, 0] = 0;
+            int stIdx = 0;
+            int maxLen = 0;
+
+            for(int i=1; i<=str.Length; i++)
+            {
+                for(int j =i+1; j<=str.Length; j++)
+                {
+                    if (str[i-1] == str[j-1] && (j-i)>dp[i-1,j-1])
+                    {
+                        dp[i, j] = 1 + dp[i - 1, j - 1];
+                        if (dp[i, j] > maxLen)
+                        {
+                            stIdx = i;
+                            maxLen =  dp[i, j];
+                        }                           
+                    }
+                    else
+                    {
+                        dp[i, j] = 0;
+                    }
+                }
+            }
+            string ret = "";
+
+            if(maxLen>0)
+            {
+                for (int i = stIdx - maxLen + 1; i <= stIdx; i++)
+                    ret += str[i-1];
+            }
+            return ret;
+        }
+
+
+        //198. House Robber
+        //You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security system connected and it will automatically contact the police if two adjacent houses were broken into on the same night.
+        //Given a list of non-negative integers representing the amount of money of each house, determine the maximum amount of money you can rob tonight without alerting the police.
+        //Example 1: Input: [1,2,3,1]
+        //Output: 4
+        //Explanation: Rob house 1 (money = 1) and then rob house 3 (money = 3).
+        //Total amount you can rob = 1 + 3 = 4.
+        public int Rob(int[] nums)
+        {
+            if (nums == null || nums.Length == 0)
+                return 0;
+            if (nums.Length == 1)
+                return nums[0];
+
+            //dp i is cur max value if rob this house or not  
+            var dp = new int[nums.Length+1];
+            dp[0] = 0;
+            dp[1] = nums[0];
+            dp[2] = Math.Max(dp[1],nums[1]+dp[0]);
+                
+            for(int i=3; i< dp.Length; i++)
+            {
+                dp[i] = Math.Max(dp[i - 1], nums[i - 1] + dp[i - 2]);
+            }
+            return dp[nums.Length];
+        }
+
+        //213. House Robber II
+        //All houses at this place are arranged in a circle. That means the first house is 
+        //the neighbor of the last one.
+        //hint: remove 1st or remove last then compare 2 conditions
+        public int Rob2(int[] nums)
+        {
+            if (nums == null || nums.Length == 0)
+                return 0;
+            if (nums.Length == 1)
+                return nums[0];
+
+            var arr1 = new int[nums.Length - 1];
+            var arr2 = new int[nums.Length - 1];
+
+            Array.Copy(nums,0, arr1,0, nums.Length - 1);
+            Array.Copy(nums,1, arr2,0, nums.Length - 1);
+           
+            return Math.Max(Rob(arr1), Rob(arr2));
+        }
 
         //647. Palindromic Substrings 
         //Given a string, your task is to count how many palindromic substrings in this string.
@@ -314,9 +413,9 @@ namespace Interview
                 return 0;
 
             int len = s.Length;
-            int[] ret = new int[len + 1];
-            ret[0] = 1;
-            ret[1] = 1;
+            int[] dp = new int[len + 1];
+            dp[0] = 1;
+            dp[1] = 1;
 
             for (int i = 2; i <= len; i++)
             {
@@ -328,14 +427,14 @@ namespace Interview
                 int.TryParse(s.Substring(i - 1, 1), out digi1);
 
                 if (digi2 >= 10 && digi2 <= 26)
-                    prev2 = ret[i - 2];
+                    prev2 = dp[i - 2];
 
                 if (digi1 != 0)
-                    prev1 = ret[i - 1];
+                    prev1 = dp[i - 1];
 
-                ret[i] = prev2 + prev1;
+                dp[i] = prev2 + prev1;
             }
-            return ret[len];
+            return dp[len];
         }
 
         //70. Climbing Stairs

@@ -9,6 +9,98 @@ namespace Interview
     public class HashTable
     {
         
+        //387. First Unique Character in a String
+        public int FirstUniqChar(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+                return -1;
+            var map = new Dictionary<char, int>();
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (!map.ContainsKey(s[i]))
+                    map.Add(s[i], 1);
+                else
+                    map[s[i]] += 1;
+            }
+            for (int i = 0; i < map.Count; i++)
+            {
+                if (map.ElementAt(i).Value == 1)
+                    return s.IndexOf(map.ElementAt(i).Key);
+            }
+            return -1;
+        }
+
+
+        //359.  Logger Rate Limiter
+        //Design a logger system that receive stream of messages along with its timestamps, each message should be printed if and only if it is not printed in the last 10 seconds.
+        //Given a message and a timestamp(in seconds granularity), return true if the message should be printed in the given timestamp, otherwise returns false.
+        //It is possible that several messages arrive roughly at the same time.
+        //e.g.
+        //Logger logger = new Logger();
+        // logging string "foo" at timestamp 1
+        //logger.shouldPrintMessage(1, "foo"); returns true; 
+        // logging string "bar" at timestamp 2
+        //logger.shouldPrintMessage(2,"bar"); returns true;
+        // logging string "foo" at timestamp 3
+        //logger.shouldPrintMessage(3,"foo"); returns false;
+        //使用哈希映射记录各个时间点的消息，使用一个集合记录最近10秒的所有消息。
+        bool shouldPrintMessage2(int timestamp, string message)
+        {
+            var map = new Dictionary<string, int>();
+
+            if (!map.ContainsKey(message))
+            {
+                map.Add(message, timestamp);
+                return true;
+            }
+            if(timestamp- map[message]>10)
+            {
+                map[message] = timestamp;
+                return true;
+            }
+            return false;
+        }
+        public class Logger
+        {
+            Dictionary<int, List<string>> mapSPM;
+            HashSet<string> curSet;
+            int from;
+            public Logger()
+            {
+                mapSPM = new Dictionary<int, List<string>>();
+                curSet = new HashSet<string>();
+                from = 0;
+            }
+            
+            bool shouldPrintMessage(int timestamp, string message) {
+                //remove all element (in set and map) staying longer than 10
+                for(int i = from; i <= timestamp-10; i++)
+                {
+                    foreach(var str in mapSPM[i])
+                    {
+                        if (curSet.Contains(str))
+                            curSet.Remove(str);
+                    }
+                    mapSPM.Remove(i);
+                }
+                //maintain curset can reduce time on searching
+                if (curSet.Contains(message))
+                    return false;
+                curSet.Add(message);
+                if (mapSPM.ContainsKey(timestamp) && mapSPM[timestamp] != null)
+                    mapSPM[timestamp].Add(message);
+                else if (mapSPM.ContainsKey(timestamp))
+                    mapSPM[timestamp] = new List<string> { message };
+                else
+                    mapSPM.Add(timestamp, new List<string> { message });
+
+                from = timestamp - 9;
+                return true;
+            }
+        }
+        
+
         //340. Find the longest substring with k unique characters in a given string (Not Tested yet)
         //Given a string you need to print longest possible substring that has exactly M unique characters. 
         //If there are more than one substring of longest possible length, then print any one of them.

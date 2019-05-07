@@ -8,6 +8,152 @@ namespace Interview
 {
     public class ArrayString
     {
+        //443. String Compression
+        //Input: ["a","a","b","b","c","c","c"]
+        //Output: Return 6, and the first 6 characters of the input array should be: ["a","2","b","2","c","3"]
+        //Explanation:"aa" is replaced by "a2". "bb" is replaced by "b2". "ccc" is replaced by "c3".
+        //e.g.2 Input:["a"]
+        //Output:Return 1, and the first 1 characters of the input array should be: ["a"]
+        //Explanation:Nothing is replaced.
+        public int Compress(char[] chars)
+        {
+            int n = chars.Length, cur = 0;
+            for (int i = 0, j = 0; i < n; i = j)
+            {
+                while (j < n && chars[j] == chars[i])
+                    ++j;
+                chars[cur++] = chars[i];
+                if (j - i == 1)
+                    continue;
+                for (int c=0; c < (j - i).ToString().Length; c++) 
+                    chars[cur++] = (j - i).ToString()[c];
+            }
+            return cur;
+
+        }
+
+
+        //expedia OA
+        //974. Subarray Sums Divisible by K
+        //Input: A = [4,5,0,-2,-3,1], K = 5
+        //Output: 7
+        //Explanation: There are 7 (contiduous) subarrays with a sum divisible by K = 5:
+        //[4, 5, 0, -2, -3, 1], [5], [5, 0], [5, 0, -2, -3], [0], [0, -2, -3], [-2, -3]
+        public int SubarraysDivByK(int[] A, int K)
+        {
+            var c = new int[K];
+            c[0] = 1;
+            int ans = 0;
+            int sum = 0;
+            for (int i = 0; i < A.Length; i++)
+            {
+                sum = (sum + A[i] % K + K) % K;
+                ans += c[sum];
+                c[sum]++;
+            }
+            return ans;
+
+        }
+        public int SubarraysDivByK_(int[] A, int K)
+        {
+            var preSum = new int[A.Length];
+
+            for (int i = 0; i < A.Length; i++)
+            {
+                preSum[i] = i == 0 ? A[0] : preSum[i - 1] + A[i];
+            }
+            int ret = 0;
+            for (int i = 0; i < preSum.Length; i++)
+            {
+                if (preSum[i] % K == 0)
+                    ret++;
+                for (int j = 0; j < i; j++)
+                {
+                    if ((preSum[i] - preSum[j]) % K == 0)
+                        ret++;
+                }
+            }
+            return ret;
+        }
+
+        //expedia OA 
+        //Given [1,2,3,4,1,2,2] 
+        //output[2, 2, 2, 1, 1, 3, 4]
+        //规则是先sort by freq, 同样的freq 就sort by value
+        public int[] sortByFreqValue(int[] num)
+        {
+
+            var map = new Dictionary<int, int>();
+            Array.Sort(num);
+            //1,1,2,2,2,3,4
+            for(int i=0; i<num.Length; i++)
+            {
+                if (map.ContainsKey(num[i]))
+                    map[num[i]] += 1;
+                else
+                    map.Add(num[i], 1);
+            }
+            var ret = new int[num.Length];
+            int idx = 0;
+            foreach(var item in map.OrderByDescending(kv => (kv.Value)))
+            {
+                for (int j = 0; j < item.Value; j++)
+                {
+                    ret[idx] = item.Key;
+                    idx++;
+                }
+            }
+            foreach(var ii in ret)
+                Console.Write(ii + ",");
+          
+            return ret;
+        }
+
+        //zume phone screen 04232019
+        //user1: ["abc","bef","ghi","jkl","lbj"] 
+        //user2: ["abc","cf","dpi","ghi","jkl","lbj"]
+        //return "ghi","jkl","lbj"
+        //input are sorted with alphabet
+        public List<string> LongestCommonStrArr(string[] user1, string[] user2)
+        {
+            int idx1 = 0;
+            int idx2 = 0;
+            int stIdx = 0;
+            int maxLen = 0;
+            int tempIdx = 0;
+            int cnt = 0;
+            while (idx1 < user1.Length && idx2 < user2.Length)
+            {
+                if (user1[idx1] == user2[idx2])
+                {
+                    if (cnt == 0)
+                        tempIdx = idx1;
+                    cnt++;
+                    if (cnt > maxLen)
+                    {
+                        stIdx = tempIdx;
+                        maxLen = cnt;
+                    }
+                        
+                    idx1++;
+                    idx2++;
+                }
+                else
+                {
+                    cnt = 0;
+                    if (user1[idx1][0] > user2[idx2][0])
+                        idx2++;
+                    else
+                        idx1++;
+                }
+            }
+            var ret = new List<string>();
+            for (int i = stIdx; i < stIdx + maxLen; i++)
+                ret.Add(user1[i]);
+
+            return ret;
+        }
+
         //239. Sliding Window Maximum
         //Given an array nums, there is a sliding window of size k which is moving from the very 
         //left of the array to the very right. You can only see the k numbers in the window. Each time 
@@ -732,6 +878,9 @@ namespace Interview
         //find out max and second max value in array
         public int[] FindMaxAndSecondMax(int[] nums)
         {
+            if (nums == null || nums.Length < 2)
+                return null;
+
             var ret = new List<int>();
             int max = int.MinValue;
             int smax = int.MinValue;
@@ -748,6 +897,8 @@ namespace Interview
                     smax = nums[i];
                 }
             }
+            if (smax == int.MinValue)
+                throw new Exception("no second largest element");
             ret.Add(max);
             ret.Add(smax);
             return ret.ToArray();

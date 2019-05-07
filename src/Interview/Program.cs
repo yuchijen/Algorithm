@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TSP;
-using static Interview.ArrayString;
 
 namespace Interview
 {
@@ -13,7 +12,19 @@ namespace Interview
         {
 
             var asa = new ArrayString();
+            var dp = new DynamicProgramming();
 
+            asa.Compress(new char[] { 'a', 'a', 'b', 'b', 'c', 'c', 'c' });
+
+            //Console.WriteLine( dp.longestRepeatedSubstring("geeksforgeeks"));
+
+            //var arr = new int[] { 1, 2, 3, 4, 1, 2, 2 };
+            //asa.sortByFreqValue(arr);
+            //string[] user1 = new string[] { "abc", "def", "ghi", "jkl", "lbj","mmm","nnn","oo" };
+            //var user2 = new string[] { "abc","cf","dpi","ghi","jkl","lbj", "mge", "nnn", "oo" };
+
+            //foreach (var x in asa.LongestCommonStrArr(user1, user2))
+            //    Console.WriteLine(x);
 
             //asa.FindAnagrams("cbaebabacd", "abc");
             //foreach (var x in asa.MajorityElement2(new int[5] { 2, 2, 2, 4, 4 }))
@@ -53,20 +64,26 @@ namespace Interview
             //Console.ReadLine();
 
             var C = new Circle();
-            Console.WriteLine("circumference:"+ C.Calculate((x) => { return x * 2 * 3.14; }));
+            Console.WriteLine("circumference:" + C.Calculate((x) => { return x * 2 * 3.14; }));
 
             UInt16 uii = 0xFFFF;
             var byt = BitConverter.GetBytes(uii);
-            Int32 data = BitConverter.ToInt16(byt,0);
+            Int32 data = BitConverter.ToInt16(byt, 0);
             Console.WriteLine(data);
 
             var bs = new BinarySearch();
             bs.MyPow(5.0, -4);
 
             var bm = new BitManipulate();
+
+            //Console.WriteLine("4th bit:" + bm.FourthBit(-23));
             bm.CountOneBit(4294967295);
 
             var bk = new BackTracking();
+
+
+            //bk.SubarraysDivByK(new int[] { 4, 5, 0, -2, -3, 1 }, 5);
+
             Console.WriteLine("Permutation:########");
             var perret = bk.Permute(new int[3] { 1, 2, 3 });
             foreach (var x in perret)
@@ -98,6 +115,20 @@ namespace Interview
             //tt.Execute(10, 10);
 
             var dfs = new DFS_BFS();
+
+            var parentChildPairs = new List<int[]>() {
+            new int[]{1, 3},
+            new int[]{2, 3},
+            new int[]{3, 6},
+            new int[]{5, 6},
+            new int[]{5, 7},
+            new int[]{4, 5},
+            new int[]{4, 8},
+            new int[]{8, 10}
+                };
+
+            Console.Write("find CA:");
+            Console.WriteLine(dfs.findCA(parentChildPairs, 10, 7));
 
             //var chlist = new char[6] { 'A', 'A', 'A', 'B', 'B', 'B' };
             //Console.WriteLine("tasks:" + dfs.LeastInterval(chlist, 0));

@@ -333,6 +333,8 @@ namespace Interview
                 return null;
 
             ListNode ptr = head;
+            ListNode ptr2 = head;
+
             Stack<int> st = new Stack<int>();
 
             while (ptr != null)
@@ -341,15 +343,14 @@ namespace Interview
                 ptr = ptr.next;
             }
 
-            ListNode ret = new ListNode(-1);
-            ListNode retPtr = ret;
             while (st.Count != 0)
             {
-                retPtr.next = new ListNode(st.Pop());
-                retPtr = retPtr.next;
+                ptr2.val = st.Pop();
+                ptr2 = ptr2.next;
+                //retPtr = retPtr.next;
             }
 
-            return ret.next;
+            return head; 
         }
 
         //space complex O(1);

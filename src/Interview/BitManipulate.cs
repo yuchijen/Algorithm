@@ -7,7 +7,43 @@ namespace Interview
 {
     public class BitManipulate
     {
-        
+
+        //Find 4th bit of a given num. 秒杀
+        //Given num = 32(10000)  4th是0  **1st是最后一位**
+        public int FourthBit(int num)
+        {
+            if (((1 << 3) & num) >= 1)
+                return 1;
+
+            return 0;
+
+            //for (int i = 0; i < 3; i++)
+            //    num =num >> 1;
+
+            //return num % 2;
+        } 
+
+        //add 2 numbers without + operator
+        public int add(int x, int y)
+        {
+            // Iterate till there is no carry 
+            while (y != 0)
+            {
+                // carry now contains common 
+                // set bits of x and y 
+                int carry = x & y;
+                // Sum of bits of x and y where at least one  
+                // of the bits is not set 
+                x = x ^ y;
+                // Carry is shifted by  
+                // one so that adding it  
+                // to x gives the required sum 
+                y = carry << 1;
+            }
+            return x;
+        }
+
+
         //29. Divide Two Integers
         //Divide two integers without using multiplication, division and mod operator.
         //If it is overflow, return MAX_INT.
