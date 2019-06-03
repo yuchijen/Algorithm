@@ -7,6 +7,31 @@ namespace Interview
 {
     public class DynamicProgramming
     {
+        string createShortestPalindrome(string s)
+        {
+            string str = s;
+            
+            //reverse (str);
+            char[] charArray = str.ToCharArray();
+            Array.Reverse(charArray);
+            str = new string(charArray);
+            str = s + "#" + str;
+            int len1 = s.Length, len2 = str.Length;
+
+
+            var vec = new int[len2];
+            for (int i = 1; i < len2; i++)
+            {
+                int k = vec[i - 1];
+                while (k > 0 && str[k] != str[i])
+                    k = vec[k - 1];
+
+                vec[i] = (k += str[i] == str[k]?1:0);
+            }
+            return str.Substring(len1 + 1, len1 - vec[len2 - 1]) + s;
+        }
+        
+
         //expeida OA
         //Longest repeating and non-overlapping substring
         //Input : str = "geeksforgeeks"
